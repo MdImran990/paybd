@@ -1,3 +1,4 @@
+import '../models/payment_request.dart';
 import '../models/transaction.dart';
 
 class WalletException implements Exception {
@@ -7,10 +8,18 @@ class WalletException implements Exception {
   String toString() => message;
 }
 
-/// DEMO limits. Real limits must come from the server / regulations.
+/// DEMO limits and fee. Real limits and fees come from the server / regulations.
 class WalletLimits {
-  static const minSendMinor = 1000; // ৳10
-  static const maxSendMinor = 2500000; // ৳25,000
+  static ({int min, int max}) of(TxType t) => switch (t) {
+        TxType.sent => (min: 1000, max: 2500000), // ৳10 - ৳25,000
+        TxType.cashOut => (min: 5000, max: 2500000), // ৳50 - ৳25,000
+        TxType.cashIn => (min: 5000, max: 5000000), // ৳50 - ৳50,000
+        TxType.recharge => (min: 1000, max: 100000), // ৳10 - ৳1,000
+        TxType.received => (min: 0, max: 0),
+      };
+
+  /// DEMO cash out fee: 1.5% (15 per thousand).
+  static const cashOutFeePerMille = 15;
 }
 
 /// UI and providers talk only to this interface.
@@ -19,10 +28,12 @@ class WalletLimits {
 abstract class WalletRepository {
   Future<int> getBalance();
   Future<List<Transaction>> getTransactions();
-  Future<Transaction> sendMoney({
-    required String toPhone,
-    required int amountMinor,
-  });
+
+  /// Fee for a payment. In the real app the server decides this.
+  Future<int> quoteFee(TxType type, int amountMinor);
+
+  /// Executes send, cash out, add money or recharge.
+  Future<Transaction> submit(PaymentRequest request);
 }
 
 /// DEMO ONLY. In-memory data, reset when the app restarts. Not real money.
@@ -67,25 +78,46 @@ class MockWalletRepository implements WalletRepository {
   }
 
   @override
-  Future<Transaction> sendMoney({
-    required String toPhone,
-    required int amountMinor,
-  }) async {
+  Future<int> quoteFee(TxType type, int amountMinor) async {
+    if (type == TxType.cashOut) {
+      return (amountMinor * WalletLimits.cashOutFeePerMille + 500) ~/ 1000;
+    }
+    return 0;
+  }
+
+  @override
+  Future<Transaction> submit(PaymentRequest request) async {
     await Future.delayed(const Duration(milliseconds: 800));
-    if (amountMinor < WalletLimits.minSendMinor ||
-        amountMinor > WalletLimits.maxSendMinor) {
+
+    final type = request.type;
+    if (type == TxType.received) {
+      throw const WalletException('Not allowed.');
+    }
+    final limits = WalletLimits.of(type);
+    final amount = request.amountMinor;
+    if (amount < limits.min || amount > limits.max) {
       throw const WalletException('Amount is outside the allowed limit.');
     }
-    if (amountMinor > _balance) {
-      throw const WalletException('Insufficient balance.');
+
+    // Never trust the fee sent by the app: recompute it here (the server's job).
+    final fee = await quoteFee(type, amount);
+
+    if (type.debitsWallet) {
+      if (amount + fee > _balance) {
+        throw const WalletException('Insufficient balance.');
+      }
+      _balance -= amount + fee;
+    } else {
+      _balance += amount;
     }
-    _balance -= amountMinor;
+
     final tx = Transaction(
       id: 'TX${DateTime.now().millisecondsSinceEpoch}',
-      type: TxType.sent,
-      counterparty: toPhone,
-      amountMinor: amountMinor,
-      feeMinor: 0,
+      type: type,
+      counterparty: request.counterparty,
+      note: request.note,
+      amountMinor: amount,
+      feeMinor: fee,
       createdAt: DateTime.now(),
     );
     _txs.add(tx);

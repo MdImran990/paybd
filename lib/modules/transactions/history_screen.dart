@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/utils/format.dart';
+import '../../core/utils/tx_ui.dart';
 import '../../core/widgets/receipt_card.dart';
 import '../../data/models/transaction.dart';
 import '../wallet/wallet_providers.dart';
@@ -104,7 +105,7 @@ class _TxTile extends StatelessWidget {
               CircleAvatar(
                 backgroundColor: color.withValues(alpha: 0.15),
                 child: Icon(
-                  credit ? Icons.south_rounded : Icons.north_rounded,
+                  txIcon(tx.type),
                   color: color,
                 ),
               ),
@@ -114,9 +115,7 @@ class _TxTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      credit
-                          ? 'Received from ${tx.counterparty}'
-                          : 'Sent to ${tx.counterparty}',
+                      txTitle(tx),
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 4),

@@ -10,7 +10,8 @@ class ReceiptCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sent = tx.type == TxType.sent;
+    final total =
+        tx.type.debitsWallet ? tx.amountMinor + tx.feeMinor : tx.amountMinor;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -19,10 +20,13 @@ class ReceiptCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          DetailRow('Type', sent ? 'Send Money' : 'Received'),
-          DetailRow(sent ? 'To' : 'From', tx.counterparty),
+          DetailRow('Type', tx.type.label),
+          if (tx.counterparty.isNotEmpty)
+            DetailRow(tx.type.counterpartyLabel, tx.counterparty),
+          if (tx.note != null) DetailRow('Operator', tx.note!),
           DetailRow('Amount', formatTaka(tx.amountMinor)),
           DetailRow('Fee', formatTaka(tx.feeMinor)),
+          DetailRow('Total', formatTaka(total), bold: true),
           DetailRow('Transaction ID', tx.id),
           DetailRow('Date & time', formatDateTime(tx.createdAt)),
           const DetailRow('Status', 'Successful'),

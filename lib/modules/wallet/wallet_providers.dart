@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../data/models/payment_request.dart';
 import '../../data/models/transaction.dart';
 import '../../data/repositories/wallet_repository.dart';
 
@@ -24,9 +25,10 @@ class WalletNotifier extends AsyncNotifier<WalletState> {
     );
   }
 
-  Future<Transaction> send(String phone, int amountMinor) async {
+  /// Runs any payment (send, cash out, add money, recharge) and refreshes the wallet.
+  Future<Transaction> pay(PaymentRequest request) async {
     final repo = ref.read(walletRepositoryProvider);
-    final tx = await repo.sendMoney(toPhone: phone, amountMinor: amountMinor);
+    final tx = await repo.submit(request);
     state = AsyncData(await _load());
     return tx;
   }

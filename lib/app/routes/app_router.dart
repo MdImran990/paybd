@@ -10,11 +10,11 @@ import '../../modules/auth/auth_providers.dart';
 import '../../modules/home/home_screen.dart';
 import '../../modules/onboarding/onboarding_screen.dart';
 import '../../modules/profile/profile_screen.dart';
-import '../../modules/send_money/confirm_send_screen.dart';
-import '../../modules/send_money/receipt_screen.dart';
-import '../../modules/send_money/send_money_screen.dart';
-import '../../modules/send_money/send_payload.dart';
-import '../../modules/send_money/send_pin_screen.dart';
+import '../../modules/payment/confirm_payment_screen.dart';
+import '../../modules/payment/payment_entry_screens.dart';
+import '../../modules/payment/payment_pin_screen.dart';
+import '../../modules/payment/receipt_screen.dart';
+import '../../data/models/payment_request.dart';
 import '../../modules/settings/settings_screen.dart';
 import '../../modules/splash/splash_screen.dart';
 import '../../modules/transactions/history_screen.dart';
@@ -91,22 +91,38 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (_, s) => _slide(s, const SendMoneyScreen()),
       ),
       GoRoute(
-        path: '/send/confirm',
+        path: '/cash-out',
+        pageBuilder: (_, s) => _slide(s, const CashOutScreen()),
+      ),
+      GoRoute(
+        path: '/add-money',
+        pageBuilder: (_, s) => _slide(s, const AddMoneyScreen()),
+      ),
+      GoRoute(
+        path: '/recharge',
+        pageBuilder: (_, s) => _slide(s, const RechargeScreen()),
+      ),
+      GoRoute(
+        path: '/pay/confirm',
         pageBuilder: (_, s) {
           final p = s.extra;
           return _slide(
             s,
-            p is SendPayload ? ConfirmSendScreen(payload: p) : const SendMoneyScreen(),
+            p is PaymentRequest
+                ? ConfirmPaymentScreen(request: p)
+                : const HomeScreen(),
           );
         },
       ),
       GoRoute(
-        path: '/send/pin',
+        path: '/pay/pin',
         pageBuilder: (_, s) {
           final p = s.extra;
           return _slide(
             s,
-            p is SendPayload ? SendPinScreen(payload: p) : const SendMoneyScreen(),
+            p is PaymentRequest
+                ? PaymentPinScreen(request: p)
+                : const HomeScreen(),
           );
         },
       ),

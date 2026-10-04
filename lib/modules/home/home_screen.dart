@@ -144,11 +144,15 @@ class _BalanceCard extends ConsumerWidget {
                     color: Colors.white.withValues(alpha: 0.18),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Row(mainAxisSize: MainAxisSize.min, children: [
-                    Icon(Icons.add_circle_outline, size: 16),
-                    SizedBox(width: 6),
-                    Text('Add Money', style: TextStyle(fontSize: 12)),
-                  ]),
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => context.push('/add-money'),
+                    child: const Row(mainAxisSize: MainAxisSize.min, children: [
+                      Icon(Icons.add_circle_outline, size: 16),
+                      SizedBox(width: 6),
+                      Text('Add Money', style: TextStyle(fontSize: 12)),
+                    ]),
+                  ),
                 ),
               ],
             ),
@@ -260,15 +264,15 @@ class _OfferBanner extends StatelessWidget {
 class _ServicesPanel extends StatelessWidget {
   const _ServicesPanel();
 
-  static const _items = <(IconData, String)>[
-    (Icons.smartphone_rounded, 'Recharge'),
-    (Icons.flight_takeoff_rounded, 'Travelling'),
-    (Icons.apartment_rounded, 'Hotel'),
-    (Icons.wifi_rounded, 'WiFi'),
-    (Icons.lightbulb_outline_rounded, 'Electricity'),
-    (Icons.movie_outlined, 'Movie'),
-    (Icons.storefront_rounded, 'Store'),
-    (Icons.more_horiz_rounded, 'More'),
+  static const _items = <(IconData, String, String?)>[
+    (Icons.smartphone_rounded, 'Recharge', '/recharge'),
+    (Icons.flight_takeoff_rounded, 'Travelling', null),
+    (Icons.apartment_rounded, 'Hotel', null),
+    (Icons.wifi_rounded, 'WiFi', null),
+    (Icons.lightbulb_outline_rounded, 'Electricity', null),
+    (Icons.movie_outlined, 'Movie', null),
+    (Icons.storefront_rounded, 'Store', null),
+    (Icons.payments_outlined, 'Cash Out', '/cash-out'),
   ];
 
   @override
@@ -293,7 +297,16 @@ class _ServicesPanel extends StatelessWidget {
               for (final it in _items)
                 InkWell(
                   borderRadius: BorderRadius.circular(12),
-                  onTap: () {},
+                  onTap: () {
+                    final route = it.$3;
+                    if (route != null) {
+                      context.push(route);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Coming soon')),
+                      );
+                    }
+                  },
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
