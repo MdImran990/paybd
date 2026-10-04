@@ -10,6 +10,7 @@ abstract class PinRepository {
   bool get hasPin;
   Future<void> setPin(String pin);
   Future<PinResult> verifyPin(String pin);
+  Future<void> clear();
 }
 
 /// DEMO ONLY. The PIN is kept in memory (lost when the app closes).
@@ -29,6 +30,13 @@ class MockPinRepository implements PinRepository {
   Future<void> setPin(String pin) async {
     await Future.delayed(const Duration(milliseconds: 300));
     _pin = pin;
+    _failed = 0;
+    _lockedUntil = null;
+  }
+
+  @override
+  Future<void> clear() async {
+    _pin = null;
     _failed = 0;
     _lockedUntil = null;
   }

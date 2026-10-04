@@ -1,8 +1,8 @@
-PayBD step 3: PIN setup + Send Money + Receipt + History
+PayBD step 4: Auth guard + Profile + Change PIN + Settings + Logout
 
   Expand-Archive -Path "<ZIP_PATH>" -DestinationPath . -Force
   fvm flutter analyze
   fvm flutter run
 
-Flow: OTP -> Create PIN -> Home -> Send -> Confirm -> PIN -> Receipt -> History
-Demo OTP: 123456. All data is in memory (resets on app restart). Not real money.
+Guard: without login, every page except Splash/Onboarding/Login/OTP redirects to /login.
+Logout clears the session + PIN and resets the demo wallet (all data is in memory).

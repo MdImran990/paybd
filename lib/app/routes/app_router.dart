@@ -2,16 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../data/models/transaction.dart';
+import '../../modules/auth/change_pin_screen.dart';
 import '../../modules/auth/login_screen.dart';
 import '../../modules/auth/otp_screen.dart';
 import '../../modules/auth/pin_setup_screen.dart';
+import '../../modules/auth/auth_providers.dart';
 import '../../modules/home/home_screen.dart';
 import '../../modules/onboarding/onboarding_screen.dart';
+import '../../modules/profile/profile_screen.dart';
 import '../../modules/send_money/confirm_send_screen.dart';
 import '../../modules/send_money/receipt_screen.dart';
 import '../../modules/send_money/send_money_screen.dart';
 import '../../modules/send_money/send_payload.dart';
 import '../../modules/send_money/send_pin_screen.dart';
+import '../../modules/settings/settings_screen.dart';
 import '../../modules/splash/splash_screen.dart';
 import '../../modules/transactions/history_screen.dart';
 
@@ -40,8 +44,22 @@ CustomTransitionPage<void> _slide(GoRouterState state, Widget child) {
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
+  // Re-run the redirect whenever the session changes (login / logout).
+  final refresh = ValueNotifier<int>(0);
+  ref.onDispose(refresh.dispose);
+  ref.listen<String?>(sessionPhoneProvider, (_, _) => refresh.value++);
+
   return GoRouter(
     initialLocation: '/',
+    refreshListenable: refresh,
+    redirect: (context, state) {
+      final loggedIn = ref.read(sessionPhoneProvider) != null;
+      final path = state.matchedLocation;
+      const publicPaths = {'/', '/onboarding', '/login', '/otp'};
+      if (!loggedIn && !publicPaths.contains(path)) return '/login';
+      if (loggedIn && (path == '/login' || path == '/onboarding')) return '/home';
+      return null;
+    },
     routes: [
       GoRoute(
         path: '/',
@@ -105,6 +123,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/history',
         pageBuilder: (_, s) => _slide(s, const HistoryScreen()),
+      ),
+      GoRoute(
+        path: '/profile',
+        pageBuilder: (_, s) => _slide(s, const ProfileScreen()),
+      ),
+      GoRoute(
+        path: '/settings',
+        pageBuilder: (_, s) => _slide(s, const SettingsScreen()),
+      ),
+      GoRoute(
+        path: '/change-pin',
+        pageBuilder: (_, s) => _slide(s, const ChangePinScreen()),
       ),
     ],
   );

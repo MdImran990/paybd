@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
+import '../settings/settings_providers.dart';
 import '../wallet/wallet_providers.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -31,7 +32,9 @@ class HomeScreen extends StatelessWidget {
         width: 64,
         height: 64,
         child: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('QR payment coming soon')),
+          ),
           backgroundColor: AppColors.primary,
           shape: const CircleBorder(),
           child: const Icon(Icons.qr_code_scanner_rounded, size: 30),
@@ -52,8 +55,18 @@ class _Header extends StatelessWidget {
         const Text('PayBD',
             style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800)),
         const Spacer(),
-        IconButton(onPressed: () {}, icon: const Icon(Icons.account_circle_outlined)),
-        IconButton(onPressed: () {}, icon: const Icon(Icons.notifications_none_rounded)),
+        IconButton(
+          tooltip: 'Profile',
+          onPressed: () => context.push('/profile'),
+          icon: const Icon(Icons.account_circle_outlined),
+        ),
+        IconButton(
+          tooltip: 'Notifications',
+          onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Coming soon')),
+          ),
+          icon: const Icon(Icons.notifications_none_rounded),
+        ),
       ],
     );
   }
@@ -65,6 +78,7 @@ class _BalanceCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final balance = ref.watch(balanceProvider).value ?? 0.0;
+    final hidden = ref.watch(hideBalanceProvider);
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
@@ -88,14 +102,31 @@ class _BalanceCard extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Row(children: [
-                  Icon(Icons.account_balance_wallet_outlined, size: 16),
-                  SizedBox(width: 6),
-                  Text('PayBD Balance', style: TextStyle(fontSize: 12)),
+                Row(children: [
+                  const Icon(Icons.account_balance_wallet_outlined, size: 16),
+                  const SizedBox(width: 6),
+                  const Text('PayBD Balance', style: TextStyle(fontSize: 12)),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () =>
+                        ref.read(hideBalanceProvider.notifier).toggle(),
+                    child: Icon(
+                      hidden
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      size: 16,
+                    ),
+                  ),
                 ]),
                 const SizedBox(height: 10),
                 // Animated count-up, only this widget rebuilds
-                TweenAnimationBuilder<double>(
+                hidden
+                    ? const Text(
+                        '৳ ••••••',
+                        style: TextStyle(
+                            fontSize: 26, fontWeight: FontWeight.w800),
+                      )
+                    : TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0, end: balance),
                   duration: const Duration(milliseconds: 900),
                   curve: Curves.easeOutCubic,
@@ -291,14 +322,35 @@ class _BottomNav extends StatelessWidget {
       color: AppColors.panel,
       shape: const CircularNotchedRectangle(),
       notchMargin: 8,
-      child: const Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Icon(Icons.home_rounded, color: AppColors.green),
-          Icon(Icons.account_balance_wallet_outlined, color: AppColors.textMuted),
-          SizedBox(width: 48), // space for the QR button
-          Icon(Icons.swap_horiz_rounded, color: AppColors.textMuted),
-          Icon(Icons.person_outline_rounded, color: AppColors.textMuted),
+          IconButton(
+            tooltip: 'Home',
+            onPressed: () {},
+            icon: const Icon(Icons.home_rounded, color: AppColors.green),
+          ),
+          IconButton(
+            tooltip: 'Wallet',
+            onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Coming soon')),
+            ),
+            icon: const Icon(Icons.account_balance_wallet_outlined,
+                color: AppColors.textMuted),
+          ),
+          const SizedBox(width: 48), // space for the QR button
+          IconButton(
+            tooltip: 'Activity',
+            onPressed: () => context.push('/history'),
+            icon: const Icon(Icons.swap_horiz_rounded,
+                color: AppColors.textMuted),
+          ),
+          IconButton(
+            tooltip: 'Profile',
+            onPressed: () => context.push('/profile'),
+            icon: const Icon(Icons.person_outline_rounded,
+                color: AppColors.textMuted),
+          ),
         ],
       ),
     );

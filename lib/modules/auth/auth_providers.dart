@@ -16,6 +16,7 @@ class SessionNotifier extends Notifier<String?> {
   String? build() => null;
 
   void setPhone(String phone) => state = phone;
+  void logout() => state = null;
 }
 
 final sessionPhoneProvider =
