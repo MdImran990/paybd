@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
 import '../wallet/wallet_providers.dart';
 
@@ -140,9 +141,9 @@ class _QuickActions extends StatelessWidget {
     return const Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _ActionItem(Icons.north_rounded, 'Send', AppColors.yellow),
+        _ActionItem(Icons.north_rounded, 'Send', AppColors.yellow, '/send'),
         _ActionItem(Icons.south_rounded, 'Receive', AppColors.pink),
-        _ActionItem(Icons.history_rounded, 'History', AppColors.green),
+        _ActionItem(Icons.history_rounded, 'History', AppColors.green, '/history'),
         _ActionItem(Icons.help_outline_rounded, 'A/c Balance', AppColors.blue),
       ],
     );
@@ -153,7 +154,8 @@ class _ActionItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final Color color;
-  const _ActionItem(this.icon, this.label, this.color);
+  final String? route;
+  const _ActionItem(this.icon, this.label, this.color, [this.route]);
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +166,15 @@ class _ActionItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           child: InkWell(
             borderRadius: BorderRadius.circular(16),
-            onTap: () {},
+            onTap: () {
+              if (route != null) {
+                context.push(route!);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Coming soon')),
+                );
+              }
+            },
             child: SizedBox(
               width: 58,
               height: 58,

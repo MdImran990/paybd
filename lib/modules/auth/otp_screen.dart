@@ -69,7 +69,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
           .verifyOtp(widget.phone, _controller.text);
       if (!mounted) return;
       if (ok) {
-        context.go('/home');
+        ref.read(sessionPhoneProvider.notifier).setPhone(widget.phone);
+        final hasPin = ref.read(pinRepositoryProvider).hasPin;
+        context.go(hasPin ? '/home' : '/pin-setup');
       } else {
         _controller.clear();
         setState(() => _error = 'Wrong OTP. Please try again.');
