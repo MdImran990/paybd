@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/lib" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/bin/cache/dart-sdk/lib/_internal/sdk_library_metadata/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/bin/cache/dart-sdk/lib/_internal/sdk_library_metadata/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/bin/cache/dart-sdk/lib/_internal/sdk_library_metadata/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/bin/cache/pkg/flutter_gpu/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/bin/cache/pkg/flutter_gpu/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/bin/cache/pkg/flutter_gpu/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/bin/cache/pkg/sky_engine/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/bin/cache/pkg/sky_engine/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/bin/cache/pkg/sky_engine/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/complex_layout/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/complex_layout/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/complex_layout/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/imitation_game_flutter/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/imitation_game_flutter/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/imitation_game_flutter/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/macrobenchmarks/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/macrobenchmarks/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/macrobenchmarks/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/microbenchmarks/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/microbenchmarks/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/microbenchmarks/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/multiple_flutters/module/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/multiple_flutters/module/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/multiple_flutters/module/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/platform_channels_benchmarks/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/platform_channels_benchmarks/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/platform_channels_benchmarks/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/platform_views_layout/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/platform_views_layout/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/platform_views_layout/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/platform_views_layout_hybrid_composition/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/platform_views_layout_hybrid_composition/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/platform_views_layout_hybrid_composition/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/test_apps/stocks/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/test_apps/stocks/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/benchmarks/test_apps/stocks/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/bots/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/bots/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/bots/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/devicelab/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/devicelab/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/devicelab/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/docs/platform_integration/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/docs/platform_integration/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/docs/platform_integration/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/docs/renderers/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/docs/renderers/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/docs/renderers/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/manual_tests/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/manual_tests/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/manual_tests/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/snippets/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/snippets/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/snippets/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/tools/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/tools/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/tools/android_driver_extensions/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/tools/android_driver_extensions/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/tools/android_driver_extensions/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/tools/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/tools/gen_defaults/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/tools/gen_defaults/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/tools/gen_defaults/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/tools/gen_keycodes/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/tools/gen_keycodes/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/tools/gen_keycodes/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/tools/vitool/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/tools/vitool/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/.fvm/versions/stable/dev/tools/vitool/build" />
+      <excludeFolder url="file://$MODULE_DIR$/.pub" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Dart SDK" level="project" />
+    <orderEntry type="library" name="Flutter Plugins" level="project" />
+    <orderEntry type="library" name="Dart Packages" level="project" />
+  </component>
+</module>

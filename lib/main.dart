@@ -1,0 +1,22 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'app/routes/app_router.dart';
+import 'app/theme/app_theme.dart';
+
+void main() {
+  runApp(const ProviderScope(child: PayBdApp()));
+}
+
+class PayBdApp extends ConsumerWidget {
+  const PayBdApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      title: 'PayBD',
+      theme: AppTheme.dark,
+      routerConfig: ref.watch(routerProvider),
+    );
+  }
+}
