@@ -98,7 +98,7 @@ class _MyQrTabState extends ConsumerState<_MyQrTab> {
                   const SizedBox(height: 14),
                   Text(
                     amountOk
-                        ? 'Request ${formatTaka(minor!)}'
+                        ? 'Request ${formatTaka(minor)}'
                         : 'Anyone can scan this to pay you',
                     style: const TextStyle(color: AppColors.textMuted),
                   ),
