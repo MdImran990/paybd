@@ -32,9 +32,7 @@ class HomeScreen extends StatelessWidget {
         width: 64,
         height: 64,
         child: FloatingActionButton(
-          onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('QR payment coming soon')),
-          ),
+          onPressed: () => context.push('/qr?tab=scan'),
           backgroundColor: AppColors.primary,
           shape: const CircleBorder(),
           child: const Icon(Icons.qr_code_scanner_rounded, size: 30),
@@ -177,7 +175,7 @@ class _QuickActions extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _ActionItem(Icons.north_rounded, 'Send', AppColors.yellow, '/send'),
-        _ActionItem(Icons.south_rounded, 'Receive', AppColors.pink),
+        _ActionItem(Icons.south_rounded, 'Receive', AppColors.pink, '/qr'),
         _ActionItem(Icons.history_rounded, 'History', AppColors.green, '/history'),
         _ActionItem(Icons.help_outline_rounded, 'A/c Balance', AppColors.blue),
       ],

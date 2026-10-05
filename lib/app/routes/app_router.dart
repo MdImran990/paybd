@@ -10,6 +10,8 @@ import '../../modules/auth/auth_providers.dart';
 import '../../modules/home/home_screen.dart';
 import '../../modules/onboarding/onboarding_screen.dart';
 import '../../modules/profile/profile_screen.dart';
+import '../../modules/qr/qr_payload.dart';
+import '../../modules/qr/qr_screen.dart';
 import '../../modules/payment/confirm_payment_screen.dart';
 import '../../modules/payment/payment_entry_screens.dart';
 import '../../modules/payment/payment_pin_screen.dart';
@@ -88,7 +90,22 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/send',
-        pageBuilder: (_, s) => _slide(s, const SendMoneyScreen()),
+        pageBuilder: (_, s) {
+          final e = s.extra;
+          return _slide(
+            s,
+            SendMoneyScreen(prefill: e is QrPayload ? e : null),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/qr',
+        pageBuilder: (_, s) => _slide(
+          s,
+          QrScreen(
+            initialTab: s.uri.queryParameters['tab'] == 'scan' ? 1 : 0,
+          ),
+        ),
       ),
       GoRoute(
         path: '/cash-out',
