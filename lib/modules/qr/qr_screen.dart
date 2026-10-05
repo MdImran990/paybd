@@ -26,8 +26,8 @@ class QrScreen extends StatelessWidget {
           title: const Text('QR Pay'),
           backgroundColor: Colors.transparent,
           bottom: const TabBar(
-            indicatorColor: AppColors.green,
-            labelColor: AppColors.green,
+            indicatorColor: AppColors.primary,
+            labelColor: AppColors.primary,
             unselectedLabelColor: AppColors.textMuted,
             tabs: [Tab(text: 'My QR'), Tab(text: 'Scan')],
           ),
@@ -108,7 +108,7 @@ class _MyQrTabState extends ConsumerState<_MyQrTab> {
                       child: Text(
                         'Amount must be ${formatTaka(limits.min)} to ${formatTaka(limits.max)}.',
                         style: const TextStyle(
-                            color: AppColors.pink, fontSize: 12),
+                            color: AppColors.error, fontSize: 12),
                       ),
                     ),
                 ],
@@ -221,7 +221,7 @@ class _ScanTabState extends State<_ScanTab> {
               height: 240,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: AppColors.green, width: 3),
+                border: Border.all(color: Colors.white, width: 3),
               ),
             ),
           ),
@@ -234,7 +234,11 @@ class _ScanTabState extends State<_ScanTab> {
             child: Text(
               'Point the camera at a PayBD QR code',
               textAlign: TextAlign.center,
-              style: TextStyle(fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+                shadows: [Shadow(blurRadius: 6, color: Colors.black54)],
+              ),
             ),
           ),
         ),

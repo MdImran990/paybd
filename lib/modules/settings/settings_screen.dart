@@ -8,12 +8,9 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final hidden = ref.watch(hideBalanceProvider);
+    final requirePin = ref.watch(requirePinProvider);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-        backgroundColor: Colors.transparent,
-      ),
+      appBar: AppBar(title: const Text('Settings')),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
@@ -24,13 +21,16 @@ class SettingsScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(18),
               ),
               child: SwitchListTile(
-                value: hidden,
-                onChanged: (v) => ref.read(hideBalanceProvider.notifier).set(v),
-                activeThumbColor: AppColors.green,
-                title: const Text('Hide balance',
+                value: requirePin,
+                onChanged: (v) {
+                  ref.read(requirePinProvider.notifier).set(v);
+                  if (v) ref.read(balanceRevealedProvider.notifier).hide();
+                },
+                activeThumbColor: AppColors.primary,
+                title: const Text('Ask PIN to see balance',
                     style: TextStyle(fontWeight: FontWeight.w600)),
                 subtitle: const Text(
-                  'Show ৳ •••••• on the Home card',
+                  'Your balance stays hidden on Home until you enter your PIN.',
                   style: TextStyle(color: AppColors.textMuted, fontSize: 12),
                 ),
               ),

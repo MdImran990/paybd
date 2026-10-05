@@ -15,6 +15,7 @@ class WalletLimits {
         TxType.cashOut => (min: 5000, max: 2500000), // ৳50 - ৳25,000
         TxType.cashIn => (min: 5000, max: 5000000), // ৳50 - ৳50,000
         TxType.recharge => (min: 1000, max: 100000), // ৳10 - ৳1,000
+        TxType.bill => (min: 1000, max: 5000000), // ৳10 - ৳50,000
         TxType.received => (min: 0, max: 0),
       };
 

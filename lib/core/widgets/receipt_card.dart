@@ -23,7 +23,7 @@ class ReceiptCard extends StatelessWidget {
           DetailRow('Type', tx.type.label),
           if (tx.counterparty.isNotEmpty)
             DetailRow(tx.type.counterpartyLabel, tx.counterparty),
-          if (tx.note != null) DetailRow('Operator', tx.note!),
+          if (tx.note != null) DetailRow(tx.type.noteLabel, tx.note!),
           DetailRow('Amount', formatTaka(tx.amountMinor)),
           DetailRow('Fee', formatTaka(tx.feeMinor)),
           DetailRow('Total', formatTaka(total), bold: true),

@@ -23,7 +23,7 @@ class ProfileScreen extends ConsumerWidget {
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             child: const Text('Log out',
-                style: TextStyle(color: AppColors.pink)),
+                style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),
@@ -42,10 +42,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final phone = ref.watch(sessionPhoneProvider) ?? '';
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        backgroundColor: Colors.transparent,
-      ),
+      appBar: AppBar(title: const Text('Profile')),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
@@ -63,7 +60,7 @@ class ProfileScreen extends ConsumerWidget {
                   const CircleAvatar(
                     radius: 30,
                     backgroundColor: Colors.white24,
-                    child: Icon(Icons.person_rounded, size: 34),
+                    child: Icon(Icons.person_rounded, size: 34, color: Colors.white),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -71,11 +68,13 @@ class ProfileScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text('PayBD Account',
-                            style: TextStyle(fontSize: 12)),
+                            style: TextStyle(fontSize: 12, color: Colors.white70)),
                         const SizedBox(height: 4),
                         Text(phone,
                             style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w800)),
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white)),
                       ],
                     ),
                   ),
@@ -109,7 +108,7 @@ class ProfileScreen extends ConsumerWidget {
             _MenuTile(
               icon: Icons.logout_rounded,
               label: 'Log out',
-              color: AppColors.pink,
+              color: AppColors.error,
               onTap: () => _logout(context, ref),
             ),
           ],
@@ -133,7 +132,7 @@ class _MenuTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = color ?? Colors.white;
+    final c = color ?? AppColors.text;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Material(
@@ -146,7 +145,7 @@ class _MenuTile extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Row(
               children: [
-                Icon(icon, color: color ?? AppColors.green),
+                Icon(icon, color: color ?? AppColors.primary),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Text(label,

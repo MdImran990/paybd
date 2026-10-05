@@ -7,6 +7,7 @@ IconData txIcon(TxType type) => switch (type) {
       TxType.cashIn => Icons.add_card_rounded,
       TxType.cashOut => Icons.payments_outlined,
       TxType.recharge => Icons.smartphone_rounded,
+      TxType.bill => Icons.receipt_long_rounded,
     };
 
 String txTitle(Transaction tx) {
@@ -23,5 +24,8 @@ String txTitle(Transaction tx) {
     case TxType.recharge:
       final op = tx.note;
       return op == null ? 'Recharge $c' : 'Recharge $c ($op)';
+    case TxType.bill:
+      final kind = tx.note;
+      return kind == null ? 'Bill $c' : '$kind bill $c';
   }
 }

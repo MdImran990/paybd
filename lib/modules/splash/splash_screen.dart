@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
 
@@ -20,28 +21,35 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: TweenAnimationBuilder<double>(
-          tween: Tween(begin: 0.8, end: 1),
-          duration: const Duration(milliseconds: 900),
-          curve: Curves.easeOutBack,
-          builder: (_, v, child) => Opacity(
-            opacity: v.clamp(0.0, 1.0),
-            child: Transform.scale(scale: v, child: child),
-          ),
-          child: const Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.account_balance_wallet_rounded,
-                  size: 64, color: AppColors.green),
-              SizedBox(height: 12),
-              Text('PayBD',
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.w800)),
-              SizedBox(height: 4),
-              Text('Your Money. Your Control.',
-                  style: TextStyle(color: AppColors.textMuted)),
-            ],
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: AppColors.primary,
+        body: Center(
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0.8, end: 1),
+            duration: const Duration(milliseconds: 900),
+            curve: Curves.easeOutBack,
+            builder: (_, v, child) => Opacity(
+              opacity: v.clamp(0.0, 1.0),
+              child: Transform.scale(scale: v, child: child),
+            ),
+            child: const Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.account_balance_wallet_rounded,
+                    size: 64, color: Colors.white),
+                SizedBox(height: 12),
+                Text('PayBD',
+                    style: TextStyle(
+                        fontSize: 34,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white)),
+                SizedBox(height: 4),
+                Text('Your Money. Your Control.',
+                    style: TextStyle(color: Colors.white70)),
+              ],
+            ),
           ),
         ),
       ),

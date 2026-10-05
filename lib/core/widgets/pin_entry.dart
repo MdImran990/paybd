@@ -104,12 +104,12 @@ class _PinEntryState extends State<PinEntry>
                     height: 16,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: i < _pin.length ? AppColors.green : AppColors.panel,
+                      color: i < _pin.length ? AppColors.primary : AppColors.panel,
                       border: Border.all(
                         color: _error != null
-                            ? AppColors.pink
+                            ? AppColors.error
                             : i < _pin.length
-                                ? AppColors.green
+                                ? AppColors.primary
                                 : AppColors.textMuted.withValues(alpha: 0.4),
                       ),
                     ),
@@ -128,7 +128,7 @@ class _PinEntryState extends State<PinEntry>
                   )
                 : Text(_error ?? '',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppColors.pink, fontSize: 13)),
+                    style: const TextStyle(color: AppColors.error, fontSize: 13)),
           ),
           const Spacer(),
           for (final row in const [

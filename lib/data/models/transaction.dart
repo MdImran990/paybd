@@ -1,4 +1,4 @@
-enum TxType { sent, received, cashIn, cashOut, recharge }
+enum TxType { sent, received, cashIn, cashOut, recharge, bill }
 
 extension TxTypeX on TxType {
   bool get isCredit => this == TxType.received || this == TxType.cashIn;
@@ -10,6 +10,7 @@ extension TxTypeX on TxType {
         TxType.cashIn => 'Add Money',
         TxType.cashOut => 'Cash Out',
         TxType.recharge => 'Mobile Recharge',
+        TxType.bill => 'Pay Bill',
       };
 
   String get counterpartyLabel => switch (this) {
@@ -18,6 +19,7 @@ extension TxTypeX on TxType {
         TxType.cashIn => 'Source',
         TxType.cashOut => 'Agent',
         TxType.recharge => 'Number',
+        TxType.bill => 'Account',
       };
 
   String get confirmHeading => switch (this) {
@@ -26,6 +28,7 @@ extension TxTypeX on TxType {
         TxType.cashIn => 'You are adding',
         TxType.cashOut => 'You are cashing out',
         TxType.recharge => 'You are recharging',
+        TxType.bill => 'You are paying a bill',
       };
 
   String get successTitle => switch (this) {
@@ -34,6 +37,14 @@ extension TxTypeX on TxType {
         TxType.cashIn => 'Money added',
         TxType.cashOut => 'Cash out successful',
         TxType.recharge => 'Recharge successful',
+        TxType.bill => 'Bill paid',
+      };
+
+  /// Label for the optional note (operator, bill type).
+  String get noteLabel => switch (this) {
+        TxType.recharge => 'Operator',
+        TxType.bill => 'Bill type',
+        _ => 'Note',
       };
 }
 
