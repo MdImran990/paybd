@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/app_colors.dart';
-import '../../core/utils/format.dart';
-import '../../core/utils/tx_ui.dart';
-import '../../core/widgets/receipt_card.dart';
-import '../../data/models/transaction.dart';
+import '../../core/widgets/tx_tile.dart';
 import '../wallet/wallet_providers.dart';
 
 class HistoryScreen extends ConsumerWidget {
@@ -14,10 +11,7 @@ class HistoryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final wallet = ref.watch(walletProvider);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('History'),
-        backgroundColor: Colors.transparent,
-      ),
+      appBar: AppBar(title: const Text('History')),
       body: SafeArea(
         child: wallet.when(
           loading: () => const Center(child: CircularProgressIndicator()),
@@ -52,85 +46,9 @@ class HistoryScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
               itemCount: w.transactions.length,
               separatorBuilder: (_, _) => const SizedBox(height: 10),
-              itemBuilder: (_, i) => _TxTile(tx: w.transactions[i]),
+              itemBuilder: (_, i) => TxTile(tx: w.transactions[i]),
             );
           },
-        ),
-      ),
-    );
-  }
-}
-
-class _TxTile extends StatelessWidget {
-  final Transaction tx;
-  const _TxTile({required this.tx});
-
-  void _showDetails(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: AppColors.bg,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (_) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Transaction details',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 16),
-            ReceiptCard(tx: tx),
-          ],
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final credit = tx.isCredit;
-    final color = credit ? AppColors.green : AppColors.pink;
-    return Material(
-      color: AppColors.panel,
-      borderRadius: BorderRadius.circular(18),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(18),
-        onTap: () => _showDetails(context),
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: color.withValues(alpha: 0.15),
-                child: Icon(
-                  txIcon(tx.type),
-                  color: color,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      txTitle(tx),
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(formatDateTime(tx.createdAt),
-                        style: const TextStyle(
-                            fontSize: 12, color: AppColors.textMuted)),
-                  ],
-                ),
-              ),
-              Text(
-                '${credit ? '+' : '-'}${formatTaka(tx.amountMinor)}',
-                style: TextStyle(fontWeight: FontWeight.w800, color: color),
-              ),
-            ],
-          ),
         ),
       ),
     );

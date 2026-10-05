@@ -47,7 +47,7 @@ class ConfirmPaymentScreen extends StatelessWidget {
                               DetailRow(request.type.counterpartyLabel,
                                   request.counterparty),
                             if (request.note != null)
-                              DetailRow('Operator', request.note!),
+                              DetailRow(request.type.noteLabel, request.note!),
                             DetailRow('Amount', formatTaka(request.amountMinor)),
                             DetailRow('Fee', formatTaka(request.feeMinor)),
                             const Divider(height: 24),

@@ -146,7 +146,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               ),
               if (_error != null) ...[
                 const SizedBox(height: 14),
-                Text(_error!, style: const TextStyle(color: AppColors.pink)),
+                Text(_error!, style: const TextStyle(color: AppColors.error)),
               ],
               const SizedBox(height: 20),
               Center(
@@ -207,7 +207,7 @@ class _OtpBox extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: error
-              ? AppColors.pink
+              ? AppColors.error
               : active
                   ? AppColors.primary
                   : Colors.transparent,

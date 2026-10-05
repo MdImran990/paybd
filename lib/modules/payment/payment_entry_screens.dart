@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/utils/billers.dart';
 import '../../core/utils/operators.dart';
 import '../../data/models/transaction.dart';
 import '../qr/qr_payload.dart';
@@ -57,5 +58,20 @@ class RechargeScreen extends StatelessWidget {
         noteOptions: mobileOperators,
         suggestNote: operatorForPhone,
         quickAmounts: const [20, 50, 100, 200],
+      );
+}
+
+class PayBillScreen extends StatelessWidget {
+  const PayBillScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) => const PaymentFormScreen(
+        type: TxType.bill,
+        title: 'Pay Bill',
+        recipientLabel: 'Account / meter number',
+        recipientIsPhone: false,
+        noteLabel: 'Bill type',
+        noteOptions: billTypes,
+        quickAmounts: [500, 1000, 2000, 5000],
       );
 }

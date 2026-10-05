@@ -15,7 +15,7 @@ class PayBdApp extends ConsumerWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'PayBD',
-      theme: AppTheme.dark,
+      theme: AppTheme.light,
       routerConfig: ref.watch(routerProvider),
     );
   }

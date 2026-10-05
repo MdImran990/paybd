@@ -37,6 +37,9 @@ class PaymentFormScreen extends ConsumerStatefulWidget {
   /// null = no recipient field (Add Money).
   final String? recipientLabel;
   final bool blockSelf;
+
+  /// false = account / meter number instead of a mobile number (Pay Bill).
+  final bool recipientIsPhone;
   final List<int> quickAmounts;
 
   /// Optional chips (mobile operator, or where the money comes from).
@@ -54,6 +57,7 @@ class PaymentFormScreen extends ConsumerStatefulWidget {
     required this.title,
     this.recipientLabel,
     this.blockSelf = false,
+    this.recipientIsPhone = true,
     this.quickAmounts = const [100, 500, 1000, 2000],
     this.noteLabel,
     this.noteOptions = const [],
@@ -121,7 +125,10 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
 
     if (_hasRecipient) {
       final phone = _phone.text;
-      if (!bdPhoneRegExp.hasMatch(phone)) {
+      final recipientOk = widget.recipientIsPhone
+          ? bdPhoneRegExp.hasMatch(phone)
+          : RegExp(r'^\d{6,20}$').hasMatch(phone);
+      if (!recipientOk) {
         ok = false;
       } else if (widget.blockSelf && phone == ref.read(sessionPhoneProvider)) {
         error = "You can't send money to yourself.";
@@ -222,12 +229,16 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                           autofocus: true,
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(11),
+                            LengthLimitingTextInputFormatter(widget.recipientIsPhone ? 11 : 20),
                           ],
                           onChanged: _onPhoneChanged,
                           decoration: _decoration(
-                            hint: '01XXXXXXXXX',
-                            prefix: const Icon(Icons.phone_android_rounded),
+                            hint: widget.recipientIsPhone
+                                ? '01XXXXXXXXX'
+                                : 'Account or meter number',
+                            prefix: Icon(widget.recipientIsPhone
+                                ? Icons.phone_android_rounded
+                                : Icons.receipt_long_rounded),
                           ),
                         ),
                         const SizedBox(height: 22),
@@ -248,6 +259,11 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                                   label: Text(o),
                                   selected: selected == o,
                                   showCheckmark: false,
+                                  labelStyle: TextStyle(
+                                    color: selected == o
+                                        ? Colors.white
+                                        : AppColors.text,
+                                  ),
                                   selectedColor: AppColors.primary,
                                   backgroundColor: AppColors.panel,
                                   side: BorderSide.none,
@@ -291,7 +307,7 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                                 padding: const EdgeInsets.only(top: 8),
                                 child: Text(e,
                                     style: const TextStyle(
-                                        color: AppColors.pink, fontSize: 13)),
+                                        color: AppColors.error, fontSize: 13)),
                               ),
                       ),
                       const SizedBox(height: 10),

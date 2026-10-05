@@ -16,7 +16,7 @@ const _pages = <_PageData>[
     Icons.send_rounded,
     'Send money easily',
     'Send and receive money with just a phone number.',
-    AppColors.yellow,
+    AppColors.primary,
   ),
   _PageData(
     Icons.receipt_long_rounded,
@@ -100,7 +100,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             width: i == current ? 26 : 8,
                             decoration: BoxDecoration(
                               color: i == current
-                                  ? AppColors.green
+                                  ? AppColors.primary
                                   : AppColors.panel,
                               borderRadius: BorderRadius.circular(8),
                             ),

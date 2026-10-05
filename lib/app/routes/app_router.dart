@@ -120,6 +120,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (_, s) => _slide(s, const RechargeScreen()),
       ),
       GoRoute(
+        path: '/pay-bill',
+        pageBuilder: (_, s) => _slide(s, const PayBillScreen()),
+      ),
+      GoRoute(
         path: '/pay/confirm',
         pageBuilder: (_, s) {
           final p = s.extra;

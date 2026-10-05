@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 
+/// PayBD palette: bKash-style pink on a light background.
+/// Use PayBD's own logo and name; do not copy any other company's branding.
 class AppColors {
-  static const bg = Color(0xFF16153F);
-  static const panel = Color(0xFF211F57);
-  static const tile = Color(0xFF1B1A4B);
-  static const primary = Color(0xFF6B54FF);
-  static const primaryDark = Color(0xFF4B3BDB);
-  static const green = Color(0xFF2EE6A6);
-  static const yellow = Color(0xFFFFC83D);
-  static const pink = Color(0xFFFF4D8D);
-  static const blue = Color(0xFF3DA5FF);
-  static const textMuted = Color(0xFFB8B6E0);
+  static const bg = Color(0xFFF5F5F8);
+  static const panel = Color(0xFFFFFFFF);
+  static const tile = Color(0xFFFFFFFF);
+  static const primary = Color(0xFFE2136E);
+  static const primaryDark = Color(0xFFB80F58);
+  static const text = Color(0xFF1E1E2D);
+  static const textMuted = Color(0xFF7B7B8E);
+  static const green = Color(0xFF1FA971); // success / money in
+  static const yellow = Color(0xFFC77700); // warning / demo notices
+  static const blue = Color(0xFF3B82F6);
+  static const error = Color(0xFFE5484D); // errors / money out
 }
