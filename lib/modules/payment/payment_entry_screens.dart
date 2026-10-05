@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import '../../core/utils/operators.dart';
 import '../../data/models/transaction.dart';
+import '../qr/qr_payload.dart';
 import 'payment_form_screen.dart';
 
 class SendMoneyScreen extends StatelessWidget {
-  const SendMoneyScreen({super.key});
+  /// Set when the user arrives from scanning a QR code.
+  final QrPayload? prefill;
+  const SendMoneyScreen({super.key, this.prefill});
 
   @override
-  Widget build(BuildContext context) => const PaymentFormScreen(
+  Widget build(BuildContext context) => PaymentFormScreen(
         type: TxType.sent,
         title: 'Send Money',
         recipientLabel: 'Recipient',
         blockSelf: true,
+        initialPhone: prefill?.phone,
+        initialAmountMinor: prefill?.amountMinor,
       );
 }
 

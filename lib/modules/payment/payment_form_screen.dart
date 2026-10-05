@@ -44,6 +44,10 @@ class PaymentFormScreen extends ConsumerStatefulWidget {
   final List<String> noteOptions;
   final String? Function(String phone)? suggestNote;
 
+  /// Prefill (for example from a scanned QR code).
+  final String? initialPhone;
+  final int? initialAmountMinor;
+
   const PaymentFormScreen({
     super.key,
     required this.type,
@@ -54,6 +58,8 @@ class PaymentFormScreen extends ConsumerStatefulWidget {
     this.noteLabel,
     this.noteOptions = const [],
     this.suggestNote,
+    this.initialPhone,
+    this.initialAmountMinor,
   });
 
   @override
@@ -70,6 +76,25 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
   bool _noteTouched = false;
 
   bool get _hasRecipient => widget.recipientLabel != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final phone = widget.initialPhone;
+    final amount = widget.initialAmountMinor;
+    if (phone != null) _phone.text = phone;
+    if (amount != null) {
+      final paisa = amount % 100;
+      _amount.text = paisa == 0
+          ? '${amount ~/ 100}'
+          : '${amount ~/ 100}.${paisa.toString().padLeft(2, '0')}';
+    }
+    if (phone != null || amount != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _revalidate();
+      });
+    }
+  }
 
   @override
   void dispose() {
