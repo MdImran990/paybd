@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/utils/format.dart';
+import '../../core/widgets/copy_receipt_button.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../core/widgets/receipt_card.dart';
 import '../../data/models/transaction.dart';
@@ -50,6 +51,8 @@ class ReceiptScreen extends StatelessWidget {
                                 color: AppColors.green)),
                         const SizedBox(height: 24),
                         ReceiptCard(tx: tx),
+                        const SizedBox(height: 8),
+                        CopyReceiptButton(tx: tx),
                       ],
                     ),
                   ),

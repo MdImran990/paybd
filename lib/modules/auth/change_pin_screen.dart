@@ -69,10 +69,25 @@ class _ChangePinScreenState extends ConsumerState<ChangePinScreen> {
     return null;
   }
 
+  Future<void> _forgotPin() async {
+    final phone = ref.read(sessionPhoneProvider);
+    if (phone == null) return;
+    await ref.read(authRepositoryProvider).sendOtp(phone);
+    if (mounted) context.push('/otp?reset=1', extra: phone);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.transparent),
+      appBar: AppBar(
+        actions: [
+          if (_stage == 0)
+            TextButton(
+              onPressed: _forgotPin,
+              child: const Text('Forgot PIN?'),
+            ),
+        ],
+      ),
       body: SafeArea(
         child: PinEntry(
           title: _titles[_stage],

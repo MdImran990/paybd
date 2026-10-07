@@ -8,6 +8,8 @@ import '../../core/utils/pin_verify.dart';
 import '../../core/widgets/pin_entry.dart';
 import '../../core/widgets/tx_tile.dart';
 import '../auth/auth_providers.dart';
+import '../notifications/notification_providers.dart';
+import '../profile/profile_providers.dart';
 import '../settings/settings_providers.dart';
 import '../wallet/wallet_providers.dart';
 
@@ -88,6 +90,8 @@ class _Header extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final phone = ref.watch(sessionPhoneProvider) ?? '';
+    final name = ref.watch(profileNameProvider);
+    final unread = ref.watch(unreadCountProvider);
     final top = MediaQuery.of(context).padding.top;
     return Container(
       padding: EdgeInsets.fromLTRB(20, top + 14, 20, 24),
@@ -118,7 +122,7 @@ class _Header extends ConsumerWidget {
                   children: [
                     const Text('Welcome back',
                         style: TextStyle(fontSize: 12, color: Colors.white70)),
-                    Text(phone,
+                    Text(name ?? phone,
                         style: const TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w700,
@@ -128,9 +132,13 @@ class _Header extends ConsumerWidget {
               ),
               IconButton(
                 tooltip: 'Notifications',
-                onPressed: () => _comingSoon(context, 'Notifications'),
-                icon: const Icon(Icons.notifications_none_rounded,
-                    color: Colors.white),
+                onPressed: () => context.push('/inbox'),
+                icon: Badge(
+                  isLabelVisible: unread > 0,
+                  label: Text('$unread'),
+                  child: const Icon(Icons.notifications_none_rounded,
+                      color: Colors.white),
+                ),
               ),
             ],
           ),
@@ -271,11 +279,15 @@ const _services = <_Service>[
   _Service(Icons.add_card_rounded, 'Add Money', '/add-money'),
   _Service(Icons.receipt_long_rounded, 'Pay Bill', '/pay-bill'),
   _Service(Icons.request_quote_rounded, 'Request Money', '/qr'),
+  _Service(Icons.savings_rounded, 'Savings', '/savings'),
+  _Service(Icons.volunteer_activism_rounded, 'Donation', '/donation'),
+  _Service(Icons.school_rounded, 'Education Fee', '/education'),
+  _Service(Icons.history_rounded, 'Statement', '/history'),
+  _Service(Icons.help_outline_rounded, 'Help', '/help'),
   _Service(Icons.public_rounded, 'Remittance', null),
-  _Service(Icons.savings_rounded, 'Savings', null),
   _Service(Icons.account_balance_rounded, 'Loan', null),
   _Service(Icons.health_and_safety_rounded, 'Insurance', null),
-  _Service(Icons.volunteer_activism_rounded, 'Donation', null),
+  _Service(Icons.person_outline_rounded, 'My Profile', '/profile'),
 ];
 
 class _ServiceGrid extends StatelessWidget {
@@ -453,7 +465,7 @@ class _BottomNav extends StatelessWidget {
               onTap: () => context.push('/history')),
           const SizedBox(width: 56), // space for the QR button
           _NavItem(Icons.mail_outline_rounded, 'Inbox',
-              onTap: () => _comingSoon(context, 'Inbox')),
+              onTap: () => context.push('/inbox')),
           _NavItem(Icons.person_outline_rounded, 'Menu',
               onTap: () => context.push('/profile')),
         ],

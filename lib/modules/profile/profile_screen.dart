@@ -3,10 +3,41 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
 import '../auth/auth_providers.dart';
-import '../wallet/wallet_providers.dart';
+import '../auth/logout.dart';
+import 'profile_providers.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
+
+  Future<void> _editName(BuildContext context, WidgetRef ref) async {
+    final controller =
+        TextEditingController(text: ref.read(profileNameProvider) ?? '');
+    final name = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.panel,
+        title: const Text('Your name'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          maxLength: 30,
+          textCapitalization: TextCapitalization.words,
+          decoration: const InputDecoration(hintText: 'Enter your name'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(controller.text),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    if (name != null) await ref.read(profileNameProvider.notifier).set(name);
+  }
 
   Future<void> _logout(BuildContext context, WidgetRef ref) async {
     final ok = await showDialog<bool>(
@@ -14,7 +45,8 @@ class ProfileScreen extends ConsumerWidget {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.panel,
         title: const Text('Log out?'),
-        content: const Text('You will need to verify your number again.'),
+        content: const Text(
+            'You will need to verify your number again. Demo data on this device will be erased.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -29,18 +61,13 @@ class ProfileScreen extends ConsumerWidget {
       ),
     );
     if (ok != true) return;
-
-    // Demo: every login starts a fresh demo account.
-    await ref.read(pinRepositoryProvider).clear();
-    ref.invalidate(walletProvider);
-    ref.invalidate(walletRepositoryProvider);
-    // The router guard sends the user to /login once the session is cleared.
-    ref.read(sessionPhoneProvider.notifier).logout();
+    await performLogout(ref);
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final phone = ref.watch(sessionPhoneProvider) ?? '';
+    final name = ref.watch(profileNameProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
       body: SafeArea(
@@ -60,23 +87,30 @@ class ProfileScreen extends ConsumerWidget {
                   const CircleAvatar(
                     radius: 30,
                     backgroundColor: Colors.white24,
-                    child: Icon(Icons.person_rounded, size: 34, color: Colors.white),
+                    child:
+                        Icon(Icons.person_rounded, size: 34, color: Colors.white),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('PayBD Account',
-                            style: TextStyle(fontSize: 12, color: Colors.white70)),
+                        Text(name ?? 'PayBD Account',
+                            style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white)),
                         const SizedBox(height: 4),
                         Text(phone,
                             style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white)),
+                                fontSize: 13, color: Colors.white70)),
                       ],
                     ),
+                  ),
+                  IconButton(
+                    tooltip: 'Edit name',
+                    onPressed: () => _editName(context, ref),
+                    icon: const Icon(Icons.edit_rounded, color: Colors.white),
                   ),
                 ],
               ),
@@ -93,12 +127,22 @@ class ProfileScreen extends ConsumerWidget {
               onTap: () => context.push('/settings'),
             ),
             _MenuTile(
+              icon: Icons.help_outline_rounded,
+              label: 'Help & Support',
+              onTap: () => context.push('/help'),
+            ),
+            _MenuTile(
+              icon: Icons.description_outlined,
+              label: 'Terms & Privacy',
+              onTap: () => context.push('/terms'),
+            ),
+            _MenuTile(
               icon: Icons.info_outline_rounded,
               label: 'About PayBD',
               onTap: () => showAboutDialog(
                 context: context,
                 applicationName: 'PayBD',
-                applicationVersion: '0.1.0 (demo)',
+                applicationVersion: '0.2.0 (demo)',
                 children: const [
                   Text('Demo build. Balances and transactions are not real money.'),
                 ],

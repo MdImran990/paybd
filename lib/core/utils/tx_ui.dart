@@ -8,6 +8,10 @@ IconData txIcon(TxType type) => switch (type) {
       TxType.cashOut => Icons.payments_outlined,
       TxType.recharge => Icons.smartphone_rounded,
       TxType.bill => Icons.receipt_long_rounded,
+      TxType.donation => Icons.volunteer_activism_rounded,
+      TxType.education => Icons.school_rounded,
+      TxType.savings => Icons.savings_rounded,
+      TxType.savingsWithdraw => Icons.account_balance_wallet_outlined,
     };
 
 String txTitle(Transaction tx) {
@@ -27,5 +31,14 @@ String txTitle(Transaction tx) {
     case TxType.bill:
       final kind = tx.note;
       return kind == null ? 'Bill $c' : '$kind bill $c';
+    case TxType.donation:
+      return 'Donation: $c';
+    case TxType.education:
+      final inst = tx.note;
+      return inst == null ? 'Education fee $c' : '$inst fee $c';
+    case TxType.savings:
+      return 'Saved to $c';
+    case TxType.savingsWithdraw:
+      return 'Withdrawn from $c';
   }
 }

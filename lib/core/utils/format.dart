@@ -31,7 +31,6 @@ int? parseTakaToMinor(String input) {
   final frac = (m.group(2) ?? '').padRight(2, '0');
   return taka * 100 + int.parse(frac);
 }
-
 const _months = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',

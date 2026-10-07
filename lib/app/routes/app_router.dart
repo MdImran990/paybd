@@ -8,7 +8,11 @@ import '../../modules/auth/otp_screen.dart';
 import '../../modules/auth/pin_setup_screen.dart';
 import '../../modules/auth/auth_providers.dart';
 import '../../modules/home/home_screen.dart';
+import '../../modules/notifications/inbox_screen.dart';
 import '../../modules/onboarding/onboarding_screen.dart';
+import '../../modules/savings/savings_screen.dart';
+import '../../modules/support/help_screen.dart';
+import '../../modules/support/terms_screen.dart';
 import '../../modules/profile/profile_screen.dart';
 import '../../modules/qr/qr_payload.dart';
 import '../../modules/qr/qr_screen.dart';
@@ -58,7 +62,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       final loggedIn = ref.read(sessionPhoneProvider) != null;
       final path = state.matchedLocation;
       const publicPaths = {'/', '/onboarding', '/login', '/otp'};
+      final hasPin = ref.read(pinRepositoryProvider).hasPin;
       if (!loggedIn && !publicPaths.contains(path)) return '/login';
+      // Logged in but the PIN was never created (app closed during setup).
+      if (loggedIn && !hasPin && path != '/pin-setup' && path != '/otp') {
+        return '/pin-setup';
+      }
       if (loggedIn && (path == '/login' || path == '/onboarding')) return '/home';
       return null;
     },
@@ -78,7 +87,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/otp',
         pageBuilder: (_, s) =>
-            _slide(s, OtpScreen(phone: (s.extra as String?) ?? '')),
+            _slide(
+          s,
+          OtpScreen(
+            phone: (s.extra as String?) ?? '',
+            resetPin: s.uri.queryParameters['reset'] == '1',
+          ),
+        ),
       ),
       GoRoute(
         path: '/pin-setup',
@@ -122,6 +137,37 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/pay-bill',
         pageBuilder: (_, s) => _slide(s, const PayBillScreen()),
+      ),
+      GoRoute(
+        path: '/donation',
+        pageBuilder: (_, s) => _slide(s, const DonationScreen()),
+      ),
+      GoRoute(
+        path: '/education',
+        pageBuilder: (_, s) => _slide(s, const EducationFeeScreen()),
+      ),
+      GoRoute(
+        path: '/savings',
+        pageBuilder: (_, s) => _slide(s, const SavingsScreen()),
+      ),
+      GoRoute(
+        path: '/savings/add',
+        pageBuilder: (_, s) => _slide(
+          s,
+          SavingsDepositScreen(goalName: s.extra is String ? s.extra as String : null),
+        ),
+      ),
+      GoRoute(
+        path: '/inbox',
+        pageBuilder: (_, s) => _slide(s, const InboxScreen()),
+      ),
+      GoRoute(
+        path: '/help',
+        pageBuilder: (_, s) => _slide(s, const HelpScreen()),
+      ),
+      GoRoute(
+        path: '/terms',
+        pageBuilder: (_, s) => _slide(s, const TermsScreen()),
       ),
       GoRoute(
         path: '/pay/confirm',

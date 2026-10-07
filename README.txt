@@ -1,5 +1,3 @@
-PayBD step 7: bKash-style pink theme + new Home + Pay Bill
-
-  Expand-Archive -Path "<ZIP_PATH>" -DestinationPath . -Force
-  fvm flutter analyze
-  fvm flutter run
+PayBD step 8: saved data, secure PIN, app lock, inbox, savings, donation, education fee,
+forgot PIN, history filters, profile name, help/terms, tests.
+See chat for the exact commands.

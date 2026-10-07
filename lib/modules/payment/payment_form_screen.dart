@@ -51,6 +51,9 @@ class PaymentFormScreen extends ConsumerStatefulWidget {
   final String? initialPhone;
   final int? initialAmountMinor;
 
+  /// Preselected chip (for example the savings goal).
+  final String? initialNote;
+
   const PaymentFormScreen({
     super.key,
     required this.type,
@@ -64,6 +67,7 @@ class PaymentFormScreen extends ConsumerStatefulWidget {
     this.suggestNote,
     this.initialPhone,
     this.initialAmountMinor,
+    this.initialNote,
   });
 
   @override
@@ -93,7 +97,11 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
           ? '${amount ~/ 100}'
           : '${amount ~/ 100}.${paisa.toString().padLeft(2, '0')}';
     }
-    if (phone != null || amount != null) {
+    if (widget.initialNote != null) {
+      _note.value = widget.initialNote;
+      _noteTouched = true;
+    }
+    if (phone != null || amount != null || widget.initialNote != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) _revalidate();
       });
@@ -157,6 +165,22 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
 
     _error.value = error;
     _valid.value = ok;
+  }
+
+  /// Last few people / accounts used for this kind of payment.
+  List<String> _recents(WidgetRef ref) {
+    final txs = ref.watch(walletProvider).value?.transactions ??
+        const <Transaction>[];
+    final seen = <String>[];
+    for (final t in txs) {
+      if (t.type == widget.type &&
+          t.counterparty.isNotEmpty &&
+          !seen.contains(t.counterparty)) {
+        seen.add(t.counterparty);
+      }
+      if (seen.length >= 4) break;
+    }
+    return seen;
   }
 
   void _setQuick(int taka) {
@@ -241,6 +265,30 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                                 : Icons.receipt_long_rounded),
                           ),
                         ),
+                        Consumer(builder: (_, ref, _) {
+                          final recents = _recents(ref);
+                          if (recents.isEmpty) return const SizedBox.shrink();
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: Wrap(
+                              spacing: 8,
+                              children: [
+                                for (final r in recents)
+                                  ActionChip(
+                                    label: Text(r),
+                                    backgroundColor: AppColors.panel,
+                                    side: BorderSide.none,
+                                    onPressed: () {
+                                      _phone.text = r;
+                                      _phone.selection = TextSelection.collapsed(
+                                          offset: r.length);
+                                      _onPhoneChanged(r);
+                                    },
+                                  ),
+                              ],
+                            ),
+                          );
+                        }),
                         const SizedBox(height: 22),
                       ],
                       if (widget.noteOptions.isNotEmpty) ...[

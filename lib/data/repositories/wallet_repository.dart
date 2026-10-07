@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/payment_request.dart';
 import '../models/transaction.dart';
 
@@ -16,6 +18,10 @@ class WalletLimits {
         TxType.cashIn => (min: 5000, max: 5000000), // ৳50 - ৳50,000
         TxType.recharge => (min: 1000, max: 100000), // ৳10 - ৳1,000
         TxType.bill => (min: 1000, max: 5000000), // ৳10 - ৳50,000
+        TxType.donation => (min: 1000, max: 5000000),
+        TxType.education => (min: 1000, max: 5000000),
+        TxType.savings => (min: 1000, max: 5000000),
+        TxType.savingsWithdraw => (min: 1, max: 100000000),
         TxType.received => (min: 0, max: 0),
       };
 
@@ -24,7 +30,7 @@ class WalletLimits {
 }
 
 /// UI and providers talk only to this interface.
-/// Today: MockWalletRepository. Later: ApiWalletRepository.
+/// Today: MockWalletRepository (saved on this device). Later: ApiWalletRepository.
 /// Money amounts are ints in paisa.
 abstract class WalletRepository {
   Future<int> getBalance();
@@ -33,19 +39,31 @@ abstract class WalletRepository {
   /// Fee for a payment. In the real app the server decides this.
   Future<int> quoteFee(TxType type, int amountMinor);
 
-  /// Executes send, cash out, add money or recharge.
+  /// Executes any payment (send, cash out, add money, recharge, bill, ...).
   Future<Transaction> submit(PaymentRequest request);
+
+  /// Demo only: back to the starting demo data (used on logout).
+  Future<void> reset();
 }
 
-/// DEMO ONLY. In-memory data, reset when the app restarts. Not real money.
-/// The real balance and every validation must live on the server.
+/// DEMO ONLY. Demo balance and transactions are saved on this device so they survive
+/// app restarts. Not real money. The real balance and every validation must live on the server.
 class MockWalletRepository implements WalletRepository {
-  int _balance = 1600300; // ৳16,003.00
-  final List<Transaction> _txs = [];
+  static const _kBalance = 'wallet_balance';
+  static const _kTxs = 'wallet_txs';
+  static const startBalance = 1600300; // ৳16,003.00
 
-  MockWalletRepository() {
+  final SharedPreferences _prefs;
+  int _balance;
+  List<Transaction> _txs;
+
+  MockWalletRepository(this._prefs)
+      : _balance = _prefs.getInt(_kBalance) ?? startBalance,
+        _txs = _load(_prefs);
+
+  static List<Transaction> _seed() {
     final now = DateTime.now();
-    _txs.addAll([
+    return [
       Transaction(
         id: 'TX1001',
         type: TxType.received,
@@ -62,18 +80,39 @@ class MockWalletRepository implements WalletRepository {
         feeMinor: 0,
         createdAt: now.subtract(const Duration(days: 3, hours: 5)),
       ),
-    ]);
+    ];
+  }
+
+  static List<Transaction> _load(SharedPreferences prefs) {
+    final raw = prefs.getString(_kTxs);
+    if (raw == null) return _seed();
+    try {
+      final list = jsonDecode(raw) as List<dynamic>;
+      return [
+        for (final e in list) Transaction.fromJson(e as Map<String, dynamic>),
+      ];
+    } catch (_) {
+      return _seed();
+    }
+  }
+
+  Future<void> _save() async {
+    await _prefs.setInt(_kBalance, _balance);
+    await _prefs.setString(
+      _kTxs,
+      jsonEncode([for (final t in _txs) t.toJson()]),
+    );
   }
 
   @override
   Future<int> getBalance() async {
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 250));
     return _balance;
   }
 
   @override
   Future<List<Transaction>> getTransactions() async {
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 250));
     final list = [..._txs]..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return List.unmodifiable(list);
   }
@@ -88,7 +127,7 @@ class MockWalletRepository implements WalletRepository {
 
   @override
   Future<Transaction> submit(PaymentRequest request) async {
-    await Future.delayed(const Duration(milliseconds: 800));
+    await Future.delayed(const Duration(milliseconds: 700));
 
     final type = request.type;
     if (type == TxType.received) {
@@ -122,6 +161,15 @@ class MockWalletRepository implements WalletRepository {
       createdAt: DateTime.now(),
     );
     _txs.add(tx);
+    await _save();
     return tx;
+  }
+
+  @override
+  Future<void> reset() async {
+    await _prefs.remove(_kBalance);
+    await _prefs.remove(_kTxs);
+    _balance = startBalance;
+    _txs = _seed();
   }
 }

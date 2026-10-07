@@ -3,6 +3,7 @@ import '../../app/theme/app_colors.dart';
 import '../../data/models/transaction.dart';
 import '../utils/format.dart';
 import '../utils/tx_ui.dart';
+import 'copy_receipt_button.dart';
 import 'receipt_card.dart';
 
 class TxTile extends StatelessWidget {
@@ -26,6 +27,7 @@ class TxTile extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
             const SizedBox(height: 16),
             ReceiptCard(tx: tx),
+            CopyReceiptButton(tx: tx),
           ],
         ),
       ),

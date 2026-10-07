@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/widgets/primary_button.dart';
+import '../notifications/notification_providers.dart';
 import 'auth_providers.dart';
 
 const _otpLength = 6;
@@ -12,7 +13,10 @@ const _resendSeconds = 30;
 
 class OtpScreen extends ConsumerStatefulWidget {
   final String phone;
-  const OtpScreen({super.key, required this.phone});
+
+  /// true = the user forgot the PIN: after the OTP they create a new PIN.
+  final bool resetPin;
+  const OtpScreen({super.key, required this.phone, this.resetPin = false});
 
   @override
   ConsumerState<OtpScreen> createState() => _OtpScreenState();
@@ -69,7 +73,12 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
           .verifyOtp(widget.phone, _controller.text);
       if (!mounted) return;
       if (ok) {
+        if (widget.resetPin) {
+          context.go('/pin-setup');
+          return;
+        }
         ref.read(sessionPhoneProvider.notifier).setPhone(widget.phone);
+        ref.read(notificationsProvider.notifier).addWelcomeIfEmpty();
         final hasPin = ref.read(pinRepositoryProvider).hasPin;
         context.go(hasPin ? '/home' : '/pin-setup');
       } else {

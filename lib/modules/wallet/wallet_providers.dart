@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/storage/prefs.dart';
 import '../../data/models/payment_request.dart';
 import '../../data/models/transaction.dart';
 import '../../data/repositories/wallet_repository.dart';
 
 final walletRepositoryProvider = Provider<WalletRepository>(
-  (ref) => MockWalletRepository(),
+  (ref) => MockWalletRepository(ref.watch(sharedPreferencesProvider)),
 );
 
 class WalletState {
@@ -25,7 +26,7 @@ class WalletNotifier extends AsyncNotifier<WalletState> {
     );
   }
 
-  /// Runs any payment (send, cash out, add money, recharge) and refreshes the wallet.
+  /// Runs any payment and refreshes the wallet.
   Future<Transaction> pay(PaymentRequest request) async {
     final repo = ref.read(walletRepositoryProvider);
     final tx = await repo.submit(request);
@@ -36,8 +37,3 @@ class WalletNotifier extends AsyncNotifier<WalletState> {
 
 final walletProvider =
     AsyncNotifierProvider<WalletNotifier, WalletState>(WalletNotifier.new);
-
-/// Balance in taka for display (Home balance card uses this).
-final balanceProvider = Provider<AsyncValue<double>>(
-  (ref) => ref.watch(walletProvider).whenData((w) => w.balanceMinor / 100),
-);

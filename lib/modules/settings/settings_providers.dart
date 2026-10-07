@@ -1,12 +1,18 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/storage/prefs.dart';
 
-/// Ask for the PIN before showing the balance on Home.
+/// Ask for the PIN before showing the balance on Home. Saved on the device.
 class RequirePinNotifier extends Notifier<bool> {
-  @override
-  bool build() => true;
+  static const _key = 'require_pin_for_balance';
 
-  void set(bool value) => state = value;
+  @override
+  bool build() => ref.read(sharedPreferencesProvider).getBool(_key) ?? true;
+
+  void set(bool value) {
+    state = value;
+    ref.read(sharedPreferencesProvider).setBool(_key, value);
+  }
 }
 
 final requirePinProvider =

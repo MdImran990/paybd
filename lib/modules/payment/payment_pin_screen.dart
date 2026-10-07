@@ -7,6 +7,8 @@ import '../../data/models/payment_request.dart';
 import '../../data/models/transaction.dart';
 import '../../data/repositories/wallet_repository.dart';
 import '../auth/auth_providers.dart';
+import '../notifications/notification_providers.dart';
+import '../savings/savings_providers.dart';
 import '../wallet/wallet_providers.dart';
 
 class PaymentPinScreen extends ConsumerWidget {
@@ -24,6 +26,17 @@ class PaymentPinScreen extends ConsumerWidget {
     }
     try {
       final tx = await ref.read(walletProvider.notifier).pay(request);
+      if (request.type == TxType.savings) {
+        await ref
+            .read(savingsProvider.notifier)
+            .deposit(request.counterparty, request.amountMinor);
+      } else if (request.type == TxType.savingsWithdraw) {
+        await ref.read(savingsProvider.notifier).withdrawAll(request.counterparty);
+      }
+      await ref.read(notificationsProvider.notifier).add(
+            title: tx.type.successTitle,
+            body: '${formatTaka(tx.amountMinor)} · ${tx.counterparty}',
+          );
       if (context.mounted) context.go('/receipt', extra: tx);
       return null;
     } on WalletException catch (e) {
