@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/utils/validators.dart';
@@ -79,7 +80,7 @@ class _ChangePinScreenState extends ConsumerState<ChangePinScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: PayAppBar(
         actions: [
           if (_stage == 0)
             TextButton(

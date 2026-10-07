@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/utils/format.dart';
@@ -53,7 +54,7 @@ class PaymentPinScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final who = request.counterparty.isEmpty ? '' : ' (${request.counterparty})';
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.transparent),
+      appBar: PayAppBar(backgroundColor: Colors.transparent),
       body: SafeArea(
         child: PinEntry(
           title: 'Enter your PIN',

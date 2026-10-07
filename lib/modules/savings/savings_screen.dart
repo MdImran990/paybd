@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -17,7 +18,7 @@ class SavingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final goals = ref.watch(savingsProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Savings')),
+      appBar: PayAppBar(title: const Text('Savings')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => showDialog<void>(
           context: context,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pay_app_bar.dart';
 import '../../app/theme/app_colors.dart';
 
 const _faqs = <(String, String)>[
@@ -37,7 +38,7 @@ class HelpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Help & Support')),
+      appBar: PayAppBar(title: const Text('Help & Support')),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),

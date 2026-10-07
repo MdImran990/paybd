@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/utils/format.dart';
@@ -31,7 +32,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
   Widget build(BuildContext context) {
     final items = ref.watch(notificationsProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Inbox')),
+      appBar: PayAppBar(title: const Text('Inbox')),
       body: SafeArea(
         child: items.isEmpty
             ? const Center(

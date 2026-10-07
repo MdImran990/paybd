@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -22,7 +23,7 @@ class QrScreen extends StatelessWidget {
       length: 2,
       initialIndex: initialTab,
       child: Scaffold(
-        appBar: AppBar(
+        appBar: PayAppBar(
           title: const Text('QR Pay'),
           backgroundColor: Colors.transparent,
           bottom: const TabBar(

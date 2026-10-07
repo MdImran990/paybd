@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/widgets/tx_tile.dart';
@@ -20,7 +21,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   Widget build(BuildContext context) {
     final wallet = ref.watch(walletProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('History')),
+      appBar: PayAppBar(title: const Text('History')),
       body: SafeArea(
         child: wallet.when(
           loading: () => const Center(child: CircularProgressIndicator()),

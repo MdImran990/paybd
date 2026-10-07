@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/app_colors.dart';
 import 'settings_providers.dart';
@@ -10,7 +11,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final requirePin = ref.watch(requirePinProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: PayAppBar(title: const Text('Settings')),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),

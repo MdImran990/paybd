@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pay_app_bar.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/utils/format.dart';
@@ -14,7 +15,7 @@ class ConfirmPaymentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: PayAppBar(
         title: const Text('Confirm'),
         backgroundColor: Colors.transparent,
       ),

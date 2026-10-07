@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -217,7 +218,7 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: PayAppBar(
         title: Text(widget.title),
         backgroundColor: Colors.transparent,
       ),
@@ -250,7 +251,8 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                         TextField(
                           controller: _phone,
                           keyboardType: TextInputType.phone,
-                          autofocus: true,
+                          onTapOutside: (_) =>
+                              FocusManager.instance.primaryFocus?.unfocus(),
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
                             LengthLimitingTextInputFormatter(widget.recipientIsPhone ? 11 : 20),
@@ -333,7 +335,8 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                         controller: _amount,
                         keyboardType: const TextInputType.numberWithOptions(
                             decimal: true),
-                        autofocus: !_hasRecipient,
+                        onTapOutside: (_) =>
+                            FocusManager.instance.primaryFocus?.unfocus(),
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
                               RegExp(r'^\d{0,5}(\.\d{0,2})?$')),

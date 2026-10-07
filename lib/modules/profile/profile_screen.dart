@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
@@ -69,7 +70,7 @@ class ProfileScreen extends ConsumerWidget {
     final phone = ref.watch(sessionPhoneProvider) ?? '';
     final name = ref.watch(profileNameProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: PayAppBar(title: const Text('Profile')),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
