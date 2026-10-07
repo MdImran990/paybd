@@ -25,13 +25,28 @@ import '../../modules/settings/settings_screen.dart';
 import '../../modules/splash/splash_screen.dart';
 import '../../modules/transactions/history_screen.dart';
 
+/// The page underneath slides left a little while a new page comes in.
+Widget _parallaxExit(Animation<double> secondary, Widget child) {
+  return SlideTransition(
+    position: Tween<Offset>(begin: Offset.zero, end: const Offset(-0.18, 0))
+        .animate(secondary.drive(CurveTween(curve: Curves.easeOutCubic))),
+    child: child,
+  );
+}
+
 CustomTransitionPage<void> _fade(GoRouterState state, Widget child) {
   return CustomTransitionPage<void>(
     key: state.pageKey,
     child: child,
-    transitionDuration: const Duration(milliseconds: 300),
-    transitionsBuilder: (_, animation, _, child) =>
-        FadeTransition(opacity: animation, child: child),
+    transitionDuration: const Duration(milliseconds: 350),
+    reverseTransitionDuration: const Duration(milliseconds: 300),
+    transitionsBuilder: (_, animation, secondary, child) => _parallaxExit(
+      secondary,
+      FadeTransition(
+        opacity: animation.drive(CurveTween(curve: Curves.easeOut)),
+        child: child,
+      ),
+    ),
   );
 }
 
@@ -39,13 +54,19 @@ CustomTransitionPage<void> _slide(GoRouterState state, Widget child) {
   return CustomTransitionPage<void>(
     key: state.pageKey,
     child: child,
-    transitionDuration: const Duration(milliseconds: 300),
-    transitionsBuilder: (_, animation, _, child) => SlideTransition(
-      position: Tween(begin: const Offset(1, 0), end: Offset.zero)
-          .chain(CurveTween(curve: Curves.easeOutCubic))
-          .animate(animation),
-      child: child,
-    ),
+    transitionDuration: const Duration(milliseconds: 380),
+    reverseTransitionDuration: const Duration(milliseconds: 300),
+    transitionsBuilder: (_, animation, secondary, child) {
+      final enter = animation.drive(CurveTween(curve: Curves.easeOutCubic));
+      return _parallaxExit(
+        secondary,
+        SlideTransition(
+          position: Tween<Offset>(begin: const Offset(0.25, 0), end: Offset.zero)
+              .animate(enter),
+          child: FadeTransition(opacity: enter, child: child),
+        ),
+      );
+    },
   );
 }
 

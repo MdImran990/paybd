@@ -206,7 +206,11 @@ class _OtpBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
+    return AnimatedScale(
+      scale: char.isNotEmpty ? 1.08 : 1,
+      duration: const Duration(milliseconds: 140),
+      curve: Curves.easeOutBack,
+      child: AnimatedContainer(
       duration: const Duration(milliseconds: 150),
       width: 48,
       height: 58,
@@ -225,6 +229,7 @@ class _OtpBox extends StatelessWidget {
       ),
       child: Text(char,
           style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
+    ),
     );
   }
 }

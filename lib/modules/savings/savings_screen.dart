@@ -136,6 +136,9 @@ class _GoalCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Material(
       color: AppColors.panel,
+      elevation: 1.5,
+      shadowColor: const Color(0x22000000),
+      surfaceTintColor: Colors.transparent,
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
@@ -163,11 +166,16 @@ class _GoalCard extends ConsumerWidget {
               const SizedBox(height: 12),
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: LinearProgressIndicator(
-                  value: goal.progress,
-                  minHeight: 8,
-                  color: AppColors.primary,
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: goal.progress),
+                  duration: const Duration(milliseconds: 700),
+                  curve: Curves.easeOutCubic,
+                  builder: (_, v, _) => LinearProgressIndicator(
+                    value: v,
+                    minHeight: 8,
+                    color: AppColors.primary,
+                    backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                  ),
                 ),
               ),
               const SizedBox(height: 10),

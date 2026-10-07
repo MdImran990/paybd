@@ -3,7 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
+import '../../app/theme/app_shadows.dart';
 import '../../core/utils/format.dart';
+import '../../core/widgets/fade_slide_in.dart';
+import '../../core/widgets/pressable_scale.dart';
+import '../../core/widgets/skeleton.dart';
 import '../../core/utils/pin_verify.dart';
 import '../../core/widgets/pin_entry.dart';
 import '../../core/widgets/tx_tile.dart';
@@ -51,7 +55,16 @@ class HomeScreen extends StatelessWidget {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light, // light icons on the pink header
       child: Scaffold(
-        body: ListView(
+        body: Consumer(
+          builder: (context, ref, _) => RefreshIndicator(
+            color: AppColors.primary,
+            backgroundColor: Colors.white,
+            displacement: 70,
+            onRefresh: () async {
+              await ref.refresh(walletProvider.future);
+            },
+            child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
           padding: EdgeInsets.zero,
           children: const [
             _Header(),
@@ -64,18 +77,10 @@ class HomeScreen extends StatelessWidget {
             SizedBox(height: 110),
           ],
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: SizedBox(
-          width: 64,
-          height: 64,
-          child: FloatingActionButton(
-            onPressed: () => context.push('/qr?tab=scan'),
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            shape: const CircleBorder(),
-            child: const Icon(Icons.qr_code_scanner_rounded, size: 30),
           ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: const _PulsingQrButton(),
         bottomNavigationBar: const _BottomNav(),
       ),
     );
@@ -150,6 +155,9 @@ class _Header extends ConsumerWidget {
   }
 }
 
+const _balanceStyle = TextStyle(
+    fontSize: 26, fontWeight: FontWeight.w800, color: Colors.white);
+
 class _BalanceCard extends ConsumerWidget {
   const _BalanceCard();
 
@@ -204,16 +212,20 @@ class _BalanceCard extends ConsumerWidget {
                 const SizedBox(height: 6),
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 250),
-                  child: Text(
-                    show
-                        ? (balance == null ? '...' : formatTaka(balance))
-                        : '৳ ••••••',
-                    key: ValueKey(show),
-                    style: const TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white),
-                  ),
+                  child: show && balance != null
+                      ? TweenAnimationBuilder<int>(
+                          key: const ValueKey('shown'),
+                          tween: IntTween(begin: 0, end: balance),
+                          duration: const Duration(milliseconds: 800),
+                          curve: Curves.easeOutCubic,
+                          builder: (_, v, _) =>
+                              Text(formatTaka(v), style: _balanceStyle),
+                        )
+                      : Text(
+                          show ? '...' : '৳ ••••••',
+                          key: ValueKey(show),
+                          style: _balanceStyle,
+                        ),
                 ),
               ],
             ),
@@ -301,6 +313,7 @@ class _ServiceGrid extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.panel,
         borderRadius: BorderRadius.circular(24),
+        boxShadow: softShadow,
       ),
       child: GridView.count(
         crossAxisCount: 4,
@@ -308,44 +321,54 @@ class _ServiceGrid extends StatelessWidget {
         physics: const NeverScrollableScrollPhysics(),
         childAspectRatio: 0.82,
         children: [
-          for (final s in _services)
-            InkWell(
-              borderRadius: BorderRadius.circular(14),
-              onTap: () {
-                final route = s.route;
-                if (route != null) {
-                  context.push(route);
-                } else {
-                  _comingSoon(context, s.label);
-                }
-              },
-              child: Opacity(
-                opacity: s.route == null ? 0.55 : 1,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 52,
-                      height: 52,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.primary.withValues(alpha: 0.09),
-                      ),
-                      child: Icon(s.icon, color: AppColors.primary, size: 26),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      s.label,
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      style: const TextStyle(
-                          fontSize: 11, fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          for (var i = 0; i < _services.length; i++)
+            FadeSlideIn(index: i, child: _ServiceTile(service: _services[i])),
         ],
+      ),
+    );
+  }
+}
+
+class _ServiceTile extends StatelessWidget {
+  final _Service service;
+  const _ServiceTile({required this.service});
+
+  @override
+  Widget build(BuildContext context) {
+    return PressableScale(
+      scale: 0.92,
+      onTap: () {
+        final route = service.route;
+        if (route != null) {
+          context.push(route);
+        } else {
+          _comingSoon(context, service.label);
+        }
+      },
+      child: Opacity(
+        opacity: service.route == null ? 0.55 : 1,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.primary.withValues(alpha: 0.09),
+              ),
+              child: Icon(service.icon, color: AppColors.primary, size: 26),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              service.label,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              style:
+                  const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -413,9 +436,14 @@ class _RecentSection extends ConsumerWidget {
             ],
           ),
           wallet.when(
-            loading: () => const Padding(
-              padding: EdgeInsets.all(16),
-              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            loading: () => const Column(
+              children: [
+                TxSkeleton(),
+                SizedBox(height: 10),
+                TxSkeleton(),
+                SizedBox(height: 10),
+                TxSkeleton(),
+              ],
             ),
             error: (_, _) => const Text('Could not load transactions.',
                 style: TextStyle(color: AppColors.textMuted)),
@@ -427,12 +455,16 @@ class _RecentSection extends ConsumerWidget {
                       style: TextStyle(color: AppColors.textMuted)),
                 );
               }
+              final recent = w.transactions.take(3).toList();
               return Column(
                 children: [
-                  for (final tx in w.transactions.take(3))
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: TxTile(tx: tx),
+                  for (var i = 0; i < recent.length; i++)
+                    FadeSlideIn(
+                      index: i + 2,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: TxTile(tx: recent[i]),
+                      ),
                     ),
                 ],
               );
@@ -497,6 +529,65 @@ class _NavItem extends StatelessWidget {
             Text(label, style: TextStyle(fontSize: 10, color: color)),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// QR button with a soft pulsing ring that invites a tap.
+class _PulsingQrButton extends StatefulWidget {
+  const _PulsingQrButton();
+
+  @override
+  State<_PulsingQrButton> createState() => _PulsingQrButtonState();
+}
+
+class _PulsingQrButtonState extends State<_PulsingQrButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2200),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 64,
+      height: 64,
+      child: Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
+        children: [
+          IgnorePointer(
+            child: AnimatedBuilder(
+              animation: _c,
+              builder: (_, _) {
+                final t = _c.value;
+                return Container(
+                  width: 64 + 28 * t,
+                  height: 64 + 28 * t,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.primary.withValues(alpha: 0.28 * (1 - t)),
+                  ),
+                );
+              },
+            ),
+          ),
+          FloatingActionButton(
+            onPressed: () => context.push('/qr?tab=scan'),
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            shape: const CircleBorder(),
+            child: const Icon(Icons.qr_code_scanner_rounded, size: 30),
+          ),
+        ],
       ),
     );
   }

@@ -40,6 +40,9 @@ class TxTile extends StatelessWidget {
     final color = credit ? AppColors.green : AppColors.error;
     return Material(
       color: AppColors.panel,
+      elevation: 1.5,
+      shadowColor: const Color(0x22000000),
+      surfaceTintColor: Colors.transparent,
       borderRadius: BorderRadius.circular(18),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),

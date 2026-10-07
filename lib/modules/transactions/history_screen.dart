@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/app_colors.dart';
+import '../../core/widgets/fade_slide_in.dart';
+import '../../core/widgets/skeleton.dart';
 import '../../core/widgets/tx_tile.dart';
 import '../../data/models/transaction.dart';
 import '../wallet/wallet_providers.dart';
@@ -24,7 +26,20 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       appBar: PayAppBar(title: const Text('History')),
       body: SafeArea(
         child: wallet.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => ListView(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+            children: const [
+              TxSkeleton(),
+              SizedBox(height: 10),
+              TxSkeleton(),
+              SizedBox(height: 10),
+              TxSkeleton(),
+              SizedBox(height: 10),
+              TxSkeleton(),
+              SizedBox(height: 10),
+              TxSkeleton(),
+            ],
+          ),
           error: (_, _) => Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -107,7 +122,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
                           itemCount: shown.length,
                           separatorBuilder: (_, _) => const SizedBox(height: 10),
-                          itemBuilder: (_, i) => TxTile(tx: shown[i]),
+                          itemBuilder: (_, i) => FadeSlideIn(
+                            index: i < 8 ? i : 0,
+                            child: TxTile(tx: shown[i]),
+                          ),
                         ),
                 ),
               ],

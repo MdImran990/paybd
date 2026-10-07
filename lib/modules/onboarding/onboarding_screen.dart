@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
+import '../../core/widgets/fade_slide_in.dart';
 import '../../core/widgets/primary_button.dart';
 
 class _PageData {
@@ -130,7 +131,8 @@ class _OnboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return FadeSlideIn(
+      child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
@@ -162,6 +164,7 @@ class _OnboardPage extends StatelessWidget {
           style: const TextStyle(color: AppColors.textMuted, height: 1.5),
         ),
       ],
+    ),
     );
   }
 }

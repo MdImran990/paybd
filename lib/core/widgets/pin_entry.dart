@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../app/theme/app_colors.dart';
+import 'pressable_scale.dart';
 
 /// Return an error message to show (and shake), or null on success.
 typedef PinSubmit = Future<String?> Function(String pin);
@@ -76,13 +77,22 @@ class _PinEntryState extends State<PinEntry>
       child: Column(
         children: [
           const SizedBox(height: 24),
-          Text(widget.title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: Text(widget.title,
+                key: ValueKey(widget.title),
+                textAlign: TextAlign.center,
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+          ),
           const SizedBox(height: 8),
-          Text(widget.subtitle,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.textMuted)),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 250),
+            child: Text(widget.subtitle,
+                key: ValueKey(widget.subtitle),
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: AppColors.textMuted)),
+          ),
           const SizedBox(height: 32),
           AnimatedBuilder(
             animation: _shake,
@@ -97,20 +107,27 @@ class _PinEntryState extends State<PinEntry>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 for (var i = 0; i < widget.length; i++)
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 150),
-                    margin: const EdgeInsets.symmetric(horizontal: 8),
-                    width: 16,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: i < _pin.length ? AppColors.primary : AppColors.panel,
-                      border: Border.all(
-                        color: _error != null
-                            ? AppColors.error
-                            : i < _pin.length
-                                ? AppColors.primary
-                                : AppColors.textMuted.withValues(alpha: 0.4),
+                  AnimatedScale(
+                    scale: i < _pin.length ? 1.25 : 1,
+                    duration: const Duration(milliseconds: 160),
+                    curve: Curves.easeOutBack,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 150),
+                      margin: const EdgeInsets.symmetric(horizontal: 8),
+                      width: 16,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: i < _pin.length
+                            ? AppColors.primary
+                            : AppColors.panel,
+                        border: Border.all(
+                          color: _error != null
+                              ? AppColors.error
+                              : i < _pin.length
+                                  ? AppColors.primary
+                                  : AppColors.textMuted.withValues(alpha: 0.4),
+                        ),
                       ),
                     ),
                   ),
@@ -126,9 +143,14 @@ class _PinEntryState extends State<PinEntry>
                     height: 18,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : Text(_error ?? '',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppColors.error, fontSize: 13)),
+                : AnimatedOpacity(
+                    opacity: _error == null ? 0 : 1,
+                    duration: const Duration(milliseconds: 200),
+                    child: Text(_error ?? '',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            color: AppColors.error, fontSize: 13)),
+                  ),
           ),
           const Spacer(),
           for (final row in const [
@@ -170,21 +192,27 @@ class _Key extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.panel,
-      shape: const CircleBorder(),
-      child: InkResponse(
-        onTap: onTap,
-        customBorder: const CircleBorder(),
-        child: SizedBox(
-          width: 68,
-          height: 68,
-          child: Center(
-            child: label != null
-                ? Text(label!,
-                    style: const TextStyle(
-                        fontSize: 24, fontWeight: FontWeight.w600))
-                : Icon(icon, size: 24, color: AppColors.textMuted),
+    return PressableScale(
+      scale: 0.9,
+      child: Material(
+        color: AppColors.panel,
+        elevation: 1.5,
+        shadowColor: const Color(0x33000000),
+        surfaceTintColor: Colors.transparent,
+        shape: const CircleBorder(),
+        child: InkResponse(
+          onTap: onTap,
+          customBorder: const CircleBorder(),
+          child: SizedBox(
+            width: 68,
+            height: 68,
+            child: Center(
+              child: label != null
+                  ? Text(label!,
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.w600))
+                  : Icon(icon, size: 24, color: AppColors.textMuted),
+            ),
           ),
         ),
       ),

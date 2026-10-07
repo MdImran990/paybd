@@ -182,6 +182,9 @@ class _MenuTile extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 10),
       child: Material(
         color: AppColors.panel,
+        elevation: 1.5,
+        shadowColor: const Color(0x22000000),
+        surfaceTintColor: Colors.transparent,
         borderRadius: BorderRadius.circular(18),
         child: InkWell(
           borderRadius: BorderRadius.circular(18),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/utils/format.dart';
 import '../../core/widgets/copy_receipt_button.dart';
+import '../../core/widgets/fade_slide_in.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../core/widgets/receipt_card.dart';
 import '../../data/models/transaction.dart';
@@ -26,39 +28,42 @@ class ReceiptScreen extends StatelessWidget {
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
-                        TweenAnimationBuilder<double>(
-                          tween: Tween(begin: 0, end: 1),
-                          duration: const Duration(milliseconds: 700),
-                          curve: Curves.elasticOut,
-                          builder: (_, v, child) =>
-                              Transform.scale(scale: v, child: child),
-                          child: const CircleAvatar(
-                            radius: 40,
-                            backgroundColor: AppColors.green,
-                            child: Icon(Icons.check_rounded,
-                                size: 48, color: Colors.white),
+                        const SizedBox(height: 8),
+                        const _AnimatedCheck(),
+                        const SizedBox(height: 18),
+                        FadeSlideIn(
+                          index: 3,
+                          child: Column(
+                            children: [
+                              Text(tx.type.successTitle,
+                                  style: const TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w800)),
+                              const SizedBox(height: 6),
+                              Text(formatTaka(tx.amountMinor),
+                                  style: const TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.green)),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 18),
-                        Text(tx.type.successTitle,
-                            style: const TextStyle(
-                                fontSize: 22, fontWeight: FontWeight.w800)),
-                        const SizedBox(height: 6),
-                        Text(formatTaka(tx.amountMinor),
-                            style: const TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.green)),
                         const SizedBox(height: 24),
-                        ReceiptCard(tx: tx),
+                        FadeSlideIn(index: 5, child: ReceiptCard(tx: tx)),
                         const SizedBox(height: 8),
-                        CopyReceiptButton(tx: tx),
+                        FadeSlideIn(index: 6, child: CopyReceiptButton(tx: tx)),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 12),
-                PrimaryButton(label: 'Done', onPressed: () => context.go('/home')),
+                FadeSlideIn(
+                  index: 7,
+                  child: PrimaryButton(
+                    label: 'Done',
+                    onPressed: () => context.go('/home'),
+                  ),
+                ),
               ],
             ),
           ),
@@ -66,4 +71,81 @@ class ReceiptScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Green circle that pops in, then the check mark draws itself.
+class _AnimatedCheck extends StatefulWidget {
+  const _AnimatedCheck();
+
+  @override
+  State<_AnimatedCheck> createState() => _AnimatedCheckState();
+}
+
+class _AnimatedCheckState extends State<_AnimatedCheck> {
+  @override
+  void initState() {
+    super.initState();
+    HapticFeedback.mediumImpact();
+  }
+
+  static double _seg(double t, double a, double b) {
+    final x = (t - a) / (b - a);
+    return x < 0 ? 0 : (x > 1 ? 1 : x);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 1100),
+      builder: (_, t, _) {
+        final circle = Curves.elasticOut.transform(_seg(t, 0, 0.6));
+        final check = Curves.easeOut.transform(_seg(t, 0.4, 0.9));
+        return Transform.scale(
+          scale: circle,
+          child: Container(
+            width: 84,
+            height: 84,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.green,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.green.withValues(alpha: 0.35),
+                  blurRadius: 22,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: CustomPaint(painter: _CheckPainter(check)),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _CheckPainter extends CustomPainter {
+  final double progress;
+  const _CheckPainter(this.progress);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 6
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    final path = Path()
+      ..moveTo(size.width * 0.27, size.height * 0.52)
+      ..lineTo(size.width * 0.44, size.height * 0.68)
+      ..lineTo(size.width * 0.74, size.height * 0.36);
+    for (final metric in path.computeMetrics()) {
+      canvas.drawPath(metric.extractPath(0, metric.length * progress), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_CheckPainter old) => old.progress != progress;
 }
