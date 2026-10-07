@@ -61,7 +61,8 @@ class HomeScreen extends StatelessWidget {
             backgroundColor: Colors.white,
             displacement: 70,
             onRefresh: () async {
-              await ref.refresh(walletProvider.future);
+              ref.invalidate(walletProvider);
+              await ref.read(walletProvider.future);
             },
             child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
