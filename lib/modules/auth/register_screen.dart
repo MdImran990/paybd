@@ -64,7 +64,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       _loading.value = false;
     }
   }
-
   @override
   Widget build(BuildContext context) {
     final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
