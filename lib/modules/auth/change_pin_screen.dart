@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -64,7 +65,7 @@ class _ChangePinScreenState extends ConsumerState<ChangePinScreen> {
     await repo.setPin(pin);
     if (mounted) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('PIN changed')));
+          .showSnackBar(const SnackBar(content: Tr('PIN changed')));
       context.pop();
     }
     return null;
@@ -85,7 +86,7 @@ class _ChangePinScreenState extends ConsumerState<ChangePinScreen> {
           if (_stage == 0)
             TextButton(
               onPressed: _forgotPin,
-              child: const Text('Forgot PIN?'),
+              child: const Tr('Forgot PIN?'),
             ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/widgets/fade_slide_in.dart';
@@ -74,7 +75,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () => context.go('/login'),
-                  child: const Text('Skip',
+                  child: const Tr('Skip',
                       style: TextStyle(color: AppColors.textMuted)),
                 ),
               ),
@@ -152,13 +153,13 @@ class _OnboardPage extends StatelessWidget {
           child: Icon(data.icon, size: 80, color: data.color),
         ),
         const SizedBox(height: 40),
-        Text(
+        Tr(
           data.title,
           textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 12),
-        Text(
+        Tr(
           data.subtitle,
           textAlign: TextAlign.center,
           style: const TextStyle(color: AppColors.textMuted, height: 1.5),

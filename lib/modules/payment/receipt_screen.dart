@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
@@ -35,12 +36,12 @@ class ReceiptScreen extends StatelessWidget {
                           index: 3,
                           child: Column(
                             children: [
-                              Text(tx.type.successTitle,
+                              Tr(tx.type.successTitle,
                                   style: const TextStyle(
                                       fontSize: 22,
                                       fontWeight: FontWeight.w800)),
                               const SizedBox(height: 6),
-                              Text(formatTaka(tx.amountMinor),
+                              Tr(formatTaka(tx.amountMinor),
                                   style: const TextStyle(
                                       fontSize: 30,
                                       fontWeight: FontWeight.w800,

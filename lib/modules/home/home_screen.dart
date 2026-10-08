@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -32,11 +33,11 @@ void _comingSoon(BuildContext context, String title) {
           const Icon(Icons.construction_rounded,
               size: 40, color: AppColors.primary),
           const SizedBox(height: 12),
-          Text(title,
+          Tr(title,
               style:
                   const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
           const SizedBox(height: 8),
-          const Text(
+          const Tr(
             'This service is coming in a future update.',
             textAlign: TextAlign.center,
             style: TextStyle(color: AppColors.textMuted),
@@ -126,9 +127,9 @@ class _Header extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Welcome back',
+                    const Tr('Welcome back',
                         style: TextStyle(fontSize: 12, color: Colors.white70)),
-                    Text(name ?? phone,
+                    Tr(name ?? phone,
                         style: const TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w700,
@@ -137,11 +138,11 @@ class _Header extends ConsumerWidget {
                 ),
               ),
               IconButton(
-                tooltip: 'Notifications',
+                tooltip: tr('Notifications'),
                 onPressed: () => context.push('/inbox'),
                 icon: Badge(
                   isLabelVisible: unread > 0,
-                  label: Text('$unread'),
+                  label: Tr('$unread'),
                   child: const Icon(Icons.notifications_none_rounded,
                       color: Colors.white),
                 ),
@@ -208,7 +209,7 @@ class _BalanceCard extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('PayBD Balance',
+                const Tr('PayBD Balance',
                     style: TextStyle(fontSize: 12, color: Colors.white70)),
                 const SizedBox(height: 6),
                 AnimatedSwitcher(
@@ -220,9 +221,9 @@ class _BalanceCard extends ConsumerWidget {
                           duration: const Duration(milliseconds: 800),
                           curve: Curves.easeOutCubic,
                           builder: (_, v, _) =>
-                              Text(formatTaka(v), style: _balanceStyle),
+                              Tr(formatTaka(v), style: _balanceStyle),
                         )
-                      : Text(
+                      : Tr(
                           show ? '...' : '৳ ••••••',
                           key: ValueKey(show),
                           style: _balanceStyle,
@@ -258,7 +259,7 @@ class _BalanceCard extends ConsumerWidget {
                       color: AppColors.primary,
                     ),
                     const SizedBox(width: 6),
-                    Text(
+                    Tr(
                       show ? 'Hide' : 'Tap for balance',
                       style: const TextStyle(
                           color: AppColors.primary,
@@ -361,7 +362,7 @@ class _ServiceTile extends StatelessWidget {
               child: Icon(service.icon, color: AppColors.primary, size: 26),
             ),
             const SizedBox(height: 6),
-            Text(
+            Tr(
               service.label,
               textAlign: TextAlign.center,
               maxLines: 2,
@@ -396,11 +397,11 @@ class _PromoBanner extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Invite friends',
+                Tr('Invite friends',
                     style:
                         TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
                 SizedBox(height: 2),
-                Text('Referral offers are coming soon',
+                Tr('Referral offers are coming soon',
                     style:
                         TextStyle(fontSize: 12, color: AppColors.textMuted)),
               ],
@@ -427,12 +428,12 @@ class _RecentSection extends ConsumerWidget {
         children: [
           Row(
             children: [
-              const Text('Recent transactions',
+              const Tr('Recent transactions',
                   style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
               const Spacer(),
               TextButton(
                 onPressed: () => context.push('/history'),
-                child: const Text('See all'),
+                child: const Tr('See all'),
               ),
             ],
           ),
@@ -446,13 +447,13 @@ class _RecentSection extends ConsumerWidget {
                 TxSkeleton(),
               ],
             ),
-            error: (_, _) => const Text('Could not load transactions.',
+            error: (_, _) => const Tr('Could not load transactions.',
                 style: TextStyle(color: AppColors.textMuted)),
             data: (w) {
               if (w.transactions.isEmpty) {
                 return const Padding(
                   padding: EdgeInsets.symmetric(vertical: 12),
-                  child: Text('No transactions yet',
+                  child: Tr('No transactions yet',
                       style: TextStyle(color: AppColors.textMuted)),
                 );
               }
@@ -527,7 +528,7 @@ class _NavItem extends StatelessWidget {
           children: [
             Icon(icon, color: color, size: 24),
             const SizedBox(height: 2),
-            Text(label, style: TextStyle(fontSize: 10, color: color)),
+            Tr(label, style: TextStyle(fontSize: 10, color: color)),
           ],
         ),
       ),

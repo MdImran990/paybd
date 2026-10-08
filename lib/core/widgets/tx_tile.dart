@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n/tr.dart';
 import '../../app/theme/app_colors.dart';
 import '../../data/models/transaction.dart';
 import '../utils/format.dart';
@@ -23,7 +24,7 @@ class TxTile extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Transaction details',
+            const Tr('Transaction details',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
             const SizedBox(height: 16),
             ReceiptCard(tx: tx),
@@ -60,18 +61,18 @@ class TxTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    Tr(
                       txTitle(tx),
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 4),
-                    Text(formatDateTime(tx.createdAt),
+                    Tr(formatDateTime(tx.createdAt),
                         style: const TextStyle(
                             fontSize: 12, color: AppColors.textMuted)),
                   ],
                 ),
               ),
-              Text(
+              Tr(
                 '${credit ? '+' : '-'}${formatTaka(tx.amountMinor)}',
                 style: TextStyle(fontWeight: FontWeight.w800, color: color),
               ),

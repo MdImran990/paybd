@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -43,7 +44,7 @@ class PaymentPinScreen extends ConsumerWidget {
     } on WalletException catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.message)));
+            .showSnackBar(SnackBar(content: Tr(e.message)));
         context.go('/home');
       }
       return null;

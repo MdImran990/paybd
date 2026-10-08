@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'app/routes/app_router.dart';
 import 'app/theme/app_theme.dart';
+import 'core/i18n/app_language.dart';
 import 'core/storage/prefs.dart';
 import 'data/repositories/pin_repository.dart';
 import 'modules/app_lock/app_lock_provider.dart';
@@ -12,6 +13,7 @@ import 'modules/auth/auth_providers.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
+  initLanguage(prefs);
   final pinRepo = await SecurePinRepository.create(prefs);
 
   runApp(

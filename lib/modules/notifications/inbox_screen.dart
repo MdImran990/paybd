@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/app_colors.dart';
@@ -32,7 +33,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
   Widget build(BuildContext context) {
     final items = ref.watch(notificationsProvider);
     return Scaffold(
-      appBar: PayAppBar(title: const Text('Inbox')),
+      appBar: PayAppBar(title: const Tr('Inbox')),
       body: SafeArea(
         child: items.isEmpty
             ? const Center(
@@ -42,7 +43,7 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
                     Icon(Icons.mail_outline_rounded,
                         size: 56, color: AppColors.textMuted),
                     SizedBox(height: 12),
-                    Text('No messages yet',
+                    Tr('No messages yet',
                         style: TextStyle(color: AppColors.textMuted)),
                   ],
                 ),
@@ -78,16 +79,16 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(n.title,
+                              Tr(n.title,
                                   style: const TextStyle(
                                       fontWeight: FontWeight.w700)),
                               const SizedBox(height: 2),
-                              Text(n.body,
+                              Tr(n.body,
                                   style: const TextStyle(
                                       fontSize: 13,
                                       color: AppColors.textMuted)),
                               const SizedBox(height: 6),
-                              Text(formatDateTime(n.createdAt),
+                              Tr(formatDateTime(n.createdAt),
                                   style: const TextStyle(
                                       fontSize: 11,
                                       color: AppColors.textMuted)),

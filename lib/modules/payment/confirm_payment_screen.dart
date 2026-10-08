@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import '../../core/widgets/pay_app_bar.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
@@ -16,7 +17,7 @@ class ConfirmPaymentScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PayAppBar(
-        title: const Text('Confirm'),
+        title: const Tr('Confirm'),
         backgroundColor: Colors.transparent,
       ),
       body: SafeArea(
@@ -36,11 +37,11 @@ class ConfirmPaymentScreen extends StatelessWidget {
                         ),
                         child: Column(
                           children: [
-                            Text(request.type.confirmHeading,
+                            Tr(request.type.confirmHeading,
                                 style: const TextStyle(
                                     color: AppColors.textMuted)),
                             const SizedBox(height: 8),
-                            Text(formatTaka(request.amountMinor),
+                            Tr(formatTaka(request.amountMinor),
                                 style: const TextStyle(
                                     fontSize: 32, fontWeight: FontWeight.w800)),
                             const Divider(height: 32),
@@ -59,7 +60,7 @@ class ConfirmPaymentScreen extends StatelessWidget {
                       ),
                       if (request.type.debitsWallet) ...[
                         const SizedBox(height: 16),
-                        const Text(
+                        const Tr(
                           'Never share your PIN or OTP with anyone.',
                           style: TextStyle(
                               fontSize: 12, color: AppColors.textMuted),

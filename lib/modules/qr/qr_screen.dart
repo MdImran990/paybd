@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,13 +25,13 @@ class QrScreen extends StatelessWidget {
       initialIndex: initialTab,
       child: Scaffold(
         appBar: PayAppBar(
-          title: const Text('QR Pay'),
+          title: const Tr('QR Pay'),
           backgroundColor: Colors.transparent,
-          bottom: const TabBar(
+          bottom: TabBar(
             indicatorColor: AppColors.primary,
             labelColor: AppColors.primary,
             unselectedLabelColor: AppColors.textMuted,
-            tabs: [Tab(text: 'My QR'), Tab(text: 'Scan')],
+            tabs: [Tab(text: tr('My QR')), Tab(text: tr('Scan'))],
           ),
         ),
         // Tabs are built only when shown, so the camera runs only on the Scan tab.
@@ -97,7 +98,7 @@ class _MyQrTabState extends ConsumerState<_MyQrTab> {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  Text(
+                  Tr(
                     amountOk
                         ? 'Request ${formatTaka(minor)}'
                         : 'Anyone can scan this to pay you',
@@ -106,7 +107,7 @@ class _MyQrTabState extends ConsumerState<_MyQrTab> {
                   if (text.isNotEmpty && !amountOk)
                     Padding(
                       padding: const EdgeInsets.only(top: 6),
-                      child: Text(
+                      child: Tr(
                         'Amount must be ${formatTaka(limits.min)} to ${formatTaka(limits.max)}.',
                         style: const TextStyle(
                             color: AppColors.error, fontSize: 12),
@@ -117,7 +118,7 @@ class _MyQrTabState extends ConsumerState<_MyQrTab> {
             },
           ),
           const SizedBox(height: 18),
-          Text(phone,
+          Tr(phone,
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
           const SizedBox(height: 4),
           TextButton.icon(
@@ -125,17 +126,17 @@ class _MyQrTabState extends ConsumerState<_MyQrTab> {
               await Clipboard.setData(ClipboardData(text: phone));
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Number copied')),
+                  const SnackBar(content: Tr('Number copied')),
                 );
               }
             },
             icon: const Icon(Icons.copy_rounded, size: 18),
-            label: const Text('Copy number'),
+            label: const Tr('Copy number'),
           ),
           const SizedBox(height: 20),
           Align(
             alignment: Alignment.centerLeft,
-            child: const Text('Request an amount (optional)',
+            child: const Tr('Request an amount (optional)',
                 style: TextStyle(fontWeight: FontWeight.w600)),
           ),
           const SizedBox(height: 8),
@@ -202,7 +203,7 @@ class _ScanTabState extends State<_ScanTab> {
       if (now.difference(_lastWarning) > const Duration(seconds: 3)) {
         _lastWarning = now;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('This is not a PayBD QR code.')),
+          const SnackBar(content: Tr('This is not a PayBD QR code.')),
         );
       }
       return;
@@ -232,7 +233,7 @@ class _ScanTabState extends State<_ScanTab> {
           right: 24,
           bottom: 32,
           child: IgnorePointer(
-            child: Text(
+            child: Tr(
               'Point the camera at a PayBD QR code',
               textAlign: TextAlign.center,
               style: TextStyle(

@@ -1,1 +1,1 @@
-bKash-style login + registration (step 11)
+Bangla / English (step 12)

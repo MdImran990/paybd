@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/widgets/pay_app_bar.dart';
+import '../../core/i18n/app_language.dart';
 import '../auth/logout.dart';
 import 'settings_providers.dart';
 
@@ -13,18 +15,18 @@ class SettingsScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.panel,
-        title: const Text('Erase all data?'),
-        content: const Text(
+        title: const Tr('Erase all data?'),
+        content: const Tr(
           'This deletes your account, PIN, demo balance and transactions from this device, then logs you out.',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
+            child: const Tr('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Erase',
+            child: const Tr('Erase',
                 style: TextStyle(color: AppColors.error)),
           ),
         ],
@@ -37,11 +39,13 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final requirePin = ref.watch(requirePinProvider);
     return Scaffold(
-      appBar: PayAppBar(title: const Text('Settings')),
+      appBar: PayAppBar(title: const Tr('Settings')),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
+            const _LanguageTile(),
+            const SizedBox(height: 12),
             Container(
               decoration: BoxDecoration(
                 color: AppColors.panel,
@@ -54,9 +58,9 @@ class SettingsScreen extends ConsumerWidget {
                   if (v) ref.read(balanceRevealedProvider.notifier).hide();
                 },
                 activeThumbColor: AppColors.primary,
-                title: const Text('Ask PIN to see balance',
+                title: const Tr('Ask PIN to see balance',
                     style: TextStyle(fontWeight: FontWeight.w600)),
-                subtitle: const Text(
+                subtitle: const Tr(
                   'Your balance stays hidden on Home until you enter your PIN.',
                   style: TextStyle(color: AppColors.textMuted, fontSize: 12),
                 ),
@@ -72,10 +76,10 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 leading:
                     const Icon(Icons.delete_outline_rounded, color: AppColors.error),
-                title: const Text('Erase all data',
+                title: const Tr('Erase all data',
                     style: TextStyle(
                         fontWeight: FontWeight.w600, color: AppColors.error)),
-                subtitle: const Text(
+                subtitle: const Tr(
                   'Delete the account and demo data from this device.',
                   style: TextStyle(color: AppColors.textMuted, fontSize: 12),
                 ),
@@ -84,6 +88,49 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _LanguageTile extends ConsumerWidget {
+  const _LanguageTile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final lang = ref.watch(languageProvider);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.panel,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.language_rounded, color: AppColors.primary),
+          const SizedBox(width: 12),
+          const Expanded(
+            child: Tr('Language', style: TextStyle(fontWeight: FontWeight.w600)),
+          ),
+          for (final (code, label) in const [('en', 'English'), ('bn', 'বাংলা')])
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: ChoiceChip(
+                label: Text(label),
+                selected: lang == code,
+                showCheckmark: false,
+                selectedColor: AppColors.primary,
+                backgroundColor: AppColors.bg,
+                side: BorderSide.none,
+                labelStyle: TextStyle(
+                  color: lang == code ? Colors.white : AppColors.text,
+                  fontSize: 12,
+                ),
+                onSelected: (_) =>
+                    ref.read(languageProvider.notifier).set(code),
+              ),
+            ),
+        ],
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
@@ -40,13 +41,13 @@ class _SplashScreenState extends State<SplashScreen> {
                 Icon(Icons.account_balance_wallet_rounded,
                     size: 64, color: Colors.white),
                 SizedBox(height: 12),
-                Text('PayBD',
+                Tr('PayBD',
                     style: TextStyle(
                         fontSize: 34,
                         fontWeight: FontWeight.w800,
                         color: Colors.white)),
                 SizedBox(height: 4),
-                Text('Your Money. Your Control.',
+                Tr('Your Money. Your Control.',
                     style: TextStyle(color: Colors.white70)),
               ],
             ),

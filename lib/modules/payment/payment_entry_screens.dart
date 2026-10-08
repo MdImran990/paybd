@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/utils/billers.dart';
@@ -117,8 +118,8 @@ class SavingsDepositScreen extends ConsumerWidget {
     final names = [for (final g in ref.watch(savingsProvider)) g.name];
     if (names.isEmpty) {
       return Scaffold(
-        appBar: PayAppBar(title: const Text('Add to savings')),
-        body: const Center(child: Text('Create a savings goal first.')),
+        appBar: PayAppBar(title: const Tr('Add to savings')),
+        body: const Center(child: Tr('Create a savings goal first.')),
       );
     }
     return PaymentFormScreen(

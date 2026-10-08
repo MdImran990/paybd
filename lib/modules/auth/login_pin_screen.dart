@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -60,7 +61,7 @@ class LoginPinScreen extends ConsumerWidget {
                     ),
                     TextButton(
                       onPressed: () => _forgotPin(context, ref),
-                      child: const Text('Forgot PIN?'),
+                      child: const Tr('Forgot PIN?'),
                     ),
                     const SizedBox(height: 8),
                   ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/app_colors.dart';
@@ -23,7 +24,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   Widget build(BuildContext context) {
     final wallet = ref.watch(walletProvider);
     return Scaffold(
-      appBar: PayAppBar(title: const Text('History')),
+      appBar: PayAppBar(title: const Tr('History')),
       body: SafeArea(
         child: wallet.when(
           loading: () => ListView(
@@ -44,10 +45,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Could not load transactions.'),
+                const Tr('Could not load transactions.'),
                 TextButton(
                   onPressed: () => ref.invalidate(walletProvider),
-                  child: const Text('Retry'),
+                  child: const Tr('Retry'),
                 ),
               ],
             ),
@@ -71,7 +72,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   child: TextField(
                     onChanged: (v) => setState(() => _query = v),
                     decoration: InputDecoration(
-                      hintText: 'Search number or transaction ID',
+                      hintText: tr('Search number or transaction ID'),
                       prefixIcon: const Icon(Icons.search_rounded),
                       filled: true,
                       fillColor: AppColors.panel,
@@ -113,7 +114,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                               Icon(Icons.receipt_long_rounded,
                                   size: 56, color: AppColors.textMuted),
                               SizedBox(height: 12),
-                              Text('No transactions found',
+                              Tr('No transactions found',
                                   style: TextStyle(color: AppColors.textMuted)),
                             ],
                           ),
@@ -152,7 +153,7 @@ class _FilterChip extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: ChoiceChip(
-        label: Text(label),
+        label: Tr(label),
         selected: selected,
         showCheckmark: false,
         selectedColor: AppColors.primary,

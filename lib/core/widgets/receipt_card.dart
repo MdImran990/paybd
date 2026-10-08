@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n/tr.dart';
 import '../../app/theme/app_colors.dart';
 import '../../data/models/transaction.dart';
 import '../utils/format.dart';
@@ -31,7 +32,7 @@ class ReceiptCard extends StatelessWidget {
           DetailRow('Date & time', formatDateTime(tx.createdAt)),
           const DetailRow('Status', 'Successful'),
           const SizedBox(height: 8),
-          const Text(
+          const Tr(
             'DEMO transaction. Not real money.',
             style: TextStyle(fontSize: 12, color: AppColors.yellow),
           ),

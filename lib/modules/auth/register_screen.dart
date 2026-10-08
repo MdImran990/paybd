@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -51,7 +52,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     if (ref.read(accountProvider) == phone) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('This number already has an account. Please log in.')),
+            content: Tr('This number already has an account. Please log in.')),
       );
       return;
     }
@@ -64,6 +65,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       _loading.value = false;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
@@ -89,11 +91,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Your mobile number',
+                          Tr('Your mobile number',
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.w800)),
                           SizedBox(height: 4),
-                          Text('We will send a code to verify it.',
+                          Tr('We will send a code to verify it.',
                               style: TextStyle(color: AppColors.textMuted)),
                         ],
                       ),
@@ -124,11 +126,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                               child: Wrap(
                                 crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
-                                  const Text('I agree to the ',
+                                  const Tr('I agree to the ',
                                       style: TextStyle(fontSize: 13)),
                                   GestureDetector(
                                     onTap: () => context.push('/terms'),
-                                    child: const Text(
+                                    child: const Tr(
                                       'Terms & Privacy',
                                       style: TextStyle(
                                         fontSize: 13,
@@ -170,11 +172,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('Already have an account?',
+                        const Tr('Already have an account?',
                             style: TextStyle(color: AppColors.textMuted)),
                         TextButton(
                           onPressed: () => context.go('/login'),
-                          child: const Text('Log in',
+                          child: const Tr('Log in',
                               style: TextStyle(fontWeight: FontWeight.w800)),
                         ),
                       ],

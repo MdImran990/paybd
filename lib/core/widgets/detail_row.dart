@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n/tr.dart';
 import '../../app/theme/app_colors.dart';
 
 class DetailRow extends StatelessWidget {
@@ -14,10 +15,10 @@ class DetailRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(color: AppColors.textMuted)),
+          Tr(label, style: const TextStyle(color: AppColors.textMuted)),
           const SizedBox(width: 16),
           Expanded(
-            child: Text(
+            child: Tr(
               value,
               textAlign: TextAlign.right,
               style: TextStyle(

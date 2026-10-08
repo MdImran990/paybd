@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -17,22 +18,22 @@ class ProfileScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.panel,
-        title: const Text('Your name'),
+        title: const Tr('Your name'),
         content: TextField(
           controller: controller,
           autofocus: true,
           maxLength: 30,
           textCapitalization: TextCapitalization.words,
-          decoration: const InputDecoration(hintText: 'Enter your name'),
+          decoration: InputDecoration(hintText: tr('Enter your name')),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
+            child: const Tr('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(controller.text),
-            child: const Text('Save'),
+            child: const Tr('Save'),
           ),
         ],
       ),
@@ -45,17 +46,17 @@ class ProfileScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.panel,
-        title: const Text('Log out?'),
-        content: const Text(
+        title: const Tr('Log out?'),
+        content: const Tr(
             'You will log in again with your number and PIN.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
+            child: const Tr('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Log out',
+            child: const Tr('Log out',
                 style: TextStyle(color: AppColors.error)),
           ),
         ],
@@ -70,7 +71,7 @@ class ProfileScreen extends ConsumerWidget {
     final phone = ref.watch(sessionPhoneProvider) ?? '';
     final name = ref.watch(profileNameProvider);
     return Scaffold(
-      appBar: PayAppBar(title: const Text('Profile')),
+      appBar: PayAppBar(title: const Tr('Profile')),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
@@ -96,20 +97,20 @@ class ProfileScreen extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(name ?? 'PayBD Account',
+                        Tr(name ?? 'PayBD Account',
                             style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white)),
                         const SizedBox(height: 4),
-                        Text(phone,
+                        Tr(phone,
                             style: const TextStyle(
                                 fontSize: 13, color: Colors.white70)),
                       ],
                     ),
                   ),
                   IconButton(
-                    tooltip: 'Edit name',
+                    tooltip: tr('Edit name'),
                     onPressed: () => _editName(context, ref),
                     icon: const Icon(Icons.edit_rounded, color: Colors.white),
                   ),
@@ -145,7 +146,7 @@ class ProfileScreen extends ConsumerWidget {
                 applicationName: 'PayBD',
                 applicationVersion: '0.2.0 (demo)',
                 children: const [
-                  Text('Demo build. Balances and transactions are not real money.'),
+                  Tr('Demo build. Balances and transactions are not real money.'),
                 ],
               ),
             ),
@@ -196,7 +197,7 @@ class _MenuTile extends StatelessWidget {
                 Icon(icon, color: color ?? AppColors.primary),
                 const SizedBox(width: 14),
                 Expanded(
-                  child: Text(label,
+                  child: Tr(label,
                       style: TextStyle(fontWeight: FontWeight.w600, color: c)),
                 ),
                 Icon(Icons.chevron_right_rounded,

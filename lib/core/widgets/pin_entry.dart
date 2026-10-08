@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import '../i18n/tr.dart';
 import 'package:flutter/services.dart';
 import '../../app/theme/app_colors.dart';
 import 'pressable_scale.dart';
@@ -76,7 +77,7 @@ class _PinEntryState extends State<PinEntry>
         const SizedBox(height: 24),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 250),
-          child: Text(widget.title,
+          child: Tr(widget.title,
               key: ValueKey(widget.title),
               textAlign: TextAlign.center,
               style:
@@ -85,7 +86,7 @@ class _PinEntryState extends State<PinEntry>
         const SizedBox(height: 8),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 250),
-          child: Text(widget.subtitle,
+          child: Tr(widget.subtitle,
               key: ValueKey(widget.subtitle),
               textAlign: TextAlign.center,
               style: const TextStyle(color: AppColors.textMuted)),
@@ -142,7 +143,7 @@ class _PinEntryState extends State<PinEntry>
               : AnimatedOpacity(
                   opacity: _error == null ? 0 : 1,
                   duration: const Duration(milliseconds: 200),
-                  child: Text(_error ?? '',
+                  child: Tr(_error ?? '',
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                           color: AppColors.error, fontSize: 13)),
@@ -231,7 +232,7 @@ class _Key extends StatelessWidget {
             height: 68,
             child: Center(
               child: label != null
-                  ? Text(label!,
+                  ? Tr(label!,
                       style: const TextStyle(
                           fontSize: 24, fontWeight: FontWeight.w600))
                   : Icon(icon, size: 24, color: AppColors.textMuted),

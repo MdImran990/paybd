@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -80,7 +81,7 @@ class _RegisterDetailsScreenState extends ConsumerState<RegisterDetailsScreen> {
                   children: [
                     const FadeSlideIn(
                       index: 0,
-                      child: Text('What should we call you?',
+                      child: Tr('What should we call you?',
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.w800)),
                     ),
@@ -95,7 +96,7 @@ class _RegisterDetailsScreenState extends ConsumerState<RegisterDetailsScreen> {
                         onTapOutside: (_) =>
                             FocusManager.instance.primaryFocus?.unfocus(),
                         decoration: InputDecoration(
-                          hintText: 'Full name',
+                          hintText: tr('Full name'),
                           counterText: '',
                           filled: true,
                           fillColor: AppColors.panel,
@@ -128,7 +129,7 @@ class _RegisterDetailsScreenState extends ConsumerState<RegisterDetailsScreen> {
                                 color: AppColors.primary, size: 20),
                             SizedBox(width: 10),
                             Expanded(
-                              child: Text(
+                              child: Tr(
                                 'This is a basic account. Identity verification (eKYC) will be added later to raise your limits.',
                                 style: TextStyle(
                                     fontSize: 12, color: AppColors.textMuted),

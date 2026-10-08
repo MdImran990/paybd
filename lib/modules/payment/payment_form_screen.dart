@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,7 +16,7 @@ import '../wallet/wallet_providers.dart';
 
 InputDecoration _decoration({required String hint, Widget? prefix}) {
   return InputDecoration(
-    hintText: hint,
+    hintText: tr(hint),
     prefixIcon: prefix,
     filled: true,
     fillColor: AppColors.panel,
@@ -219,7 +220,7 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PayAppBar(
-        title: Text(widget.title),
+        title: Tr(widget.title),
         backgroundColor: Colors.transparent,
       ),
       body: SafeArea(
@@ -235,7 +236,7 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                       Consumer(builder: (_, ref, _) {
                         final bal =
                             ref.watch(walletProvider).value?.balanceMinor;
-                        return Text(
+                        return Tr(
                           bal == null
                               ? ' '
                               : 'Available balance: ${formatTaka(bal)}',
@@ -244,7 +245,7 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                       }),
                       const SizedBox(height: 24),
                       if (_hasRecipient) ...[
-                        Text(widget.recipientLabel!,
+                        Tr(widget.recipientLabel!,
                             style:
                                 const TextStyle(fontWeight: FontWeight.w600)),
                         const SizedBox(height: 8),
@@ -277,7 +278,7 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                               children: [
                                 for (final r in recents)
                                   ActionChip(
-                                    label: Text(r),
+                                    label: Tr(r),
                                     backgroundColor: AppColors.panel,
                                     side: BorderSide.none,
                                     onPressed: () {
@@ -294,7 +295,7 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                         const SizedBox(height: 22),
                       ],
                       if (widget.noteOptions.isNotEmpty) ...[
-                        Text(widget.noteLabel ?? '',
+                        Tr(widget.noteLabel ?? '',
                             style:
                                 const TextStyle(fontWeight: FontWeight.w600)),
                         const SizedBox(height: 8),
@@ -306,7 +307,7 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                             children: [
                               for (final o in widget.noteOptions)
                                 ChoiceChip(
-                                  label: Text(o),
+                                  label: Tr(o),
                                   selected: selected == o,
                                   showCheckmark: false,
                                   labelStyle: TextStyle(
@@ -328,7 +329,7 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                         ),
                         const SizedBox(height: 22),
                       ],
-                      const Text('Amount',
+                      const Tr('Amount',
                           style: TextStyle(fontWeight: FontWeight.w600)),
                       const SizedBox(height: 8),
                       TextField(
@@ -356,7 +357,7 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                             ? const SizedBox(height: 14)
                             : Padding(
                                 padding: const EdgeInsets.only(top: 8),
-                                child: Text(e,
+                                child: Tr(e,
                                     style: const TextStyle(
                                         color: AppColors.error, fontSize: 13)),
                               ),
@@ -367,7 +368,7 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                         children: [
                           for (final v in widget.quickAmounts)
                             ActionChip(
-                              label: Text('৳ $v'),
+                              label: Tr('৳ $v'),
                               backgroundColor: AppColors.panel,
                               side: BorderSide.none,
                               onPressed: () => _setQuick(v),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -121,10 +122,10 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Verify your number',
+              const Tr('Verify your number',
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800)),
               const SizedBox(height: 8),
-              Text('Enter the 6-digit code sent to ${widget.phone}',
+              Tr('Enter the 6-digit code sent to ${widget.phone}',
                   style: const TextStyle(color: AppColors.textMuted)),
               const SizedBox(height: 32),
               GestureDetector(
@@ -169,16 +170,16 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               ),
               if (_error != null) ...[
                 const SizedBox(height: 14),
-                Text(_error!, style: const TextStyle(color: AppColors.error)),
+                Tr(_error!, style: const TextStyle(color: AppColors.error)),
               ],
               const SizedBox(height: 20),
               Center(
                 child: _seconds > 0
-                    ? Text('Resend code in ${_seconds}s',
+                    ? Tr('Resend code in ${_seconds}s',
                         style: const TextStyle(color: AppColors.textMuted))
                     : TextButton(
                         onPressed: _resend,
-                        child: const Text('Resend code'),
+                        child: const Tr('Resend code'),
                       ),
               ),
               const Spacer(),
@@ -190,7 +191,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                   color: AppColors.panel,
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: const Text(
+                child: const Tr(
                   'DEMO MODE: use code 123456. No real SMS is sent.',
                   style: TextStyle(fontSize: 12, color: AppColors.yellow),
                 ),
@@ -241,7 +242,7 @@ class _OtpBox extends StatelessWidget {
           width: 1.5,
         ),
       ),
-      child: Text(char,
+      child: Tr(char,
           style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
     ),
     );

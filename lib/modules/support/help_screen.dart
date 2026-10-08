@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import '../../core/widgets/pay_app_bar.dart';
 import '../../app/theme/app_colors.dart';
 
@@ -38,7 +39,7 @@ class HelpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PayAppBar(title: const Text('Help & Support')),
+      appBar: PayAppBar(title: const Tr('Help & Support')),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
@@ -55,14 +56,14 @@ class HelpScreen extends StatelessWidget {
                     data: Theme.of(context)
                         .copyWith(dividerColor: Colors.transparent),
                     child: ExpansionTile(
-                      title: Text(q,
+                      title: Tr(q,
                           style: const TextStyle(
                               fontWeight: FontWeight.w600, fontSize: 14)),
                       childrenPadding:
                           const EdgeInsets.fromLTRB(16, 0, 16, 16),
                       expandedCrossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(a,
+                        Tr(a,
                             style: const TextStyle(
                                 color: AppColors.textMuted, height: 1.5)),
                       ],
@@ -71,7 +72,7 @@ class HelpScreen extends StatelessWidget {
                 ),
               ),
             const SizedBox(height: 8),
-            const Text(
+            const Tr(
               'Support contact details will be added before launch.',
               style: TextStyle(fontSize: 12, color: AppColors.textMuted),
             ),

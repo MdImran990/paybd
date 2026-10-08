@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n/tr.dart';
 import 'package:flutter/services.dart';
 import '../../data/models/transaction.dart';
 import '../utils/receipt_text.dart';
@@ -14,12 +15,12 @@ class CopyReceiptButton extends StatelessWidget {
         await Clipboard.setData(ClipboardData(text: receiptText(tx)));
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Receipt copied')),
+            const SnackBar(content: Tr('Receipt copied')),
           );
         }
       },
       icon: const Icon(Icons.copy_rounded, size: 18),
-      label: const Text('Copy receipt'),
+      label: const Tr('Copy receipt'),
     );
   }
 }

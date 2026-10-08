@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n/tr.dart';
 import 'package:flutter/services.dart';
 import '../../app/theme/app_colors.dart';
 import 'pressable_scale.dart';
@@ -67,7 +68,7 @@ class PrimaryButton extends StatelessWidget {
                               color: Colors.white,
                             ),
                           )
-                        : Text(
+                        : Tr(
                             label,
                             key: ValueKey(label),
                             style: const TextStyle(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,7 +19,7 @@ class SavingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final goals = ref.watch(savingsProvider);
     return Scaffold(
-      appBar: PayAppBar(title: const Text('Savings')),
+      appBar: PayAppBar(title: const Tr('Savings')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => showDialog<void>(
           context: context,
@@ -27,7 +28,7 @@ class SavingsScreen extends ConsumerWidget {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.add_rounded),
-        label: const Text('New goal'),
+        label: const Tr('New goal'),
       ),
       body: SafeArea(
         child: goals.isEmpty
@@ -40,7 +41,7 @@ class SavingsScreen extends ConsumerWidget {
                       Icon(Icons.savings_rounded,
                           size: 56, color: AppColors.textMuted),
                       SizedBox(height: 12),
-                      Text(
+                      Tr(
                         'Create a goal and save a little at a time.',
                         textAlign: TextAlign.center,
                         style: TextStyle(color: AppColors.textMuted),
@@ -76,11 +77,11 @@ class _GoalCard extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(goal.name,
+            Tr(goal.name,
                 style:
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
             const SizedBox(height: 4),
-            Text(
+            Tr(
               'Saved ${formatTaka(goal.savedMinor)} of ${formatTaka(goal.targetMinor)}',
               style: const TextStyle(color: AppColors.textMuted),
             ),
@@ -108,7 +109,7 @@ class _GoalCard extends ConsumerWidget {
                       );
                     }
                   : null,
-              child: const Text('Withdraw all to wallet'),
+              child: const Tr('Withdraw all to wallet'),
             ),
             TextButton(
               onPressed: goal.savedMinor == 0
@@ -117,7 +118,7 @@ class _GoalCard extends ConsumerWidget {
                       Navigator.of(sheetContext).pop();
                     }
                   : null,
-              child: Text(
+              child: Tr(
                 'Delete goal',
                 style: TextStyle(
                   color: goal.savedMinor == 0
@@ -153,11 +154,11 @@ class _GoalCard extends ConsumerWidget {
                   const Icon(Icons.savings_rounded, color: AppColors.primary),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: Text(goal.name,
+                    child: Tr(goal.name,
                         style: const TextStyle(
                             fontWeight: FontWeight.w700, fontSize: 16)),
                   ),
-                  Text('${(goal.progress * 100).round()}%',
+                  Tr('${(goal.progress * 100).round()}%',
                       style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           color: AppColors.primary)),
@@ -179,7 +180,7 @@ class _GoalCard extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              Text(
+              Tr(
                 '${formatTaka(goal.savedMinor)} of ${formatTaka(goal.targetMinor)}',
                 style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
               ),
@@ -226,7 +227,7 @@ class _NewGoalDialogState extends ConsumerState<_NewGoalDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: AppColors.panel,
-      title: const Text('New savings goal'),
+      title: const Tr('New savings goal'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -235,7 +236,7 @@ class _NewGoalDialogState extends ConsumerState<_NewGoalDialog> {
             autofocus: true,
             maxLength: 24,
             textCapitalization: TextCapitalization.sentences,
-            decoration: const InputDecoration(hintText: 'Goal name (e.g. Eid trip)'),
+            decoration: InputDecoration(hintText: tr('Goal name (e.g. Eid trip)')),
           ),
           TextField(
             controller: _target,
@@ -245,15 +246,15 @@ class _NewGoalDialogState extends ConsumerState<_NewGoalDialog> {
               FilteringTextInputFormatter.allow(
                   RegExp(r'^\d{0,7}(\.\d{0,2})?$')),
             ],
-            decoration: const InputDecoration(
-              hintText: 'Target amount',
+            decoration: InputDecoration(
+              hintText: tr('Target amount'),
               prefixText: '৳ ',
             ),
           ),
           if (_error != null)
             Padding(
               padding: const EdgeInsets.only(top: 10),
-              child: Text(_error!,
+              child: Tr(_error!,
                   style:
                       const TextStyle(color: AppColors.error, fontSize: 12)),
             ),
@@ -262,9 +263,9 @@ class _NewGoalDialogState extends ConsumerState<_NewGoalDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: const Tr('Cancel'),
         ),
-        TextButton(onPressed: _create, child: const Text('Create')),
+        TextButton(onPressed: _create, child: const Tr('Create')),
       ],
     );
   }

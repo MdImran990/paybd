@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../i18n/tr.dart';
 import '../../app/theme/app_colors.dart';
 import 'pay_app_bar.dart';
 
@@ -9,6 +10,7 @@ class AuthHeader extends StatelessWidget {
   final String subtitle;
   final bool compact;
   final bool showBack;
+  final Widget? trailing;
 
   const AuthHeader({
     super.key,
@@ -16,6 +18,7 @@ class AuthHeader extends StatelessWidget {
     required this.subtitle,
     this.compact = false,
     this.showBack = false,
+    this.trailing,
   });
 
   @override
@@ -65,7 +68,7 @@ class AuthHeader extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 10),
-                              const Text('PayBD',
+                              const Tr('PayBD',
                                   style: TextStyle(
                                       fontSize: 28,
                                       fontWeight: FontWeight.w800,
@@ -74,13 +77,13 @@ class AuthHeader extends StatelessWidget {
                           ),
                           const SizedBox(height: 18),
                         ],
-                        Text(title,
+                        Tr(title,
                             style: const TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white)),
                         const SizedBox(height: 4),
-                        Text(subtitle,
+                        Tr(subtitle,
                             style: const TextStyle(
                                 fontSize: 13, color: Colors.white70)),
                       ],
@@ -89,6 +92,8 @@ class AuthHeader extends StatelessWidget {
                 ),
               ),
             ),
+            if (trailing != null)
+              Positioned(top: top + 10, right: 16, child: trailing!),
             if (showBack)
               Positioned(
                 top: top + 2,

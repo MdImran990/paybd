@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,6 +7,7 @@ import '../../app/theme/app_colors.dart';
 import '../../core/utils/validators.dart';
 import '../../core/widgets/auth_header.dart';
 import '../../core/widgets/fade_slide_in.dart';
+import '../../core/widgets/language_toggle.dart';
 import '../../core/widgets/primary_button.dart';
 import 'account_provider.dart';
 import 'auth_providers.dart';
@@ -46,7 +48,7 @@ class PhoneField extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('+88',
+              Tr('+88',
                   style: TextStyle(
                       fontWeight: FontWeight.w800, color: AppColors.primary)),
               SizedBox(width: 10),
@@ -140,10 +142,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             const Icon(Icons.person_add_alt_1_rounded,
                 size: 44, color: AppColors.primary),
             const SizedBox(height: 12),
-            const Text('No account found',
+            const Tr('No account found',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
             const SizedBox(height: 6),
-            Text(
+            Tr(
               'There is no PayBD account for $phone on this device. Create one in a minute.',
               textAlign: TextAlign.center,
               style: const TextStyle(color: AppColors.textMuted),
@@ -158,13 +160,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
             TextButton(
               onPressed: () => Navigator.of(sheetContext).pop(),
-              child: const Text('Use another number'),
+              child: const Tr('Use another number'),
             ),
           ],
         ),
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
@@ -178,6 +181,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               title: 'Login',
               subtitle: 'Log in to your PayBD account',
               compact: keyboardOpen,
+              trailing: const LanguageToggle(),
             ),
             Expanded(
               child: AuthSheet(
@@ -189,11 +193,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: const [
-                          Text('Enter your mobile number',
+                          Tr('Enter your mobile number',
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.w800)),
                           SizedBox(height: 4),
-                          Text('We will ask for your PIN next.',
+                          Tr('We will ask for your PIN next.',
                               style: TextStyle(color: AppColors.textMuted)),
                         ],
                       ),
@@ -229,11 +233,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text('New to PayBD?',
+                          const Tr('New to PayBD?',
                               style: TextStyle(color: AppColors.textMuted)),
                           TextButton(
                             onPressed: () => context.push('/register'),
-                            child: const Text('Create account',
+                            child: const Tr('Create account',
                                 style: TextStyle(fontWeight: FontWeight.w800)),
                           ),
                         ],
@@ -242,7 +246,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Center(
                       child: TextButton(
                         onPressed: () => context.push('/terms'),
-                        child: const Text(
+                        child: const Tr(
                           'Terms & Privacy',
                           style: TextStyle(
                               fontSize: 12, color: AppColors.textMuted),

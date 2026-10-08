@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/i18n/tr.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/utils/pin_verify.dart';
@@ -41,14 +42,14 @@ class _LockOverlayState extends ConsumerState<LockOverlay> {
             if (!_confirmLogout)
               TextButton(
                 onPressed: () => setState(() => _confirmLogout = true),
-                child: const Text('Forgot PIN? Log out'),
+                child: const Tr('Forgot PIN? Log out'),
               )
             else
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
                 child: Column(
                   children: [
-                    const Text(
+                    const Tr(
                       'Log out? Then tap "Forgot PIN?" on the login page to set a new PIN.',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: AppColors.textMuted),
@@ -59,11 +60,11 @@ class _LockOverlayState extends ConsumerState<LockOverlay> {
                         TextButton(
                           onPressed: () =>
                               setState(() => _confirmLogout = false),
-                          child: const Text('Cancel'),
+                          child: const Tr('Cancel'),
                         ),
                         TextButton(
                           onPressed: () => performLogout(ref),
-                          child: const Text('Log out',
+                          child: const Tr('Log out',
                               style: TextStyle(color: AppColors.error)),
                         ),
                       ],
