@@ -49,7 +49,7 @@ class _LockOverlayState extends ConsumerState<LockOverlay> {
                 child: Column(
                   children: [
                     const Text(
-                      'Log out and erase the data saved on this device?',
+                      'Log out? Then tap "Forgot PIN?" on the login page to set a new PIN.',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: AppColors.textMuted),
                     ),

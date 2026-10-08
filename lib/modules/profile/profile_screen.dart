@@ -47,7 +47,7 @@ class ProfileScreen extends ConsumerWidget {
         backgroundColor: AppColors.panel,
         title: const Text('Log out?'),
         content: const Text(
-            'You will need to verify your number again. Demo data on this device will be erased.'),
+            'You will log in again with your number and PIN.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),

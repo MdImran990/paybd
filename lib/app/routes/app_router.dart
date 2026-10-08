@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../data/models/transaction.dart';
 import '../../modules/auth/change_pin_screen.dart';
+import '../../modules/auth/login_pin_screen.dart';
 import '../../modules/auth/login_screen.dart';
+import '../../modules/auth/register_details_screen.dart';
+import '../../modules/auth/register_screen.dart';
 import '../../modules/auth/otp_screen.dart';
 import '../../modules/auth/pin_setup_screen.dart';
 import '../../modules/auth/auth_providers.dart';
@@ -82,14 +85,29 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final loggedIn = ref.read(sessionPhoneProvider) != null;
       final path = state.matchedLocation;
-      const publicPaths = {'/', '/onboarding', '/login', '/otp'};
+      const publicPaths = {
+        '/',
+        '/onboarding',
+        '/login',
+        '/login/pin',
+        '/register',
+        '/register/details',
+        '/otp',
+        '/terms',
+      };
       final hasPin = ref.read(pinRepositoryProvider).hasPin;
       if (!loggedIn && !publicPaths.contains(path)) return '/login';
       // Logged in but the PIN was never created (app closed during setup).
       if (loggedIn && !hasPin && path != '/pin-setup' && path != '/otp') {
         return '/pin-setup';
       }
-      if (loggedIn && (path == '/login' || path == '/onboarding')) return '/home';
+      if (loggedIn &&
+          (path == '/login' ||
+              path == '/login/pin' ||
+              path == '/register' ||
+              path == '/onboarding')) {
+        return '/home';
+      }
       return null;
     },
     routes: [
@@ -106,6 +124,33 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (_, s) => _fade(s, const LoginScreen()),
       ),
       GoRoute(
+        path: '/login/pin',
+        pageBuilder: (_, s) {
+          final p = s.extra;
+          return _slide(
+            s,
+            p is String ? LoginPinScreen(phone: p) : const LoginScreen(),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/register',
+        pageBuilder: (_, s) => _slide(
+          s,
+          RegisterScreen(initialPhone: s.extra is String ? s.extra as String : null),
+        ),
+      ),
+      GoRoute(
+        path: '/register/details',
+        pageBuilder: (_, s) {
+          final p = s.extra;
+          return _fade(
+            s,
+            p is String ? RegisterDetailsScreen(phone: p) : const RegisterScreen(),
+          );
+        },
+      ),
+      GoRoute(
         path: '/otp',
         pageBuilder: (_, s) =>
             _slide(
@@ -113,6 +158,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           OtpScreen(
             phone: (s.extra as String?) ?? '',
             resetPin: s.uri.queryParameters['reset'] == '1',
+            register: s.uri.queryParameters['mode'] == 'register',
           ),
         ),
       ),

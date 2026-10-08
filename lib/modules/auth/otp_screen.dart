@@ -16,7 +16,15 @@ class OtpScreen extends ConsumerStatefulWidget {
 
   /// true = the user forgot the PIN: after the OTP they create a new PIN.
   final bool resetPin;
-  const OtpScreen({super.key, required this.phone, this.resetPin = false});
+
+  /// true = new account: after the OTP the user fills in their details.
+  final bool register;
+  const OtpScreen({
+    super.key,
+    required this.phone,
+    this.resetPin = false,
+    this.register = false,
+  });
 
   @override
   ConsumerState<OtpScreen> createState() => _OtpScreenState();
@@ -73,7 +81,13 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
           .verifyOtp(widget.phone, _controller.text);
       if (!mounted) return;
       if (ok) {
+        if (widget.register) {
+          context.go('/register/details', extra: widget.phone);
+          return;
+        }
         if (widget.resetPin) {
+          // The OTP proves the user owns this number, so this also logs them in.
+          ref.read(sessionPhoneProvider.notifier).setPhone(widget.phone);
           context.go('/pin-setup');
           return;
         }

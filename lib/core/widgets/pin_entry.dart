@@ -70,115 +70,138 @@ class _PinEntryState extends State<PinEntry>
     setState(() => _pin = _pin.substring(0, _pin.length - 1));
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        children: [
-          const SizedBox(height: 24),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 250),
-            child: Text(widget.title,
-                key: ValueKey(widget.title),
-                textAlign: TextAlign.center,
-                style:
-                    const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
-          ),
-          const SizedBox(height: 8),
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 250),
-            child: Text(widget.subtitle,
-                key: ValueKey(widget.subtitle),
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.textMuted)),
-          ),
-          const SizedBox(height: 32),
-          AnimatedBuilder(
-            animation: _shake,
-            builder: (_, child) => Transform.translate(
-              offset: Offset(
-                math.sin(_shake.value * math.pi * 6) * 10 * (1 - _shake.value),
-                0,
-              ),
-              child: child,
+  Widget _top() {
+    return Column(
+      children: [
+        const SizedBox(height: 24),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          child: Text(widget.title,
+              key: ValueKey(widget.title),
+              textAlign: TextAlign.center,
+              style:
+                  const TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+        ),
+        const SizedBox(height: 8),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          child: Text(widget.subtitle,
+              key: ValueKey(widget.subtitle),
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.textMuted)),
+        ),
+        const SizedBox(height: 32),
+        AnimatedBuilder(
+          animation: _shake,
+          builder: (_, child) => Transform.translate(
+            offset: Offset(
+              math.sin(_shake.value * math.pi * 6) * 10 * (1 - _shake.value),
+              0,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for (var i = 0; i < widget.length; i++)
-                  AnimatedScale(
-                    scale: i < _pin.length ? 1.25 : 1,
-                    duration: const Duration(milliseconds: 160),
-                    curve: Curves.easeOutBack,
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 150),
-                      margin: const EdgeInsets.symmetric(horizontal: 8),
-                      width: 16,
-                      height: 16,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: i < _pin.length
-                            ? AppColors.primary
-                            : AppColors.panel,
-                        border: Border.all(
-                          color: _error != null
-                              ? AppColors.error
-                              : i < _pin.length
-                                  ? AppColors.primary
-                                  : AppColors.textMuted.withValues(alpha: 0.4),
-                        ),
+            child: child,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              for (var i = 0; i < widget.length; i++)
+                AnimatedScale(
+                  scale: i < _pin.length ? 1.25 : 1,
+                  duration: const Duration(milliseconds: 160),
+                  curve: Curves.easeOutBack,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
+                    width: 16,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color:
+                          i < _pin.length ? AppColors.primary : AppColors.panel,
+                      border: Border.all(
+                        color: _error != null
+                            ? AppColors.error
+                            : i < _pin.length
+                                ? AppColors.primary
+                                : AppColors.textMuted.withValues(alpha: 0.4),
                       ),
                     ),
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 22,
-            child: _busy
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : AnimatedOpacity(
-                    opacity: _error == null ? 0 : 1,
-                    duration: const Duration(milliseconds: 200),
-                    child: Text(_error ?? '',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                            color: AppColors.error, fontSize: 13)),
-                  ),
-          ),
-          const Spacer(),
-          for (final row in const [
-            ['1', '2', '3'],
-            ['4', '5', '6'],
-            ['7', '8', '9'],
-          ])
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  for (final d in row) _Key(label: d, onTap: () => _tap(d)),
-                ],
-              ),
-            ),
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          height: 22,
+          child: _busy
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : AnimatedOpacity(
+                  opacity: _error == null ? 0 : 1,
+                  duration: const Duration(milliseconds: 200),
+                  child: Text(_error ?? '',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          color: AppColors.error, fontSize: 13)),
+                ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _keypad() {
+    return Column(
+      children: [
+        for (final row in const [
+          ['1', '2', '3'],
+          ['4', '5', '6'],
+          ['7', '8', '9'],
+        ])
           Padding(
-            padding: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.only(bottom: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                const SizedBox(width: 68, height: 68),
-                _Key(label: '0', onTap: () => _tap('0')),
-                _Key(icon: Icons.backspace_outlined, onTap: _back),
+                for (final d in row) _Key(label: d, onTap: () => _tap(d)),
               ],
             ),
           ),
-        ],
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              const SizedBox(width: 68, height: 68),
+              _Key(label: '0', onTap: () => _tap('0')),
+              _Key(icon: Icons.backspace_outlined, onTap: _back),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Scrolls on short screens; on tall screens the keypad sits at the bottom.
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: constraints.hasBoundedHeight ? constraints.maxHeight : 0,
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [_top(), _keypad()],
+            ),
+          ),
+        ),
       ),
     );
   }
