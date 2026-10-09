@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'app/routes/app_router.dart';
 import 'app/theme/app_theme.dart';
 import 'core/i18n/app_language.dart';
+import 'core/security/secure_screen.dart';
 import 'core/storage/prefs.dart';
 import 'data/repositories/pin_repository.dart';
 import 'modules/app_lock/app_lock_provider.dart';
@@ -14,6 +15,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
   initLanguage(prefs);
+  await SecureScreen.setEnabled(prefs.getBool('block_screenshots') ?? true);
   final pinRepo = await SecurePinRepository.create(prefs);
 
   runApp(

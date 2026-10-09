@@ -25,6 +25,7 @@ Future<void> wipeUserData(WidgetRef ref) async {
   await ref.read(profileNameProvider.notifier).clear();
   ref.invalidate(walletProvider);
   ref.invalidate(walletRepositoryProvider);
+  ref.read(biometricEnabledProvider.notifier).set(false);
 }
 
 /// Erases the account and all data from this device, then logs out.

@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/utils/pin_verify.dart';
 import '../../core/widgets/pin_entry.dart';
+import '../../core/security/biometric_service.dart';
 import '../auth/auth_providers.dart';
+import '../settings/settings_providers.dart';
 import '../auth/logout.dart';
 import 'app_lock_provider.dart';
 
@@ -20,7 +22,21 @@ class _LockOverlayState extends ConsumerState<LockOverlay> {
   bool _confirmLogout = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Ask for the fingerprint as soon as the lock screen appears.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _tryBiometric());
+  }
+
+  Future<void> _tryBiometric() async {
+    if (!ref.read(biometricEnabledProvider)) return;
+    final ok = await BiometricService.authenticate(tr('Unlock PayBD'));
+    if (ok && mounted) ref.read(appLockProvider.notifier).unlock();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final biometric = ref.watch(biometricEnabledProvider);
     return Scaffold(
       backgroundColor: AppColors.bg,
       body: SafeArea(
@@ -39,6 +55,12 @@ class _LockOverlayState extends ConsumerState<LockOverlay> {
                 },
               ),
             ),
+            if (biometric && !_confirmLogout)
+              TextButton.icon(
+                onPressed: _tryBiometric,
+                icon: const Icon(Icons.fingerprint_rounded),
+                label: const Tr('Use fingerprint'),
+              ),
             if (!_confirmLogout)
               TextButton(
                 onPressed: () => setState(() => _confirmLogout = true),

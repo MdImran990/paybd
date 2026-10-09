@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/security/secure_screen.dart';
 import '../../core/storage/prefs.dart';
 
 /// Ask for the PIN before showing the balance on Home. Saved on the device.
@@ -42,3 +43,36 @@ class BalanceRevealNotifier extends Notifier<bool> {
 
 final balanceRevealedProvider =
     NotifierProvider<BalanceRevealNotifier, bool>(BalanceRevealNotifier.new);
+
+/// Unlock the app with a fingerprint / face instead of typing the PIN.
+class BiometricEnabledNotifier extends Notifier<bool> {
+  static const _key = 'biometric_unlock';
+
+  @override
+  bool build() => ref.read(sharedPreferencesProvider).getBool(_key) ?? false;
+
+  void set(bool value) {
+    state = value;
+    ref.read(sharedPreferencesProvider).setBool(_key, value);
+  }
+}
+
+final biometricEnabledProvider =
+    NotifierProvider<BiometricEnabledNotifier, bool>(BiometricEnabledNotifier.new);
+
+/// Block screenshots and screen recording (on by default).
+class BlockScreenshotsNotifier extends Notifier<bool> {
+  static const key = 'block_screenshots';
+
+  @override
+  bool build() => ref.read(sharedPreferencesProvider).getBool(key) ?? true;
+
+  void set(bool value) {
+    state = value;
+    ref.read(sharedPreferencesProvider).setBool(key, value);
+    SecureScreen.setEnabled(value);
+  }
+}
+
+final blockScreenshotsProvider =
+    NotifierProvider<BlockScreenshotsNotifier, bool>(BlockScreenshotsNotifier.new);
