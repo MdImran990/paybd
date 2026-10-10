@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../core/i18n/tr.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
+import '../../core/i18n/tr.dart';
 import '../../core/utils/format.dart';
+import '../../core/widgets/confetti.dart';
 import '../../core/widgets/copy_receipt_button.dart';
 import '../../core/widgets/fade_slide_in.dart';
 import '../../core/widgets/primary_button.dart';
@@ -20,54 +21,60 @@ class ReceiptScreen extends StatelessWidget {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 8),
-                        const _AnimatedCheck(),
-                        const SizedBox(height: 18),
-                        FadeSlideIn(
-                          index: 3,
-                          child: Column(
-                            children: [
-                              Tr(tx.type.successTitle,
-                                  style: const TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w800)),
-                              const SizedBox(height: 6),
-                              Tr(formatTaka(tx.amountMinor),
-                                  style: const TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w800,
-                                      color: AppColors.green)),
-                            ],
-                          ),
+        body: Stack(
+          children: [
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 8),
+                            const _AnimatedCheck(),
+                            const SizedBox(height: 18),
+                            FadeSlideIn(
+                              index: 3,
+                              child: Column(
+                                children: [
+                                  Tr(tx.type.successTitle,
+                                      style: const TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w800)),
+                                  const SizedBox(height: 6),
+                                  Tr(formatTaka(tx.amountMinor),
+                                      style: const TextStyle(
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.w800,
+                                          color: AppColors.green)),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            FadeSlideIn(index: 5, child: ReceiptCard(tx: tx)),
+                            const SizedBox(height: 8),
+                            FadeSlideIn(
+                                index: 6, child: CopyReceiptButton(tx: tx)),
+                          ],
                         ),
-                        const SizedBox(height: 24),
-                        FadeSlideIn(index: 5, child: ReceiptCard(tx: tx)),
-                        const SizedBox(height: 8),
-                        FadeSlideIn(index: 6, child: CopyReceiptButton(tx: tx)),
-                      ],
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 12),
+                    FadeSlideIn(
+                      index: 7,
+                      child: PrimaryButton(
+                        label: 'Done',
+                        onPressed: () => context.go('/home'),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                FadeSlideIn(
-                  index: 7,
-                  child: PrimaryButton(
-                    label: 'Done',
-                    onPressed: () => context.go('/home'),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+            const Positioned.fill(child: ConfettiBurst()),
+          ],
         ),
       ),
     );

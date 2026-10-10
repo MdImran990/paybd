@@ -287,4 +287,6 @@ const Map<String, String> bnStrings = {
   "Delete this account": "এই অ্যাকাউন্ট মুছুন",
   "Delete this account and all its data from this device.": "এই ডিভাইস থেকে এই অ্যাকাউন্ট ও এর সব ডেটা মুছুন।",
   "Your data stays on this device when you log out or switch accounts.": "লগ আউট করলে বা অ্যাকাউন্ট বদলালে আপনার ডেটা এই ডিভাইসেই থাকে।",
+  "Processing...": "প্রসেসিং হচ্ছে...",
+  "Please do not close the app.": "অনুগ্রহ করে অ্যাপ বন্ধ করবেন না।",
 };

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../i18n/tr.dart';
 import '../../app/theme/app_colors.dart';
+import 'floating_bubbles.dart';
 import 'pay_app_bar.dart';
 
 /// Pink header used by the login / registration pages.
@@ -38,8 +39,7 @@ class AuthHeader extends StatelessWidget {
       child: ClipRect(
         child: Stack(
           children: [
-            const Positioned(top: -60, right: -50, child: _Bubble(200, 0.09)),
-            const Positioned(bottom: -30, left: -40, child: _Bubble(140, 0.07)),
+            const Positioned.fill(child: FloatingBubbles()),
             Positioned.fill(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(24, top + 8, 24, 22),
@@ -105,24 +105,6 @@ class AuthHeader extends StatelessWidget {
               ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _Bubble extends StatelessWidget {
-  final double size;
-  final double opacity;
-  const _Bubble(this.size, this.opacity);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white.withValues(alpha: opacity),
       ),
     );
   }

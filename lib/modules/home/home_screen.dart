@@ -7,6 +7,7 @@ import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_shadows.dart';
 import '../../core/utils/format.dart';
 import '../../core/widgets/fade_slide_in.dart';
+import '../../core/widgets/floating_bubbles.dart';
 import '../../core/widgets/pressable_scale.dart';
 import '../../core/widgets/skeleton.dart';
 import '../../core/widgets/user_avatar.dart';
@@ -49,8 +50,21 @@ void _comingSoon(BuildContext context, String title) {
   );
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final _controller = ScrollController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,17 +81,29 @@ class HomeScreen extends StatelessWidget {
               await ref.read(walletProvider.future);
             },
             child: ListView(
+          controller: _controller,
           physics: const AlwaysScrollableScrollPhysics(),
           padding: EdgeInsets.zero,
-          children: const [
-            _Header(),
-            SizedBox(height: 16),
-            _ServiceGrid(),
-            SizedBox(height: 16),
-            _PromoBanner(),
-            SizedBox(height: 20),
-            _RecentSection(),
-            SizedBox(height: 110),
+          children: [
+            // Parallax: the header scrolls slower than the cards, which slide over it.
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (_, child) {
+                final offset = _controller.hasClients ? _controller.offset : 0.0;
+                return Transform.translate(
+                  offset: Offset(0, offset < 0 ? 0 : offset * 0.3),
+                  child: child,
+                );
+              },
+              child: const _Header(),
+            ),
+            const SizedBox(height: 16),
+            const _ServiceGrid(),
+            const SizedBox(height: 16),
+            const _PromoBanner(),
+            const SizedBox(height: 20),
+            const _RecentSection(),
+            const SizedBox(height: 110),
           ],
         ),
           ),
@@ -102,6 +128,7 @@ class _Header extends ConsumerWidget {
     final unread = ref.watch(unreadCountProvider);
     final top = MediaQuery.of(context).padding.top;
     return Container(
+      clipBehavior: Clip.antiAlias,
       padding: EdgeInsets.fromLTRB(20, top + 14, 20, 24),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -111,7 +138,10 @@ class _Header extends ConsumerWidget {
         ),
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
       ),
-      child: Column(
+      child: Stack(
+        children: [
+          const Positioned.fill(child: FloatingBubbles()),
+          Column(
         children: [
           Row(
             children: [
@@ -148,6 +178,8 @@ class _Header extends ConsumerWidget {
           ),
           const SizedBox(height: 20),
           const _BalanceCard(),
+        ],
+      ),
         ],
       ),
     );
@@ -515,18 +547,21 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = active ? AppColors.primary : AppColors.textMuted;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: SizedBox(
-        width: 64,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: color, size: 24),
-            const SizedBox(height: 2),
-            Tr(label, style: TextStyle(fontSize: 10, color: color)),
-          ],
+    return PressableScale(
+      scale: 0.86,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: SizedBox(
+          width: 64,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: color, size: 24),
+              const SizedBox(height: 2),
+              Tr(label, style: TextStyle(fontSize: 10, color: color)),
+            ],
+          ),
         ),
       ),
     );

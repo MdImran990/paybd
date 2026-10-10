@@ -1,1 +1,1 @@
-Per-account data safety, statement + PDF, profile photo (step 14)
+bKash-style animation pack (step 15)
