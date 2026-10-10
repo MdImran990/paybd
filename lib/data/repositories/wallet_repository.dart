@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../core/storage/account_keys.dart';
 import '../models/payment_request.dart';
 import '../models/transaction.dart';
 
@@ -54,12 +55,13 @@ class MockWalletRepository implements WalletRepository {
   static const startBalance = 1600300; // ৳16,003.00
 
   final SharedPreferences _prefs;
+  final String _phone;
   int _balance;
   List<Transaction> _txs;
 
-  MockWalletRepository(this._prefs)
-      : _balance = _prefs.getInt(_kBalance) ?? startBalance,
-        _txs = _load(_prefs);
+  MockWalletRepository(this._prefs, this._phone)
+      : _balance = _prefs.getInt(acctKey(_phone, _kBalance)) ?? startBalance,
+        _txs = _load(_prefs, _phone);
 
   static List<Transaction> _seed() {
     final now = DateTime.now();
@@ -83,8 +85,8 @@ class MockWalletRepository implements WalletRepository {
     ];
   }
 
-  static List<Transaction> _load(SharedPreferences prefs) {
-    final raw = prefs.getString(_kTxs);
+  static List<Transaction> _load(SharedPreferences prefs, String phone) {
+    final raw = prefs.getString(acctKey(phone, _kTxs));
     if (raw == null) return _seed();
     try {
       final list = jsonDecode(raw) as List<dynamic>;
@@ -97,9 +99,9 @@ class MockWalletRepository implements WalletRepository {
   }
 
   Future<void> _save() async {
-    await _prefs.setInt(_kBalance, _balance);
+    await _prefs.setInt(acctKey(_phone, _kBalance), _balance);
     await _prefs.setString(
-      _kTxs,
+      acctKey(_phone, _kTxs),
       jsonEncode([for (final t in _txs) t.toJson()]),
     );
   }
@@ -167,8 +169,8 @@ class MockWalletRepository implements WalletRepository {
 
   @override
   Future<void> reset() async {
-    await _prefs.remove(_kBalance);
-    await _prefs.remove(_kTxs);
+    await _prefs.remove(acctKey(_phone, _kBalance));
+    await _prefs.remove(acctKey(_phone, _kTxs));
     _balance = startBalance;
     _txs = _seed();
   }

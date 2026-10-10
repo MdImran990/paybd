@@ -11,28 +11,47 @@ import 'settings_providers.dart';
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
-  Future<void> _erase(BuildContext context, WidgetRef ref) async {
+  Future<void> _deleteAccount(BuildContext context, WidgetRef ref) async {
+    final controller = TextEditingController();
     final ok = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.panel,
-        title: const Tr('Erase all data?'),
-        content: const Tr(
-          'This deletes your account, PIN, demo balance and transactions from this device, then logs you out.',
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setState) => AlertDialog(
+          backgroundColor: AppColors.panel,
+          title: const Tr('Delete this account?'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Tr(
+                'All transactions, savings, messages and your PIN for this number will be deleted from this device. This cannot be undone.',
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: controller,
+                onChanged: (_) => setState(() {}),
+                decoration:
+                    InputDecoration(hintText: tr('Type DELETE to confirm')),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Tr('Cancel'),
+            ),
+            TextButton(
+              onPressed: controller.text.trim() == 'DELETE'
+                  ? () => Navigator.of(ctx).pop(true)
+                  : null,
+              child: const Tr('Delete',
+                  style: TextStyle(color: AppColors.error)),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Tr('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Tr('Erase', style: TextStyle(color: AppColors.error)),
-          ),
-        ],
       ),
     );
-    if (ok == true) await performEraseAll(ref);
+    if (ok == true) await deleteCurrentAccount(ref);
   }
 
   Future<void> _toggleBiometric(
@@ -104,15 +123,20 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 leading: const Icon(Icons.delete_outline_rounded,
                     color: AppColors.error),
-                title: const Tr('Erase all data',
+                title: const Tr('Delete this account',
                     style: TextStyle(
                         fontWeight: FontWeight.w600, color: AppColors.error)),
                 subtitle: const Tr(
-                  'Delete the account and demo data from this device.',
+                  'Delete this account and all its data from this device.',
                   style: TextStyle(color: AppColors.textMuted, fontSize: 12),
                 ),
-                onTap: () => _erase(context, ref),
+                onTap: () => _deleteAccount(context, ref),
               ),
+            ),
+            const SizedBox(height: 16),
+            const Tr(
+              'Your data stays on this device when you log out or switch accounts.',
+              style: TextStyle(fontSize: 12, color: AppColors.textMuted),
             ),
           ],
         ),

@@ -47,8 +47,8 @@ class _LockOverlayState extends ConsumerState<LockOverlay> {
                 title: 'Welcome back',
                 subtitle: 'Enter your PIN to unlock PayBD',
                 onCompleted: (pin) async {
-                  final error = await verifyPinMessage(
-                      ref.read(pinRepositoryProvider), pin);
+                  final error =
+                      await verifyPinMessage(ref.read(activePinProvider), pin);
                   if (error != null) return error;
                   ref.read(appLockProvider.notifier).unlock();
                   return null;

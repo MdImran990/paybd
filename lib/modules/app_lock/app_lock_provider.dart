@@ -7,11 +7,11 @@ class AppLockNotifier extends Notifier<bool> {
   @override
   bool build() =>
       ref.read(sessionPhoneProvider) != null &&
-      ref.read(pinRepositoryProvider).hasPin;
+      ref.read(activePinProvider).hasPin;
 
   void lock() {
     if (ref.read(sessionPhoneProvider) != null &&
-        ref.read(pinRepositoryProvider).hasPin) {
+        ref.read(activePinProvider).hasPin) {
       state = true;
     }
   }

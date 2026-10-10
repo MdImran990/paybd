@@ -27,7 +27,7 @@ class _ChangePinScreenState extends ConsumerState<ChangePinScreen> {
   ];
 
   Future<String?> _onPin(String pin) async {
-    final repo = ref.read(pinRepositoryProvider);
+    final repo = ref.read(activePinProvider);
 
     if (_stage == 0) {
       final r = await repo.verifyPin(pin);

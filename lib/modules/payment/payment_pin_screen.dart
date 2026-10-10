@@ -18,7 +18,7 @@ class PaymentPinScreen extends ConsumerWidget {
   const PaymentPinScreen({super.key, required this.request});
 
   Future<String?> _submit(BuildContext context, WidgetRef ref, String pin) async {
-    final result = await ref.read(pinRepositoryProvider).verifyPin(pin);
+    final result = await ref.read(activePinProvider).verifyPin(pin);
     if (result.locked) {
       final mins = (result.lockedFor!.inSeconds / 60).ceil();
       return 'Too many wrong attempts. Try again in $mins min.';

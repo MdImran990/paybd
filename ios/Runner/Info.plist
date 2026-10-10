@@ -70,5 +70,7 @@
 	<string>PayBD uses the camera to scan QR codes.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>PayBD uses Face ID to unlock the app.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>PayBD uses your photos to set a profile picture.</string>
 </dict>
 </plist>

@@ -27,6 +27,7 @@ import '../../data/models/payment_request.dart';
 import '../../modules/settings/settings_screen.dart';
 import '../../modules/splash/splash_screen.dart';
 import '../../modules/transactions/history_screen.dart';
+import '../../modules/transactions/statement_screen.dart';
 
 /// The page underneath slides left a little while a new page comes in.
 Widget _parallaxExit(Animation<double> secondary, Widget child) {
@@ -95,7 +96,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         '/otp',
         '/terms',
       };
-      final hasPin = ref.read(pinRepositoryProvider).hasPin;
+      final hasPin = ref.read(activePinProvider).hasPin;
       if (!loggedIn && !publicPaths.contains(path)) return '/login';
       // Logged in but the PIN was never created (app closed during setup).
       if (loggedIn && !hasPin && path != '/pin-setup' && path != '/otp') {
@@ -269,6 +270,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             t is Transaction ? ReceiptScreen(tx: t) : const HomeScreen(),
           );
         },
+      ),
+      GoRoute(
+        path: '/statement',
+        pageBuilder: (_, s) => _slide(s, const StatementScreen()),
       ),
       GoRoute(
         path: '/history',

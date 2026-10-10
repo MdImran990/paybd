@@ -94,7 +94,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         }
         ref.read(sessionPhoneProvider.notifier).setPhone(widget.phone);
         ref.read(notificationsProvider.notifier).addWelcomeIfEmpty();
-        final hasPin = ref.read(pinRepositoryProvider).hasPin;
+        final hasPin = ref.read(activePinProvider).hasPin;
         context.go(hasPin ? '/home' : '/pin-setup');
       } else {
         _controller.clear();

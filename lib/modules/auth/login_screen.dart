@@ -9,6 +9,7 @@ import '../../core/widgets/auth_header.dart';
 import '../../core/widgets/fade_slide_in.dart';
 import '../../core/widgets/language_toggle.dart';
 import '../../core/widgets/primary_button.dart';
+import '../../data/repositories/pin_repository.dart';
 import 'account_provider.dart';
 import 'auth_providers.dart';
 
@@ -108,11 +109,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _next() async {
     final phone = _phone.text.trim();
-    final account = ref.read(accountProvider);
+    final hasAccount = ref.read(accountsProvider).contains(phone);
     FocusManager.instance.primaryFocus?.unfocus();
 
-    if (account == phone) {
-      if (ref.read(pinRepositoryProvider).hasPin) {
+    if (hasAccount) {
+      if (PinAccess(ref.read(pinRepositoryProvider), phone).hasPin) {
         context.push('/login/pin', extra: phone);
       } else {
         // Account exists but the PIN is missing: verify the number and set a new PIN.

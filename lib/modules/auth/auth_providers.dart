@@ -35,3 +35,11 @@ class SessionNotifier extends Notifier<String?> {
 
 final sessionPhoneProvider =
     NotifierProvider<SessionNotifier, String?>(SessionNotifier.new);
+
+/// The PIN of the logged-in account.
+final activePinProvider = Provider<PinAccess>(
+  (ref) => PinAccess(
+    ref.watch(pinRepositoryProvider),
+    ref.watch(sessionPhoneProvider) ?? '',
+  ),
+);

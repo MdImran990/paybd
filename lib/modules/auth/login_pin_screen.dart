@@ -8,6 +8,7 @@ import '../../app/theme/app_colors.dart';
 import '../../core/widgets/auth_header.dart';
 import '../../core/widgets/pin_entry.dart';
 import '../profile/profile_providers.dart';
+import '../../data/repositories/pin_repository.dart';
 import 'auth_providers.dart';
 
 class LoginPinScreen extends ConsumerWidget {
@@ -49,7 +50,8 @@ class LoginPinScreen extends ConsumerWidget {
                         subtitle: 'Enter your 5-digit PIN to log in',
                         onCompleted: (pin) async {
                           final error = await verifyPinMessage(
-                              ref.read(pinRepositoryProvider), pin);
+                              PinAccess(ref.read(pinRepositoryProvider), phone),
+                              pin);
                           if (error != null) return error;
                           await ref
                               .read(sessionPhoneProvider.notifier)

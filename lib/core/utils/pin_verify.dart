@@ -1,8 +1,8 @@
 import '../../data/repositories/pin_repository.dart';
 
 /// Returns an error message to show, or null when the PIN is correct.
-Future<String?> verifyPinMessage(PinRepository repo, String pin) async {
-  final r = await repo.verifyPin(pin);
+Future<String?> verifyPinMessage(PinAccess pin, String code) async {
+  final r = await pin.verifyPin(code);
   if (r.locked) {
     final mins = (r.lockedFor!.inSeconds / 60).ceil();
     return 'Too many wrong attempts. Try again in $mins min.';

@@ -9,6 +9,7 @@ import '../../core/utils/format.dart';
 import '../../core/widgets/fade_slide_in.dart';
 import '../../core/widgets/pressable_scale.dart';
 import '../../core/widgets/skeleton.dart';
+import '../../core/widgets/user_avatar.dart';
 import '../../core/utils/pin_verify.dart';
 import '../../core/widgets/pin_entry.dart';
 import '../../core/widgets/tx_tile.dart';
@@ -116,11 +117,7 @@ class _Header extends ConsumerWidget {
             children: [
               GestureDetector(
                 onTap: () => context.push('/profile'),
-                child: const CircleAvatar(
-                  radius: 22,
-                  backgroundColor: Colors.white24,
-                  child: Icon(Icons.person_rounded, color: Colors.white),
-                ),
+                child: const UserAvatar(radius: 22, heroTag: 'profile-avatar'),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -179,7 +176,7 @@ class _BalanceCard extends ConsumerWidget {
           subtitle: 'to see your balance',
           onCompleted: (pin) async {
             final error =
-                await verifyPinMessage(ref.read(pinRepositoryProvider), pin);
+                await verifyPinMessage(ref.read(activePinProvider), pin);
             if (error != null) return error;
             ref.read(balanceRevealedProvider.notifier).show();
             if (ctx.mounted) Navigator.of(ctx).pop();
@@ -296,7 +293,7 @@ const _services = <_Service>[
   _Service(Icons.savings_rounded, 'Savings', '/savings'),
   _Service(Icons.volunteer_activism_rounded, 'Donation', '/donation'),
   _Service(Icons.school_rounded, 'Education Fee', '/education'),
-  _Service(Icons.history_rounded, 'Statement', '/history'),
+  _Service(Icons.history_rounded, 'Statement', '/statement'),
   _Service(Icons.help_outline_rounded, 'Help', '/help'),
   _Service(Icons.public_rounded, 'Remittance', null),
   _Service(Icons.account_balance_rounded, 'Loan', null),

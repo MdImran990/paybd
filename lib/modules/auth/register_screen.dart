@@ -49,7 +49,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final phone = _phone.text.trim();
     FocusManager.instance.primaryFocus?.unfocus();
 
-    if (ref.read(accountProvider) == phone) {
+    if (ref.read(accountsProvider).contains(phone)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Tr('This number already has an account. Please log in.')),

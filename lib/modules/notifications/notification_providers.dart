@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/storage/account_keys.dart';
 import '../../core/storage/prefs.dart';
 import '../../data/models/app_notification.dart';
+import '../auth/auth_providers.dart';
 
 /// In-app notification center (saved on the device).
 /// Real push notifications (Firebase) need the backend and are added later.
@@ -11,7 +13,9 @@ class NotificationsNotifier extends Notifier<List<AppNotification>> {
 
   @override
   List<AppNotification> build() {
-    final raw = ref.read(sharedPreferencesProvider).getString(_key);
+    final phone = ref.watch(sessionPhoneProvider);
+    final raw =
+        ref.read(sharedPreferencesProvider).getString(acctKey(phone, _key));
     if (raw == null) return const [];
     try {
       final list = jsonDecode(raw) as List<dynamic>;
@@ -25,7 +29,7 @@ class NotificationsNotifier extends Notifier<List<AppNotification>> {
   }
 
   Future<void> _save() => ref.read(sharedPreferencesProvider).setString(
-        _key,
+        acctKey(ref.read(sessionPhoneProvider), _key),
         jsonEncode([for (final n in state) n.toJson()]),
       );
 
@@ -56,7 +60,9 @@ class NotificationsNotifier extends Notifier<List<AppNotification>> {
 
   Future<void> clear() async {
     state = const [];
-    await ref.read(sharedPreferencesProvider).remove(_key);
+    await ref
+        .read(sharedPreferencesProvider)
+        .remove(acctKey(ref.read(sessionPhoneProvider), _key));
   }
 }
 

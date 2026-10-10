@@ -1,18 +1,26 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/security/secure_screen.dart';
+import '../../core/storage/account_keys.dart';
 import '../../core/storage/prefs.dart';
+import '../auth/auth_providers.dart';
 
 /// Ask for the PIN before showing the balance on Home. Saved on the device.
 class RequirePinNotifier extends Notifier<bool> {
   static const _key = 'require_pin_for_balance';
 
   @override
-  bool build() => ref.read(sharedPreferencesProvider).getBool(_key) ?? true;
+  bool build() {
+    final phone = ref.watch(sessionPhoneProvider);
+    return ref.read(sharedPreferencesProvider).getBool(acctKey(phone, _key)) ??
+        true;
+  }
 
   void set(bool value) {
     state = value;
-    ref.read(sharedPreferencesProvider).setBool(_key, value);
+    ref
+        .read(sharedPreferencesProvider)
+        .setBool(acctKey(ref.read(sessionPhoneProvider), _key), value);
   }
 }
 
@@ -49,11 +57,17 @@ class BiometricEnabledNotifier extends Notifier<bool> {
   static const _key = 'biometric_unlock';
 
   @override
-  bool build() => ref.read(sharedPreferencesProvider).getBool(_key) ?? false;
+  bool build() {
+    final phone = ref.watch(sessionPhoneProvider);
+    return ref.read(sharedPreferencesProvider).getBool(acctKey(phone, _key)) ??
+        false;
+  }
 
   void set(bool value) {
     state = value;
-    ref.read(sharedPreferencesProvider).setBool(_key, value);
+    ref
+        .read(sharedPreferencesProvider)
+        .setBool(acctKey(ref.read(sessionPhoneProvider), _key), value);
   }
 }
 

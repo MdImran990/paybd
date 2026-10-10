@@ -19,7 +19,7 @@ void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     prefs = await SharedPreferences.getInstance();
-    repo = MockWalletRepository(prefs);
+    repo = MockWalletRepository(prefs, '01711111111');
   });
 
   test('starts with the demo balance', () async {
@@ -63,7 +63,7 @@ void main() {
 
   test('data survives a restart (new repository, same storage)', () async {
     await repo.submit(_req(TxType.sent, 10000));
-    final again = MockWalletRepository(prefs);
+    final again = MockWalletRepository(prefs, '01711111111');
     expect(await again.getBalance(), MockWalletRepository.startBalance - 10000);
     expect((await again.getTransactions()).length, 3);
   });
@@ -73,5 +73,15 @@ void main() {
     await repo.reset();
     expect(await repo.getBalance(), MockWalletRepository.startBalance);
     expect((await repo.getTransactions()).length, 2);
+  });
+
+  test('accounts on the same phone keep separate data', () async {
+    await repo.submit(_req(TxType.sent, 10000));
+    final other = MockWalletRepository(prefs, '01822222222');
+    expect(await other.getBalance(), MockWalletRepository.startBalance);
+    expect((await other.getTransactions()).length, 2);
+    // the first account is untouched
+    final first = MockWalletRepository(prefs, '01711111111');
+    expect(await first.getBalance(), MockWalletRepository.startBalance - 10000);
   });
 }

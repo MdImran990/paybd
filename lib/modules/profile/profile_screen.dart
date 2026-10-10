@@ -3,9 +3,12 @@ import '../../core/i18n/tr.dart';
 import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../app/theme/app_colors.dart';
 import '../auth/auth_providers.dart';
 import '../auth/logout.dart';
+import '../../core/widgets/user_avatar.dart';
+import 'profile_photo.dart';
 import 'profile_providers.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -39,6 +42,60 @@ class ProfileScreen extends ConsumerWidget {
       ),
     );
     if (name != null) await ref.read(profileNameProvider.notifier).set(name);
+  }
+
+  void _changePhoto(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.panel,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (sheet) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(8),
+                child: Tr('Profile photo',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library_rounded,
+                    color: AppColors.primary),
+                title: const Tr('Choose from gallery'),
+                onTap: () {
+                  Navigator.of(sheet).pop();
+                  ref.read(profilePhotoProvider.notifier).pick(ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_camera_rounded,
+                    color: AppColors.primary),
+                title: const Tr('Take a photo'),
+                onTap: () {
+                  Navigator.of(sheet).pop();
+                  ref.read(profilePhotoProvider.notifier).pick(ImageSource.camera);
+                },
+              ),
+              if (ref.read(profilePhotoProvider) != null)
+                ListTile(
+                  leading: const Icon(Icons.delete_outline_rounded,
+                      color: AppColors.error),
+                  title: const Tr('Remove photo',
+                      style: TextStyle(color: AppColors.error)),
+                  onTap: () {
+                    Navigator.of(sheet).pop();
+                    ref.read(profilePhotoProvider.notifier).remove();
+                  },
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _logout(BuildContext context, WidgetRef ref) async {
@@ -86,11 +143,24 @@ class ProfileScreen extends ConsumerWidget {
               ),
               child: Row(
                 children: [
-                  const CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.white24,
-                    child:
-                        Icon(Icons.person_rounded, size: 34, color: Colors.white),
+                  GestureDetector(
+                    onTap: () => _changePhoto(context, ref),
+                    child: const Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        UserAvatar(radius: 32, heroTag: 'profile-avatar'),
+                        Positioned(
+                          right: -2,
+                          bottom: -2,
+                          child: CircleAvatar(
+                            radius: 12,
+                            backgroundColor: Colors.white,
+                            child: Icon(Icons.camera_alt_rounded,
+                                size: 14, color: AppColors.primary),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -118,6 +188,11 @@ class ProfileScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 24),
+            _MenuTile(
+              icon: Icons.history_rounded,
+              label: 'Statement',
+              onTap: () => context.push('/statement'),
+            ),
             _MenuTile(
               icon: Icons.lock_outline_rounded,
               label: 'Change PIN',

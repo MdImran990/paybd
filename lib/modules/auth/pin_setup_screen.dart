@@ -29,7 +29,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
       setState(() => _first = null);
       return 'PINs did not match. Start again.';
     }
-    await ref.read(pinRepositoryProvider).setPin(pin);
+    await ref.read(activePinProvider).setPin(pin);
     if (mounted) context.go('/home');
     return null;
   }

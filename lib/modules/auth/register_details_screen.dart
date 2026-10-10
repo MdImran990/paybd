@@ -11,7 +11,6 @@ import '../notifications/notification_providers.dart';
 import '../profile/profile_providers.dart';
 import 'account_provider.dart';
 import 'auth_providers.dart';
-import 'logout.dart';
 
 class RegisterDetailsScreen extends ConsumerStatefulWidget {
   final String phone;
@@ -45,18 +44,24 @@ class _RegisterDetailsScreenState extends ConsumerState<RegisterDetailsScreen> {
     final phone = widget.phone;
     FocusManager.instance.primaryFocus?.unfocus();
     _loading.value = true;
-    try {
-      // A different number replaces the old demo account on this device.
-      final previous = ref.read(accountProvider);
-      if (previous != null && previous != phone) await wipeUserData(ref);
 
-      await ref.read(accountProvider.notifier).save(phone);
-      await ref.read(profileNameProvider.notifier).set(name);
-      await ref.read(notificationsProvider.notifier).addWelcomeIfEmpty();
-      await ref.read(sessionPhoneProvider.notifier).setPhone(phone);
+    // Grab everything first: the screen is replaced as soon as the session is set.
+    final accounts = ref.read(accountsProvider.notifier);
+    final lastAccount = ref.read(accountProvider.notifier);
+    final session = ref.read(sessionPhoneProvider.notifier);
+    final profileName = ref.read(profileNameProvider.notifier);
+    final notifications = ref.read(notificationsProvider.notifier);
+    try {
+      // Other accounts on this device are never touched.
+      await accounts.add(phone);
+      await lastAccount.save(phone);
+      // Log in first, so the name and welcome message are saved under THIS account.
+      await session.setPhone(phone);
+      await profileName.set(name);
+      await notifications.addWelcomeIfEmpty();
       if (mounted) context.go('/pin-setup');
     } finally {
-      _loading.value = false;
+      if (mounted) _loading.value = false;
     }
   }
 

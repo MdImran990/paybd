@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/storage/account_keys.dart';
 import '../../core/storage/prefs.dart';
 import '../../data/models/savings_goal.dart';
+import '../auth/auth_providers.dart';
 
 /// Savings goals (demo, saved on the device).
 class SavingsNotifier extends Notifier<List<SavingsGoal>> {
@@ -9,7 +11,9 @@ class SavingsNotifier extends Notifier<List<SavingsGoal>> {
 
   @override
   List<SavingsGoal> build() {
-    final raw = ref.read(sharedPreferencesProvider).getString(_key);
+    final phone = ref.watch(sessionPhoneProvider);
+    final raw =
+        ref.read(sharedPreferencesProvider).getString(acctKey(phone, _key));
     if (raw == null) return const [];
     try {
       final list = jsonDecode(raw) as List<dynamic>;
@@ -22,7 +26,7 @@ class SavingsNotifier extends Notifier<List<SavingsGoal>> {
   }
 
   Future<void> _save() => ref.read(sharedPreferencesProvider).setString(
-        _key,
+        acctKey(ref.read(sessionPhoneProvider), _key),
         jsonEncode([for (final g in state) g.toJson()]),
       );
 
@@ -69,7 +73,9 @@ class SavingsNotifier extends Notifier<List<SavingsGoal>> {
 
   Future<void> clear() async {
     state = const [];
-    await ref.read(sharedPreferencesProvider).remove(_key);
+    await ref
+        .read(sharedPreferencesProvider)
+        .remove(acctKey(ref.read(sessionPhoneProvider), _key));
   }
 }
 
