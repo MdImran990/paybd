@@ -89,7 +89,10 @@ class _PaymentPinScreenState extends ConsumerState<PaymentPinScreen> {
               ),
             ),
           ),
-          if (_processing) const Positioned.fill(child: ProcessingOverlay()),
+          if (_processing)
+            const Positioned.fill(
+              child: RepaintBoundary(child: ProcessingOverlay()),
+            ),
         ],
       ),
     );

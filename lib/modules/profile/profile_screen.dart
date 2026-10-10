@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../app/theme/app_colors.dart';
 import '../auth/auth_providers.dart';
 import '../auth/logout.dart';
+import '../../core/app_info.dart';
 import '../../core/widgets/user_avatar.dart';
 import 'profile_photo.dart';
 import 'profile_providers.dart';
@@ -219,7 +220,7 @@ class ProfileScreen extends ConsumerWidget {
               onTap: () => showAboutDialog(
                 context: context,
                 applicationName: 'PayBD',
-                applicationVersion: '0.2.0 (demo)',
+                applicationVersion: '$appVersion (demo)',
                 children: const [
                   Tr('Demo build. Balances and transactions are not real money.'),
                 ],

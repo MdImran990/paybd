@@ -6,7 +6,15 @@ class FadeSlideIn extends StatefulWidget {
   final Widget child;
   final int index;
 
-  const FadeSlideIn({super.key, required this.child, this.index = 0});
+  /// Where the child starts (fraction of its own size). Default: a little below.
+  final Offset offset;
+
+  const FadeSlideIn({
+    super.key,
+    required this.child,
+    this.index = 0,
+    this.offset = const Offset(0, 0.12),
+  });
 
   @override
   State<FadeSlideIn> createState() => _FadeSlideInState();
@@ -45,7 +53,7 @@ class _FadeSlideInState extends State<FadeSlideIn>
     return FadeTransition(
       opacity: _anim,
       child: SlideTransition(
-        position: Tween<Offset>(begin: const Offset(0, 0.12), end: Offset.zero)
+        position: Tween<Offset>(begin: widget.offset, end: Offset.zero)
             .animate(_anim),
         child: widget.child,
       ),

@@ -11,9 +11,12 @@ import '../../modules/auth/otp_screen.dart';
 import '../../modules/auth/pin_setup_screen.dart';
 import '../../modules/auth/auth_providers.dart';
 import '../../modules/home/home_screen.dart';
+import '../../modules/limits/limits_screen.dart';
+import '../../modules/nominee/nominee_screen.dart';
 import '../../modules/notifications/inbox_screen.dart';
 import '../../modules/onboarding/onboarding_screen.dart';
 import '../../modules/savings/savings_screen.dart';
+import '../../modules/support/about_screen.dart';
 import '../../modules/support/help_screen.dart';
 import '../../modules/support/terms_screen.dart';
 import '../../modules/profile/profile_screen.dart';
@@ -228,6 +231,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/inbox',
         pageBuilder: (_, s) => _slide(s, const InboxScreen()),
+      ),
+      GoRoute(
+        path: '/limits',
+        pageBuilder: (_, s) => _slide(s, const LimitsScreen()),
+      ),
+      GoRoute(
+        path: '/nominee',
+        pageBuilder: (_, s) => _slide(s, const NomineeScreen()),
+      ),
+      GoRoute(
+        path: '/about',
+        pageBuilder: (_, s) => _slide(s, const AboutScreen()),
       ),
       GoRoute(
         path: '/help',

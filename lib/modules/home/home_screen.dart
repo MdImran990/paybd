@@ -18,6 +18,7 @@ import '../auth/auth_providers.dart';
 import '../notifications/notification_providers.dart';
 import '../profile/profile_providers.dart';
 import '../settings/settings_providers.dart';
+import 'menu_drawer.dart';
 import '../wallet/wallet_providers.dart';
 
 void _comingSoon(BuildContext context, String title) {
@@ -59,6 +60,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _controller = ScrollController();
+  int _drawerOpens = 0; // new key each time, so the menu items animate in again
 
   @override
   void dispose() {
@@ -71,6 +73,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light, // light icons on the pink header
       child: Scaffold(
+        endDrawer: KeyedSubtree(
+          key: ValueKey(_drawerOpens),
+          child: const MenuDrawer(),
+        ),
+        endDrawerEnableOpenDragGesture: false,
+        onEndDrawerChanged: (open) {
+          if (open) setState(() => _drawerOpens++);
+        },
         body: Consumer(
           builder: (context, ref, _) => RefreshIndicator(
             color: AppColors.primary,
@@ -140,7 +150,9 @@ class _Header extends ConsumerWidget {
       ),
       child: Stack(
         children: [
-          const Positioned.fill(child: FloatingBubbles()),
+          const Positioned.fill(
+            child: RepaintBoundary(child: FloatingBubbles()),
+          ),
           Column(
         children: [
           Row(
@@ -529,8 +541,8 @@ class _BottomNav extends StatelessWidget {
           const SizedBox(width: 56), // space for the QR button
           _NavItem(Icons.mail_outline_rounded, 'Inbox',
               onTap: () => context.push('/inbox')),
-          _NavItem(Icons.person_outline_rounded, 'Menu',
-              onTap: () => context.push('/profile')),
+          _NavItem(Icons.menu_rounded, 'Menu',
+              onTap: () => Scaffold.of(context).openEndDrawer()),
         ],
       ),
     );

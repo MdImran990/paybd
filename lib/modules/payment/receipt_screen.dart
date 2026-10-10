@@ -73,7 +73,9 @@ class ReceiptScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const Positioned.fill(child: ConfettiBurst()),
+            const Positioned.fill(
+              child: RepaintBoundary(child: ConfettiBurst()),
+            ),
           ],
         ),
       ),

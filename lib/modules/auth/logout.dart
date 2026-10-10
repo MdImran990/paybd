@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../app_lock/app_lock_provider.dart';
+import '../nominee/nominee_provider.dart';
 import '../notifications/notification_providers.dart';
 import '../profile/profile_photo.dart';
 import '../profile/profile_providers.dart';
@@ -29,6 +30,7 @@ Future<void> deleteCurrentAccount(WidgetRef ref) async {
   await ref.read(savingsProvider.notifier).clear();
   await ref.read(profileNameProvider.notifier).clear();
   await ref.read(profilePhotoProvider.notifier).remove();
+  await ref.read(nomineeProvider.notifier).remove();
   ref.read(biometricEnabledProvider.notifier).set(false);
   ref.invalidate(walletProvider);
   ref.invalidate(walletRepositoryProvider);

@@ -42,6 +42,7 @@ final _rules = <(RegExp, String Function(Match m))>[
         '${m[1]} ${_bnMonths[m[2]]} ${m[3]}, ${m[4]}:${m[5]} ${m[6] == 'AM' ? 'এএম' : 'পিএম'}',
   ),
   (RegExp(r'^(\d+) transactions?$'), (m) => '${m[1]} টি লেনদেন'),
+  (RegExp(r'^Version: (.+)$'), (m) => 'ভার্সন: ${m[1]}'),
   (RegExp(r'^Sent to (.+)$'), (m) => '${m[1]} নম্বরে পাঠানো হয়েছে'),
   (RegExp(r'^Received from (.+)$'), (m) => '${m[1]} থেকে পাওয়া'),
   (RegExp(r'^Added from (.+)$'), (m) => '${_t(m[1]!)} থেকে যোগ করা হয়েছে'),

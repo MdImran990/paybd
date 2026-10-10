@@ -1,1 +1,1 @@
-bKash-style animation pack (step 15)
+Side menu (drawer), limits, nominee, about, smoother scroll (step 16)

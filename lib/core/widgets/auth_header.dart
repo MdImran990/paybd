@@ -39,7 +39,9 @@ class AuthHeader extends StatelessWidget {
       child: ClipRect(
         child: Stack(
           children: [
-            const Positioned.fill(child: FloatingBubbles()),
+            const Positioned.fill(
+              child: RepaintBoundary(child: FloatingBubbles()),
+            ),
             Positioned.fill(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(24, top + 8, 24, 22),

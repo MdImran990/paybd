@@ -75,6 +75,7 @@ class _PayBdAppState extends ConsumerState<PayBdApp>
       title: 'PayBD',
       theme: AppTheme.light,
       routerConfig: ref.watch(routerProvider),
+      scrollBehavior: const _SmoothScrollBehavior(),
       builder: (context, child) => Stack(
         children: [
           child ?? const SizedBox.shrink(),
@@ -87,4 +88,18 @@ class _PayBdAppState extends ConsumerState<PayBdApp>
       ),
     );
   }
+}
+
+/// Soft, bouncy scrolling on every list (no harsh edge glow).
+class _SmoothScrollBehavior extends MaterialScrollBehavior {
+  const _SmoothScrollBehavior();
+
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) =>
+      const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics());
+
+  @override
+  Widget buildOverscrollIndicator(
+          BuildContext context, Widget child, ScrollableDetails details) =>
+      child;
 }

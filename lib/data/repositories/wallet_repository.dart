@@ -26,6 +26,20 @@ class WalletLimits {
         TxType.received => (min: 0, max: 0),
       };
 
+  /// DEMO monthly limit per service, in paisa.
+  static int monthlyMax(TxType t) => switch (t) {
+        TxType.sent => 30000000, // ৳300,000
+        TxType.cashOut => 30000000,
+        TxType.cashIn => 50000000,
+        TxType.recharge => 5000000, // ৳50,000
+        TxType.bill => 30000000,
+        TxType.donation => 10000000,
+        TxType.education => 30000000,
+        TxType.savings => 50000000,
+        TxType.savingsWithdraw => 999999999999,
+        TxType.received => 0,
+      };
+
   /// DEMO cash out fee: 1.5% (15 per thousand).
   static const cashOutFeePerMille = 15;
 }
@@ -139,6 +153,14 @@ class MockWalletRepository implements WalletRepository {
     final amount = request.amountMinor;
     if (amount < limits.min || amount > limits.max) {
       throw const WalletException('Amount is outside the allowed limit.');
+    }
+    final now = DateTime.now();
+    final monthStart = DateTime(now.year, now.month, 1);
+    final usedThisMonth = _txs
+        .where((t) => t.type == type && !t.createdAt.isBefore(monthStart))
+        .fold<int>(0, (sum, t) => sum + t.amountMinor);
+    if (usedThisMonth + amount > WalletLimits.monthlyMax(type)) {
+      throw const WalletException('Monthly limit exceeded.');
     }
 
     // Never trust the fee sent by the app: recompute it here (the server's job).
