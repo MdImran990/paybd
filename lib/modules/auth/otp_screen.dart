@@ -5,9 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/i18n/tr.dart';
-import '../../core/widgets/auth_header.dart';
 import '../../core/widgets/fade_slide_in.dart';
-import '../../core/widgets/primary_button.dart';
+import '../../core/utils/numeric_input.dart';
+import '../../core/widgets/continue_bar.dart';
+import '../../core/widgets/pay_keypad.dart';
+import '../../core/widgets/pink_auth_page.dart';
 import '../notifications/notification_providers.dart';
 import 'auth_providers.dart';
 
@@ -35,7 +37,6 @@ class OtpScreen extends ConsumerStatefulWidget {
 
 class _OtpScreenState extends ConsumerState<OtpScreen> {
   final _controller = TextEditingController();
-  final _focus = FocusNode();
   Timer? _timer;
   int _seconds = _resendSeconds;
   bool _loading = false;
@@ -51,7 +52,6 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   void dispose() {
     _timer?.cancel();
     _controller.dispose();
-    _focus.dispose();
     super.dispose();
   }
 
@@ -110,135 +110,102 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     }
   }
 
+  void _onKey(String key) {
+    if (key == 'next') return;
+    if (applyKey(_controller, key, maxLength: _otpLength)) {
+      setState(() => _error = null);
+      if (_controller.text.length == _otpLength) _verify();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final code = _controller.text;
-    final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light,
-      child: Scaffold(
-        backgroundColor: AppColors.primary,
-        body: Column(
-          children: [
-            AuthHeader(
-              title: 'Verify your number',
-              subtitle: 'Enter the 6-digit code sent to ${widget.phone}',
-              compact: keyboardOpen,
-              showBack: true,
-            ),
-            Expanded(
-              child: AuthSheet(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    FadeSlideIn(
-                      index: 0,
-                      child: GestureDetector(
-                        onTap: () => _focus.requestFocus(),
-                        child: Stack(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                for (var i = 0; i < _otpLength; i++)
-                                  _OtpBox(
-                                    char: i < code.length ? code[i] : '',
-                                    active:
-                                        i == code.length && _focus.hasFocus,
-                                    error: _error != null,
-                                  ),
-                              ],
-                            ),
-                            // Hidden field that receives the typing
-                            SizedBox(
-                              width: 1,
-                              height: 1,
-                              child: Opacity(
-                                opacity: 0,
-                                child: TextField(
-                                  controller: _controller,
-                                  focusNode: _focus,
-                                  autofocus: true,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                    LengthLimitingTextInputFormatter(
-                                        _otpLength),
-                                  ],
-                                  onChanged: (v) {
-                                    setState(() => _error = null);
-                                    if (v.length == _otpLength) _verify();
-                                  },
-                                ),
-                              ),
-                            ),
-                          ],
+    return PinkAuthPage(
+      title: 'Verify your number',
+      showBack: true,
+      body: Column(
+        children: [
+          FadeSlideIn(
+            index: 0,
+            child: AuthCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Tr('Enter the 6-digit code sent to ${widget.phone}',
+                      style: const TextStyle(
+                          fontSize: 13, color: AppColors.textMuted)),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      for (var i = 0; i < _otpLength; i++)
+                        _OtpBox(
+                          char: i < code.length ? code[i] : '',
+                          active: i == code.length,
+                          error: _error != null,
                         ),
-                      ),
-                    ),
-                    AnimatedSize(
-                      duration: const Duration(milliseconds: 200),
-                      alignment: Alignment.topCenter,
-                      child: _error == null
-                          ? const SizedBox(height: 14)
-                          : Padding(
-                              padding: const EdgeInsets.only(top: 14),
-                              child: Tr(_error!,
-                                  style:
-                                      const TextStyle(color: AppColors.error)),
+                    ],
+                  ),
+                  AnimatedSize(
+                    duration: const Duration(milliseconds: 200),
+                    alignment: Alignment.topCenter,
+                    child: _error == null
+                        ? const SizedBox(height: 14)
+                        : Padding(
+                            padding: const EdgeInsets.only(top: 14),
+                            child: Tr(_error!,
+                                style: const TextStyle(color: AppColors.error)),
+                          ),
+                  ),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      child: _seconds > 0
+                          ? Tr('Resend code in ${_seconds}s',
+                              key: const ValueKey('timer'),
+                              style:
+                                  const TextStyle(color: AppColors.textMuted))
+                          : TextButton(
+                              key: const ValueKey('resend'),
+                              onPressed: _resend,
+                              child: const Tr('Resend code'),
                             ),
                     ),
-                    const SizedBox(height: 14),
-                    FadeSlideIn(
-                      index: 1,
-                      child: Center(
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 250),
-                          child: _seconds > 0
-                              ? Tr('Resend code in ${_seconds}s',
-                                  key: const ValueKey('timer'),
-                                  style: const TextStyle(
-                                      color: AppColors.textMuted))
-                              : TextButton(
-                                  key: const ValueKey('resend'),
-                                  onPressed: _resend,
-                                  child: const Tr('Resend code'),
-                                ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    FadeSlideIn(
-                      index: 2,
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppColors.panel,
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: const Tr(
-                          'DEMO MODE: use code 123456. No real SMS is sent.',
-                          style:
-                              TextStyle(fontSize: 12, color: AppColors.yellow),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    FadeSlideIn(
-                      index: 3,
-                      child: PrimaryButton(
-                        label: 'Verify',
-                        loading: _loading,
-                        onPressed: code.length == _otpLength ? _verify : null,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 14),
+          FadeSlideIn(
+            index: 1,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.16),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Tr(
+                'DEMO MODE: use code 123456. No real SMS is sent.',
+                style: TextStyle(fontSize: 12, color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+      bottom: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ContinueBar(
+            label: 'Verify',
+            loading: _loading,
+            onPressed: code.length == _otpLength ? _verify : null,
+          ),
+          PayKeypad(kind: KeypadKind.pin, onKey: _onKey),
+        ],
       ),
     );
   }
@@ -262,8 +229,8 @@ class _OtpBox extends StatelessWidget {
       curve: Curves.easeOutBack,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
-        width: 46,
-        height: 58,
+        width: 40,
+        height: 52,
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: AppColors.panel,

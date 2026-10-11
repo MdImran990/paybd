@@ -8,7 +8,9 @@ import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/utils/format.dart';
 import '../../core/utils/validators.dart';
-import '../../core/widgets/primary_button.dart';
+import '../../core/utils/numeric_input.dart';
+import '../../core/widgets/continue_bar.dart';
+import '../../core/widgets/pay_keypad.dart';
 import '../../data/models/payment_request.dart';
 import '../../data/models/transaction.dart';
 import '../../data/repositories/wallet_repository.dart';
@@ -85,12 +87,22 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
   final _valid = ValueNotifier<bool>(false);
   final _loading = ValueNotifier<bool>(false);
   bool _noteTouched = false;
+  final _phoneFocus = FocusNode();
+  final _amountFocus = FocusNode();
+  final _amountActive = ValueNotifier<bool>(false);
 
   bool get _hasRecipient => widget.recipientLabel != null;
 
   @override
   void initState() {
     super.initState();
+    _amountActive.value = !_hasRecipient;
+    _phoneFocus.addListener(() {
+      if (_phoneFocus.hasFocus) _amountActive.value = false;
+    });
+    _amountFocus.addListener(() {
+      if (_amountFocus.hasFocus) _amountActive.value = true;
+    });
     final phone = widget.initialPhone;
     final amount = widget.initialAmountMinor;
     if (phone != null) _phone.text = phone;
@@ -113,6 +125,9 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
 
   @override
   void dispose() {
+    _phoneFocus.dispose();
+    _amountFocus.dispose();
+    _amountActive.dispose();
     _phone.dispose();
     _amount.dispose();
     _note.dispose();
@@ -186,6 +201,25 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
     return seen;
   }
 
+  /// One key from the on-screen keypad goes to whichever field is active.
+  void _onKey(String key) {
+    if (key == 'next') {
+      _amountFocus.requestFocus();
+      return;
+    }
+    if (_amountActive.value) {
+      if (applyKey(_amount, key, decimal: true, maxInt: 5, maxDecimals: 2)) {
+        _revalidate();
+      }
+    } else if (applyKey(_phone, key,
+        maxLength: widget.recipientIsPhone ? 11 : 20)) {
+      _onPhoneChanged(_phone.text);
+      if (widget.recipientIsPhone && _phone.text.length == 11) {
+        _amountFocus.requestFocus();
+      }
+    }
+  }
+
   void _setQuick(int taka) {
     _amount.text = taka.toString();
     _amount.selection = TextSelection.collapsed(offset: _amount.text.length);
@@ -225,12 +259,11 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
         backgroundColor: Colors.transparent,
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-          child: Column(
+        child: Column(
             children: [
               Expanded(
                 child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: staggered([
@@ -252,9 +285,9 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                         const SizedBox(height: 8),
                         TextField(
                           controller: _phone,
-                          keyboardType: TextInputType.phone,
-                          onTapOutside: (_) =>
-                              FocusManager.instance.primaryFocus?.unfocus(),
+                          keyboardType: TextInputType.none,
+                          focusNode: _phoneFocus,
+                          autofocus: true,
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
                             LengthLimitingTextInputFormatter(widget.recipientIsPhone ? 11 : 20),
@@ -335,10 +368,9 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                       const SizedBox(height: 8),
                       TextField(
                         controller: _amount,
-                        keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true),
-                        onTapOutside: (_) =>
-                            FocusManager.instance.primaryFocus?.unfocus(),
+                        keyboardType: TextInputType.none,
+                        focusNode: _amountFocus,
+                        autofocus: !_hasRecipient,
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
                               RegExp(r'^\d{0,5}(\.\d{0,2})?$')),
@@ -385,22 +417,27 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
               ValueListenableBuilder<bool>(
                 valueListenable: _loading,
                 builder: (_, loading, _) => ValueListenableBuilder<bool>(
                   valueListenable: _valid,
-                  builder: (_, valid, _) => PrimaryButton(
+                  builder: (_, valid, _) => ContinueBar(
                     label: 'Next',
                     loading: loading,
                     onPressed: valid ? _next : null,
                   ),
                 ),
               ),
+              ValueListenableBuilder<bool>(
+                valueListenable: _amountActive,
+                builder: (_, amountActive, _) => PayKeypad(
+                  kind: amountActive ? KeypadKind.decimal : KeypadKind.next,
+                  onKey: _onKey,
+                ),
+              ),
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }

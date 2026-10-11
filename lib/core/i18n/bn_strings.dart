@@ -328,4 +328,10 @@ const Map<String, String> bnStrings = {
   "Save towards your goals": "লক্ষ্য পূরণে সঞ্চয় করুন",
   "Pay and get paid with QR": "কিউআর দিয়ে টাকা দিন ও নিন",
   "Protected by your PIN and fingerprint": "পিন ও ফিঙ্গারপ্রিন্ট দিয়ে সুরক্ষিত",
+  "Login to PayBD": "PayBD-তে লগইন",
+  "Account Number": "অ্যাকাউন্ট নম্বর",
+  "PayBD PIN": "PayBD পিন",
+  "Enter PayBD PIN": "PayBD পিন দিন",
+  "Forgot PIN? Try PIN Reset": "পিন ভুলে গেছেন? পিন রিসেট করুন",
+  "Enter your registered number first.": "আগে আপনার নিবন্ধিত নম্বর দিন।",
 };

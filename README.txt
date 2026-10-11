@@ -1,1 +1,1 @@
-Smoothness pass over the whole app (step 17)
+Pink keypad + redesigned login/register/OTP (step 18)

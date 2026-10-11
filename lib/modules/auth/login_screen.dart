@@ -1,80 +1,22 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import '../../core/i18n/tr.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
+import '../../core/i18n/tr.dart';
+import '../../core/utils/numeric_input.dart';
+import '../../core/utils/pin_verify.dart';
 import '../../core/utils/validators.dart';
-import '../../core/widgets/auth_header.dart';
+import '../../core/widgets/continue_bar.dart';
 import '../../core/widgets/fade_slide_in.dart';
 import '../../core/widgets/language_toggle.dart';
+import '../../core/widgets/pay_keypad.dart';
+import '../../core/widgets/pink_auth_page.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../data/repositories/pin_repository.dart';
 import 'account_provider.dart';
 import 'auth_providers.dart';
-
-/// Shared phone field used by the login and registration pages.
-class PhoneField extends StatelessWidget {
-  final TextEditingController controller;
-  final ValueChanged<String> onChanged;
-  final bool autofocus;
-
-  const PhoneField({
-    super.key,
-    required this.controller,
-    required this.onChanged,
-    this.autofocus = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      autofocus: autofocus,
-      keyboardType: TextInputType.phone,
-      inputFormatters: [
-        FilteringTextInputFormatter.digitsOnly,
-        LengthLimitingTextInputFormatter(11),
-      ],
-      onChanged: onChanged,
-      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-      style: const TextStyle(
-          fontSize: 18, fontWeight: FontWeight.w600, letterSpacing: 1),
-      decoration: InputDecoration(
-        hintText: '01XXXXXXXXX',
-        filled: true,
-        fillColor: AppColors.panel,
-        prefixIcon: const Padding(
-          padding: EdgeInsets.only(left: 16, right: 10),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Tr('+88',
-                  style: TextStyle(
-                      fontWeight: FontWeight.w800, color: AppColors.primary)),
-              SizedBox(width: 10),
-              SizedBox(
-                height: 22,
-                child: VerticalDivider(width: 1, color: AppColors.textMuted),
-              ),
-            ],
-          ),
-        ),
-        prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-        ),
-      ),
-    );
-  }
-}
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -83,52 +25,138 @@ class LoginScreen extends ConsumerStatefulWidget {
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final _phone = TextEditingController();
-  final _valid = ValueNotifier<bool>(false);
+class _LoginScreenState extends ConsumerState<LoginScreen>
+    with SingleTickerProviderStateMixin {
+  final _number = TextEditingController();
+  final _pin = TextEditingController();
+  final _numFocus = FocusNode();
+  final _pinFocus = FocusNode();
+  final _pinActive = ValueNotifier<bool>(false);
+  final _obscure = ValueNotifier<bool>(true);
+  final _error = ValueNotifier<String?>(null);
   final _loading = ValueNotifier<bool>(false);
+  final _tick = ValueNotifier<int>(0); // bumps when the text changes
+  late final AnimationController _shake = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 400),
+  );
+
+  bool get _numberValid => bdPhoneRegExp.hasMatch(_number.text);
 
   @override
   void initState() {
     super.initState();
     // Remember the account on this device, like the bKash app does.
     final saved = ref.read(accountProvider);
-    if (saved != null) {
-      _phone.text = saved;
-      _valid.value = bdPhoneRegExp.hasMatch(saved);
-    }
+    if (saved != null) _number.text = saved;
+
+    _numFocus.addListener(() {
+      if (_numFocus.hasFocus) _pinActive.value = false;
+    });
+    _pinFocus.addListener(() {
+      if (_pinFocus.hasFocus) _pinActive.value = true;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      (_numberValid ? _pinFocus : _numFocus).requestFocus();
+    });
   }
 
   @override
   void dispose() {
-    _phone.dispose();
-    _valid.dispose();
+    _number.dispose();
+    _pin.dispose();
+    _numFocus.dispose();
+    _pinFocus.dispose();
+    _pinActive.dispose();
+    _obscure.dispose();
+    _error.dispose();
     _loading.dispose();
+    _tick.dispose();
+    _shake.dispose();
     super.dispose();
   }
 
-  Future<void> _next() async {
-    final phone = _phone.text.trim();
-    final hasAccount = ref.read(accountsProvider).contains(phone);
-    FocusManager.instance.primaryFocus?.unfocus();
-
-    if (hasAccount) {
-      if (PinAccess(ref.read(pinRepositoryProvider), phone).hasPin) {
-        context.push('/login/pin', extra: phone);
-      } else {
-        // Account exists but the PIN is missing: verify the number and set a new PIN.
-        _loading.value = true;
-        try {
-          await ref.read(authRepositoryProvider).sendOtp(phone);
-          if (mounted) context.push('/otp?reset=1', extra: phone);
-        } finally {
-          _loading.value = false;
-        }
+  void _onKey(String key) {
+    if (key == 'next') {
+      if (!_pinActive.value && _numberValid) {
+        _pinFocus.requestFocus();
+      } else if (_canContinue) {
+        _continue();
       }
       return;
     }
+    _error.value = null;
+    final pinTurn = _pinActive.value;
+    final changed = applyKey(pinTurn ? _pin : _number, key,
+        maxLength: pinTurn ? 5 : 11);
+    if (!changed) return;
+    _tick.value++;
+    if (!pinTurn && _number.text.length == 11) _pinFocus.requestFocus();
+  }
 
-    if (!mounted) return;
+  bool get _canContinue {
+    if (!_numberValid) return false;
+    final exists = ref.read(accountsProvider).contains(_number.text);
+    return !exists || _pin.text.length == 5;
+  }
+
+  Future<void> _continue() async {
+    if (!_canContinue || _loading.value) return;
+    final phone = _number.text;
+
+    if (!ref.read(accountsProvider).contains(phone)) {
+      _showNoAccount(phone);
+      return;
+    }
+
+    final access = PinAccess(ref.read(pinRepositoryProvider), phone);
+    if (!access.hasPin) {
+      // Account exists but the PIN is missing: verify the number and set a new PIN.
+      await _startReset(phone);
+      return;
+    }
+
+    _loading.value = true;
+    try {
+      final error = await verifyPinMessage(access, _pin.text);
+      if (error != null) {
+        HapticFeedback.heavyImpact();
+        _shake.forward(from: 0);
+        _pin.clear();
+        _error.value = error;
+        _tick.value++;
+        return;
+      }
+      await ref.read(accountProvider.notifier).save(phone);
+      await ref.read(sessionPhoneProvider.notifier).setPhone(phone);
+      if (mounted) context.go('/home');
+    } finally {
+      if (mounted) _loading.value = false;
+    }
+  }
+
+  Future<void> _startReset(String phone) async {
+    _loading.value = true;
+    try {
+      await ref.read(authRepositoryProvider).sendOtp(phone);
+      if (mounted) context.push('/otp?reset=1', extra: phone);
+    } finally {
+      if (mounted) _loading.value = false;
+    }
+  }
+
+  Future<void> _forgotPin() async {
+    final phone = _number.text;
+    if (!_numberValid || !ref.read(accountsProvider).contains(phone)) {
+      _error.value = 'Enter your registered number first.';
+      _numFocus.requestFocus();
+      return;
+    }
+    await _startReset(phone);
+  }
+
+  void _showNoAccount(String phone) {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: AppColors.panel,
@@ -171,95 +199,141 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light,
-      child: Scaffold(
-        backgroundColor: AppColors.primary,
-        body: Column(
-          children: [
-            AuthHeader(
-              title: 'Login',
-              subtitle: 'Log in to your PayBD account',
-              compact: keyboardOpen,
-              trailing: const LanguageToggle(),
+    return PinkAuthPage(
+      title: 'Login to PayBD',
+      trailing: const LanguageToggle(),
+      body: Column(
+        children: [
+          AnimatedBuilder(
+            animation: _shake,
+            builder: (_, child) => Transform.translate(
+              offset: Offset(
+                math.sin(_shake.value * math.pi * 6) * 10 * (1 - _shake.value),
+                0,
+              ),
+              child: child,
             ),
-            Expanded(
-              child: AuthSheet(
+            child: FadeSlideIn(
+              index: 0,
+              child: AuthCard(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    FadeSlideIn(
-                      index: 0,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Tr('Enter your mobile number',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w800)),
-                          SizedBox(height: 4),
-                          Tr('We will ask for your PIN next.',
-                              style: TextStyle(color: AppColors.textMuted)),
-                        ],
+                    ValueListenableBuilder<int>(
+                      valueListenable: _tick,
+                      builder: (_, _, _) => PinkField(
+                        label: 'Account Number',
+                        controller: _number,
+                        focus: _numFocus,
+                        hint: '01XXXXXXXXX',
+                        prefix: const Text('+88',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.primary)),
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    FadeSlideIn(
-                      index: 1,
-                      child: PhoneField(
-                        controller: _phone,
-                        onChanged: (v) =>
-                            _valid.value = bdPhoneRegExp.hasMatch(v),
-                      ),
-                    ),
-                    const SizedBox(height: 22),
-                    FadeSlideIn(
-                      index: 2,
-                      child: ValueListenableBuilder<bool>(
-                        valueListenable: _loading,
-                        builder: (_, loading, _) =>
-                            ValueListenableBuilder<bool>(
-                          valueListenable: _valid,
-                          builder: (_, valid, _) => PrimaryButton(
-                            label: 'Next',
-                            loading: loading,
-                            onPressed: valid ? _next : null,
+                    const SizedBox(height: 10),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: _obscure,
+                      builder: (_, obscure, _) => PinkField(
+                        label: 'PayBD PIN',
+                        controller: _pin,
+                        focus: _pinFocus,
+                        hint: 'Enter PayBD PIN',
+                        obscure: obscure,
+                        suffix: GestureDetector(
+                          onTap: () => _obscure.value = !obscure,
+                          child: Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: Icon(
+                              obscure
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                              size: 20,
+                              color: AppColors.textMuted,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 18),
-                    FadeSlideIn(
-                      index: 3,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Tr('New to PayBD?',
-                              style: TextStyle(color: AppColors.textMuted)),
-                          TextButton(
-                            onPressed: () => context.push('/register'),
-                            child: const Tr('Create account',
-                                style: TextStyle(fontWeight: FontWeight.w800)),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Center(
-                      child: TextButton(
-                        onPressed: () => context.push('/terms'),
-                        child: const Tr(
-                          'Terms & Privacy',
-                          style: TextStyle(
-                              fontSize: 12, color: AppColors.textMuted),
-                        ),
+                    ValueListenableBuilder<String?>(
+                      valueListenable: _error,
+                      builder: (_, e, _) => AnimatedSize(
+                        duration: const Duration(milliseconds: 200),
+                        alignment: Alignment.topCenter,
+                        child: e == null
+                            ? const SizedBox(height: 12)
+                            : Padding(
+                                padding: const EdgeInsets.only(top: 10, bottom: 4),
+                                child: Tr(e,
+                                    style: const TextStyle(
+                                        color: AppColors.error, fontSize: 12)),
+                              ),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 14),
+          FadeSlideIn(
+            index: 1,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: _forgotPin,
+                  child: const Tr('Forgot PIN? Try PIN Reset',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          decoration: TextDecoration.underline,
+                          decorationColor: Colors.white)),
+                ),
+                GestureDetector(
+                  onTap: () => context.push('/terms'),
+                  child: const Tr('Terms & Privacy',
+                      style: TextStyle(color: Colors.white70, fontSize: 12)),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+          FadeSlideIn(
+            index: 2,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Tr('New to PayBD?',
+                    style: TextStyle(color: Colors.white70)),
+                TextButton(
+                  onPressed: () => context.push('/register'),
+                  child: const Tr('Create account',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.w800)),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      bottom: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ValueListenableBuilder<int>(
+            valueListenable: _tick,
+            builder: (_, _, _) => ValueListenableBuilder<bool>(
+              valueListenable: _loading,
+              builder: (_, loading, _) => ContinueBar(
+                label: 'Continue',
+                loading: loading,
+                onPressed: _canContinue ? _continue : null,
+              ),
+            ),
+          ),
+          PayKeypad(kind: KeypadKind.next, onKey: _onKey),
+        ],
       ),
     );
   }

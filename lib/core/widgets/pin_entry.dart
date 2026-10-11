@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../i18n/tr.dart';
 import 'package:flutter/services.dart';
 import '../../app/theme/app_colors.dart';
-import 'pressable_scale.dart';
+import 'pay_keypad.dart';
 
 /// Return an error message to show (and shake), or null on success.
 typedef PinSubmit = Future<String?> Function(String pin);
@@ -155,34 +155,16 @@ class _PinEntryState extends State<PinEntry>
   }
 
   Widget _keypad() {
-    return Column(
-      children: [
-        for (final row in const [
-          ['1', '2', '3'],
-          ['4', '5', '6'],
-          ['7', '8', '9'],
-        ])
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                for (final d in row) _Key(label: d, onTap: () => _tap(d)),
-              ],
-            ),
-          ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              const SizedBox(width: 68, height: 68),
-              _Key(label: '0', onTap: () => _tap('0')),
-              _Key(icon: Icons.backspace_outlined, onTap: _back),
-            ],
-          ),
-        ),
-      ],
+    return PayKeypad(
+      kind: KeypadKind.pin,
+      docked: false,
+      onKey: (k) {
+        if (k == 'back') {
+          _back();
+        } else if (RegExp(r'^\d$').hasMatch(k)) {
+          _tap(k);
+        }
+      },
     );
   }
 
@@ -200,42 +182,6 @@ class _PinEntryState extends State<PinEntry>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [_top(), _keypad()],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _Key extends StatelessWidget {
-  final String? label;
-  final IconData? icon;
-  final VoidCallback onTap;
-  const _Key({this.label, this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return PressableScale(
-      scale: 0.9,
-      child: Material(
-        color: AppColors.panel,
-        elevation: 1.5,
-        shadowColor: const Color(0x33000000),
-        surfaceTintColor: Colors.transparent,
-        shape: const CircleBorder(),
-        child: InkResponse(
-          onTap: onTap,
-          customBorder: const CircleBorder(),
-          child: SizedBox(
-            width: 68,
-            height: 68,
-            child: Center(
-              child: label != null
-                  ? Tr(label!,
-                      style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.w600))
-                  : Icon(icon, size: 24, color: AppColors.textMuted),
             ),
           ),
         ),
