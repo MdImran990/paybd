@@ -57,7 +57,7 @@ class PinkAuthPage extends StatelessWidget {
                         else
                           const _Logo(),
                         const Spacer(),
-                        if (trailing != null) trailing!,
+                        ?trailing,
                       ],
                     ),
                   ),
@@ -205,7 +205,7 @@ class PinkField extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (suffix != null) suffix!,
+                ?suffix,
               ],
             ),
             AnimatedContainer(
