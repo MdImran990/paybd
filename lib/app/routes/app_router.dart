@@ -76,7 +76,6 @@ CustomTransitionPage<void> _slide(GoRouterState state, Widget child) {
     },
   );
 }
-
 final routerProvider = Provider<GoRouter>((ref) {
   // Re-run the redirect whenever the session changes (login / logout).
   final refresh = ValueNotifier<int>(0);

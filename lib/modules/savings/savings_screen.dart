@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/utils/format.dart';
+import '../../core/widgets/fade_slide_in.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../data/models/payment_request.dart';
 import '../../data/models/savings_goal.dart';
@@ -54,7 +55,10 @@ class SavingsScreen extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 96),
                 itemCount: goals.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 12),
-                itemBuilder: (_, i) => _GoalCard(goal: goals[i]),
+                itemBuilder: (_, i) => FadeSlideIn(
+                  index: i < 8 ? i : 0,
+                  child: _GoalCard(goal: goals[i]),
+                ),
               ),
       ),
     );

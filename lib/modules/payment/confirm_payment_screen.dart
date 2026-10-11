@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/fade_slide_in.dart';
 import '../../core/i18n/tr.dart';
 import '../../core/widgets/pay_app_bar.dart';
 import 'package:go_router/go_router.dart';
@@ -28,7 +29,7 @@ class ConfirmPaymentScreen extends StatelessWidget {
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
-                    children: [
+                    children: staggered([
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
@@ -66,7 +67,7 @@ class ConfirmPaymentScreen extends StatelessWidget {
                               fontSize: 12, color: AppColors.textMuted),
                         ),
                       ],
-                    ],
+                    ]),
                   ),
                 ),
               ),

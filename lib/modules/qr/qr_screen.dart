@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/fade_slide_in.dart';
 import '../../core/i18n/tr.dart';
 import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter/services.dart';
@@ -72,7 +73,7 @@ class _MyQrTabState extends ConsumerState<_MyQrTab> {
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
       child: Column(
-        children: [
+        children: staggered([
           ValueListenableBuilder<String>(
             valueListenable: _amountText,
             builder: (_, text, _) {
@@ -164,7 +165,7 @@ class _MyQrTabState extends ConsumerState<_MyQrTab> {
               ),
             ),
           ),
-        ],
+        ]),
       ),
     );
   }

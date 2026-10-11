@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/fade_slide_in.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/i18n/app_language.dart';
@@ -84,7 +85,7 @@ class SettingsScreen extends ConsumerWidget {
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-          children: [
+          children: staggered([
             const _LanguageTile(),
             const SizedBox(height: 12),
             _SwitchCard(
@@ -138,7 +139,7 @@ class SettingsScreen extends ConsumerWidget {
               'Your data stays on this device when you log out or switch accounts.',
               style: TextStyle(fontSize: 12, color: AppColors.textMuted),
             ),
-          ],
+          ]),
         ),
       ),
     );

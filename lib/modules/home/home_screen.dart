@@ -380,6 +380,7 @@ class _ServiceTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return PressableScale(
       scale: 0.92,
+      haptic: true,
       onTap: () {
         final route = service.route;
         if (route != null) {

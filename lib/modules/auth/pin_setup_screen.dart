@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/widgets/fade_slide_in.dart';
 import '../../core/widgets/pin_entry.dart';
 import 'auth_providers.dart';
 
@@ -38,12 +39,14 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: PinEntry(
-          title: _first == null ? 'Create your PIN' : 'Confirm your PIN',
-          subtitle: _first == null
-              ? 'Choose a 5-digit PIN. You will need it to send money.'
-              : 'Enter the same PIN again.',
-          onCompleted: _onPin,
+        child: FadeSlideIn(
+          child: PinEntry(
+            title: _first == null ? 'Create your PIN' : 'Confirm your PIN',
+            subtitle: _first == null
+                ? 'Choose a 5-digit PIN. You will need it to send money.'
+                : 'Enter the same PIN again.',
+            onCompleted: _onPin,
+          ),
         ),
       ),
     );

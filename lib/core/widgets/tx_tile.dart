@@ -5,6 +5,7 @@ import '../../data/models/transaction.dart';
 import '../utils/format.dart';
 import '../utils/tx_ui.dart';
 import 'copy_receipt_button.dart';
+import 'pressable_scale.dart';
 import 'receipt_card.dart';
 
 class TxTile extends StatelessWidget {
@@ -39,7 +40,9 @@ class TxTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final credit = tx.isCredit;
     final color = credit ? AppColors.green : AppColors.error;
-    return Material(
+    return PressableScale(
+      scale: 0.98,
+      child: Material(
       color: AppColors.panel,
       elevation: 1.5,
       shadowColor: const Color(0x22000000),
@@ -80,6 +83,6 @@ class TxTile extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ));
   }
 }

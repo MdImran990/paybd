@@ -60,3 +60,9 @@ class _FadeSlideInState extends State<FadeSlideIn>
     );
   }
 }
+
+/// Wraps each child in a [FadeSlideIn] with a growing delay (a cascade, like the menu).
+List<Widget> staggered(List<Widget> children, {int start = 0}) => [
+      for (var i = 0; i < children.length; i++)
+        FadeSlideIn(index: start + i, child: children[i]),
+    ];

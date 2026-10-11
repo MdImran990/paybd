@@ -191,6 +191,7 @@ class _MenuItem extends StatelessWidget {
     final isLogout = entry.label == 'Log out';
     return PressableScale(
       scale: 0.97,
+      haptic: true,
       onTap: entry.onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 15),

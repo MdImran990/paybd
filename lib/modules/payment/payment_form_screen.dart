@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/fade_slide_in.dart';
 import '../../core/i18n/tr.dart';
 import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter/services.dart';
@@ -232,7 +233,7 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: staggered([
                       Consumer(builder: (_, ref, _) {
                         final bal =
                             ref.watch(walletProvider).value?.balanceMinor;
@@ -353,14 +354,19 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                       ),
                       ValueListenableBuilder<String?>(
                         valueListenable: _error,
-                        builder: (_, e, _) => e == null
-                            ? const SizedBox(height: 14)
-                            : Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: Tr(e,
-                                    style: const TextStyle(
-                                        color: AppColors.error, fontSize: 13)),
-                              ),
+                        builder: (_, e, _) => AnimatedSize(
+                          duration: const Duration(milliseconds: 200),
+                          alignment: Alignment.topCenter,
+                          child: e == null
+                              ? const SizedBox(height: 14)
+                              : Padding(
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Tr(e,
+                                      style: const TextStyle(
+                                          color: AppColors.error,
+                                          fontSize: 13)),
+                                ),
+                        ),
                       ),
                       const SizedBox(height: 10),
                       Wrap(
@@ -375,7 +381,7 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
                             ),
                         ],
                       ),
-                    ],
+                    ]),
                   ),
                 ),
               ),

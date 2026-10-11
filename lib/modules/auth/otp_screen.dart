@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../../core/i18n/tr.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
+import '../../core/i18n/tr.dart';
+import '../../core/widgets/auth_header.dart';
+import '../../core/widgets/fade_slide_in.dart';
 import '../../core/widgets/primary_button.dart';
 import '../notifications/notification_providers.dart';
 import 'auth_providers.dart';
@@ -97,6 +99,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         final hasPin = ref.read(activePinProvider).hasPin;
         context.go(hasPin ? '/home' : '/pin-setup');
       } else {
+        HapticFeedback.heavyImpact();
         _controller.clear();
         setState(() => _error = 'Wrong OTP. Please try again.');
       }
@@ -110,99 +113,131 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   @override
   Widget build(BuildContext context) {
     final code = _controller.text;
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: BackButton(onPressed: () => context.pop()),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Tr('Verify your number',
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800)),
-              const SizedBox(height: 8),
-              Tr('Enter the 6-digit code sent to ${widget.phone}',
-                  style: const TextStyle(color: AppColors.textMuted)),
-              const SizedBox(height: 32),
-              GestureDetector(
-                onTap: () => _focus.requestFocus(),
-                child: Stack(
+    final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: AppColors.primary,
+        body: Column(
+          children: [
+            AuthHeader(
+              title: 'Verify your number',
+              subtitle: 'Enter the 6-digit code sent to ${widget.phone}',
+              compact: keyboardOpen,
+              showBack: true,
+            ),
+            Expanded(
+              child: AuthSheet(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        for (var i = 0; i < _otpLength; i++)
-                          _OtpBox(
-                            char: i < code.length ? code[i] : '',
-                            active: i == code.length && _focus.hasFocus,
-                            error: _error != null,
-                          ),
-                      ],
-                    ),
-                    // Hidden field that receives the typing
-                    SizedBox(
-                      width: 1,
-                      height: 1,
-                      child: Opacity(
-                        opacity: 0,
-                        child: TextField(
-                          controller: _controller,
-                          focusNode: _focus,
-                          autofocus: true,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(_otpLength),
+                    FadeSlideIn(
+                      index: 0,
+                      child: GestureDetector(
+                        onTap: () => _focus.requestFocus(),
+                        child: Stack(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                for (var i = 0; i < _otpLength; i++)
+                                  _OtpBox(
+                                    char: i < code.length ? code[i] : '',
+                                    active:
+                                        i == code.length && _focus.hasFocus,
+                                    error: _error != null,
+                                  ),
+                              ],
+                            ),
+                            // Hidden field that receives the typing
+                            SizedBox(
+                              width: 1,
+                              height: 1,
+                              child: Opacity(
+                                opacity: 0,
+                                child: TextField(
+                                  controller: _controller,
+                                  focusNode: _focus,
+                                  autofocus: true,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(
+                                        _otpLength),
+                                  ],
+                                  onChanged: (v) {
+                                    setState(() => _error = null);
+                                    if (v.length == _otpLength) _verify();
+                                  },
+                                ),
+                              ),
+                            ),
                           ],
-                          onChanged: (v) {
-                            setState(() => _error = null);
-                            if (v.length == _otpLength) _verify();
-                          },
                         ),
+                      ),
+                    ),
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 200),
+                      alignment: Alignment.topCenter,
+                      child: _error == null
+                          ? const SizedBox(height: 14)
+                          : Padding(
+                              padding: const EdgeInsets.only(top: 14),
+                              child: Tr(_error!,
+                                  style:
+                                      const TextStyle(color: AppColors.error)),
+                            ),
+                    ),
+                    const SizedBox(height: 14),
+                    FadeSlideIn(
+                      index: 1,
+                      child: Center(
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 250),
+                          child: _seconds > 0
+                              ? Tr('Resend code in ${_seconds}s',
+                                  key: const ValueKey('timer'),
+                                  style: const TextStyle(
+                                      color: AppColors.textMuted))
+                              : TextButton(
+                                  key: const ValueKey('resend'),
+                                  onPressed: _resend,
+                                  child: const Tr('Resend code'),
+                                ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    FadeSlideIn(
+                      index: 2,
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.panel,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: const Tr(
+                          'DEMO MODE: use code 123456. No real SMS is sent.',
+                          style:
+                              TextStyle(fontSize: 12, color: AppColors.yellow),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    FadeSlideIn(
+                      index: 3,
+                      child: PrimaryButton(
+                        label: 'Verify',
+                        loading: _loading,
+                        onPressed: code.length == _otpLength ? _verify : null,
                       ),
                     ),
                   ],
                 ),
               ),
-              if (_error != null) ...[
-                const SizedBox(height: 14),
-                Tr(_error!, style: const TextStyle(color: AppColors.error)),
-              ],
-              const SizedBox(height: 20),
-              Center(
-                child: _seconds > 0
-                    ? Tr('Resend code in ${_seconds}s',
-                        style: const TextStyle(color: AppColors.textMuted))
-                    : TextButton(
-                        onPressed: _resend,
-                        child: const Tr('Resend code'),
-                      ),
-              ),
-              const Spacer(),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: AppColors.panel,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: const Tr(
-                  'DEMO MODE: use code 123456. No real SMS is sent.',
-                  style: TextStyle(fontSize: 12, color: AppColors.yellow),
-                ),
-              ),
-              PrimaryButton(
-                label: 'Verify',
-                loading: _loading,
-                onPressed: code.length == _otpLength ? _verify : null,
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -226,25 +261,25 @@ class _OtpBox extends StatelessWidget {
       duration: const Duration(milliseconds: 140),
       curve: Curves.easeOutBack,
       child: AnimatedContainer(
-      duration: const Duration(milliseconds: 150),
-      width: 48,
-      height: 58,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: AppColors.panel,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: error
-              ? AppColors.error
-              : active
-                  ? AppColors.primary
-                  : Colors.transparent,
-          width: 1.5,
+        duration: const Duration(milliseconds: 150),
+        width: 46,
+        height: 58,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppColors.panel,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: error
+                ? AppColors.error
+                : active
+                    ? AppColors.primary
+                    : Colors.transparent,
+            width: 1.5,
+          ),
         ),
+        child: Tr(char,
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
       ),
-      child: Tr(char,
-          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
-    ),
     );
   }
 }

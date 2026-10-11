@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/fade_slide_in.dart';
 import '../../core/i18n/tr.dart';
 import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +9,7 @@ import '../../app/theme/app_colors.dart';
 import '../auth/auth_providers.dart';
 import '../auth/logout.dart';
 import '../../core/app_info.dart';
+import '../../core/widgets/pressable_scale.dart';
 import '../../core/widgets/user_avatar.dart';
 import 'profile_photo.dart';
 import 'profile_providers.dart';
@@ -133,7 +135,7 @@ class ProfileScreen extends ConsumerWidget {
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-          children: [
+          children: staggered([
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -233,7 +235,7 @@ class ProfileScreen extends ConsumerWidget {
               color: AppColors.error,
               onTap: () => _logout(context, ref),
             ),
-          ],
+          ]),
         ),
       ),
     );
@@ -255,7 +257,9 @@ class _MenuTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = color ?? AppColors.text;
-    return Padding(
+    return PressableScale(
+      scale: 0.98,
+      child: Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Material(
         color: AppColors.panel,
@@ -283,6 +287,6 @@ class _MenuTile extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ));
   }
 }

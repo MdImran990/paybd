@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Shrinks its child slightly while pressed, so taps feel responsive.
 /// With [onTap] it handles the tap itself; without it, it only watches the pointer
@@ -9,12 +10,16 @@ class PressableScale extends StatefulWidget {
   final double scale;
   final bool enabled;
 
+  /// A tiny vibration on tap.
+  final bool haptic;
+
   const PressableScale({
     super.key,
     required this.child,
     this.onTap,
     this.scale = 0.95,
     this.enabled = true,
+    this.haptic = false,
   });
 
   @override
@@ -43,7 +48,10 @@ class _PressableScaleState extends State<PressableScale> {
         onTapDown: (_) => _set(true),
         onTapUp: (_) => _set(false),
         onTapCancel: () => _set(false),
-        onTap: widget.onTap,
+        onTap: () {
+          if (widget.haptic) HapticFeedback.selectionClick();
+          widget.onTap!();
+        },
         child: scaled,
       );
     }

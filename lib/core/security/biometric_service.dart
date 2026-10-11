@@ -15,7 +15,6 @@ class BiometricService {
       return false;
     }
   }
-
   /// Shows the system fingerprint prompt. Returns false if cancelled or failed.
   static Future<bool> authenticate(String reason) async {
     try {
