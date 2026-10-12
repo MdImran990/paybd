@@ -1,1 +1,1 @@
-Pink keypad + redesigned login/register/OTP (step 18)
+Home screen matched to the login/menu style (step 19)

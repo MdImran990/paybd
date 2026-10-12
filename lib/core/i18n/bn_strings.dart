@@ -334,4 +334,5 @@ const Map<String, String> bnStrings = {
   "Enter PayBD PIN": "PayBD পিন দিন",
   "Forgot PIN? Try PIN Reset": "পিন ভুলে গেছেন? পিন রিসেট করুন",
   "Enter your registered number first.": "আগে আপনার নিবন্ধিত নম্বর দিন।",
+  "Services": "সেবাসমূহ",
 };

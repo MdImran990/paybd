@@ -137,69 +137,96 @@ class _Header extends ConsumerWidget {
     final name = ref.watch(profileNameProvider);
     final unread = ref.watch(unreadCountProvider);
     final top = MediaQuery.of(context).padding.top;
-    return Container(
-      clipBehavior: Clip.antiAlias,
-      padding: EdgeInsets.fromLTRB(20, top + 14, 20, 24),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.primaryDark],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+
+    // The pink area has spare room at the bottom: the white balance card
+    // overlaps it, the same way the card does on the login page.
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Column(
+          children: [
+            Container(
+              width: double.infinity,
+              clipBehavior: Clip.antiAlias,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppColors.primary, AppColors.primaryDark],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(36)),
+              ),
+              child: Stack(
+                children: [
+                  const Positioned.fill(
+                    child: RepaintBoundary(child: FloatingBubbles()),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(20, top + 14, 16, 78),
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () => context.push('/profile'),
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                            ),
+                            child: const UserAvatar(
+                                radius: 22, heroTag: 'profile-avatar'),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Tr('Welcome back',
+                                  style: TextStyle(
+                                      fontSize: 12, color: Colors.white70)),
+                              Tr(name ?? phone,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                      fontSize: 19,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white)),
+                            ],
+                          ),
+                        ),
+                        Material(
+                          color: Colors.white24,
+                          shape: const CircleBorder(),
+                          child: IconButton(
+                            tooltip: tr('Notifications'),
+                            onPressed: () => context.push('/inbox'),
+                            icon: Badge(
+                              isLabelVisible: unread > 0,
+                              label: Tr('$unread'),
+                              child: const Icon(
+                                  Icons.notifications_none_rounded,
+                                  color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 62),
+          ],
         ),
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
-      ),
-      child: Stack(
-        children: [
-          const Positioned.fill(
-            child: RepaintBoundary(child: FloatingBubbles()),
-          ),
-          Column(
-        children: [
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () => context.push('/profile'),
-                child: const UserAvatar(radius: 22, heroTag: 'profile-avatar'),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Tr('Welcome back',
-                        style: TextStyle(fontSize: 12, color: Colors.white70)),
-                    Tr(name ?? phone,
-                        style: const TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white)),
-                  ],
-                ),
-              ),
-              IconButton(
-                tooltip: tr('Notifications'),
-                onPressed: () => context.push('/inbox'),
-                icon: Badge(
-                  isLabelVisible: unread > 0,
-                  label: Tr('$unread'),
-                  child: const Icon(Icons.notifications_none_rounded,
-                      color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          const _BalanceCard(),
-        ],
-      ),
-        ],
-      ),
+        const Positioned(left: 16, right: 16, bottom: 0, child: _BalanceCard()),
+      ],
     );
   }
 }
 
 const _balanceStyle = TextStyle(
-    fontSize: 26, fontWeight: FontWeight.w800, color: Colors.white);
+    fontSize: 26, fontWeight: FontWeight.w800, color: AppColors.text);
 
 class _BalanceCard extends ConsumerWidget {
   const _BalanceCard();
@@ -239,10 +266,14 @@ class _BalanceCard extends ConsumerWidget {
     final balance = ref.watch(walletProvider).value?.balanceMinor;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(18, 16, 14, 16),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.16),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(22),
+        boxShadow: const [
+          BoxShadow(
+              color: Color(0x26000000), blurRadius: 22, offset: Offset(0, 10)),
+        ],
       ),
       child: Row(
         children: [
@@ -250,9 +281,27 @@ class _BalanceCard extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Tr('PayBD Balance',
-                    style: TextStyle(fontSize: 12, color: Colors.white70)),
-                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Container(
+                      width: 26,
+                      height: 26,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                      ),
+                      child: const Icon(Icons.account_balance_wallet_rounded,
+                          size: 15, color: AppColors.primary),
+                    ),
+                    const SizedBox(width: 8),
+                    const Tr('PayBD Balance',
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textMuted)),
+                  ],
+                ),
+                const SizedBox(height: 8),
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 250),
                   child: show && balance != null
@@ -274,7 +323,9 @@ class _BalanceCard extends ConsumerWidget {
             ),
           ),
           if (requirePin)
-            GestureDetector(
+            PressableScale(
+              scale: 0.94,
+              haptic: true,
               onTap: () {
                 if (show) {
                   ref.read(balanceRevealedProvider.notifier).hide();
@@ -284,10 +335,19 @@ class _BalanceCard extends ConsumerWidget {
               },
               child: Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(22),
+                  gradient: const LinearGradient(
+                    colors: [AppColors.primary, AppColors.primaryDark],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -297,13 +357,13 @@ class _BalanceCard extends ConsumerWidget {
                           ? Icons.visibility_off_outlined
                           : Icons.lock_outline_rounded,
                       size: 16,
-                      color: AppColors.primary,
+                      color: Colors.white,
                     ),
                     const SizedBox(width: 6),
                     Tr(
                       show ? 'Hide' : 'Tap for balance',
                       style: const TextStyle(
-                          color: AppColors.primary,
+                          color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.w700),
                     ),
@@ -352,20 +412,33 @@ class _ServiceGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.fromLTRB(8, 16, 8, 8),
+      padding: const EdgeInsets.fromLTRB(10, 16, 10, 8),
       decoration: BoxDecoration(
         color: AppColors.panel,
         borderRadius: BorderRadius.circular(24),
         boxShadow: softShadow,
       ),
-      child: GridView.count(
-        crossAxisCount: 4,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        childAspectRatio: 0.82,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          for (var i = 0; i < _services.length; i++)
-            FadeSlideIn(index: i, child: _ServiceTile(service: _services[i])),
+          const Padding(
+            padding: EdgeInsets.only(left: 8, bottom: 6),
+            child: Tr('Services',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+          ),
+          GridView.count(
+            crossAxisCount: 4,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            childAspectRatio: 0.82,
+            children: [
+              for (var i = 0; i < _services.length; i++)
+                FadeSlideIn(
+                  index: i,
+                  child: _ServiceTile(service: _services[i]),
+                ),
+            ],
+          ),
         ],
       ),
     );
@@ -399,7 +472,14 @@ class _ServiceTile extends StatelessWidget {
               height: 52,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.primary.withValues(alpha: 0.09),
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primary.withValues(alpha: 0.16),
+                    AppColors.primary.withValues(alpha: 0.06),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
               ),
               child: Icon(service.icon, color: AppColors.primary, size: 26),
             ),
@@ -423,33 +503,60 @@ class _PromoBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: const Row(
-        children: [
-          Icon(Icons.card_giftcard_rounded,
-              size: 36, color: AppColors.primary),
-          SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: PressableScale(
+        scale: 0.98,
+        onTap: () => _comingSoon(context, 'Invite friends'),
+        child: Container(
+          padding: const EdgeInsets.all(1.6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(22),
+            gradient: const LinearGradient(
+              colors: [Color(0xFFFF9A3D), AppColors.primary, Color(0xFF8E5CFF)],
+            ),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20.4),
+            ),
+            child: Row(
               children: [
-                Tr('Invite friends',
-                    style:
-                        TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
-                SizedBox(height: 2),
-                Tr('Referral offers are coming soon',
-                    style:
-                        TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    gradient: const LinearGradient(
+                      colors: [AppColors.primary, AppColors.primaryDark],
+                    ),
+                  ),
+                  child: const Icon(Icons.card_giftcard_rounded,
+                      color: Colors.white, size: 26),
+                ),
+                const SizedBox(width: 14),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Tr('Invite friends',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w800, fontSize: 15)),
+                      SizedBox(height: 2),
+                      Tr('Referral offers are coming soon',
+                          style: TextStyle(
+                              fontSize: 12, color: AppColors.textMuted)),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right_rounded,
+                    color: AppColors.textMuted),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -529,6 +636,9 @@ class _BottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return BottomAppBar(
       color: AppColors.panel,
+      elevation: 16,
+      shadowColor: const Color(0x40000000),
+      surfaceTintColor: Colors.transparent,
       shape: const CircularNotchedRectangle(),
       notchMargin: 8,
       height: 68,
@@ -570,6 +680,17 @@ class _NavItem extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOut,
+                height: 3,
+                width: active ? 22 : 0,
+                margin: const EdgeInsets.only(bottom: 5),
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
               Icon(icon, color: color, size: 24),
               const SizedBox(height: 2),
               Tr(label, style: TextStyle(fontSize: 10, color: color)),
