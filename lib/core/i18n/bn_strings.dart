@@ -335,4 +335,6 @@ const Map<String, String> bnStrings = {
   "Forgot PIN? Try PIN Reset": "পিন ভুলে গেছেন? পিন রিসেট করুন",
   "Enter your registered number first.": "আগে আপনার নিবন্ধিত নম্বর দিন।",
   "Services": "সেবাসমূহ",
+  "Messages": "মেসেজ",
+  "New": "নতুন",
 };

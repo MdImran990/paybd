@@ -6,7 +6,7 @@ import '../../core/i18n/tr.dart';
 import '../../core/pdf/statement_pdf.dart';
 import '../../core/utils/format.dart';
 import '../../core/widgets/fade_slide_in.dart';
-import '../../core/widgets/pay_app_bar.dart';
+import '../../core/widgets/pink_header.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../core/widgets/skeleton.dart';
 import '../../core/widgets/tx_tile.dart';
@@ -82,94 +82,125 @@ class _StatementScreenState extends ConsumerState<StatementScreen> {
   @override
   Widget build(BuildContext context) {
     final wallet = ref.watch(walletProvider);
-    return Scaffold(
-      appBar: const PayAppBar(title: Tr('Statement')),
-      body: SafeArea(
-        child: wallet.when(
-          loading: () => ListView(
-            padding: const EdgeInsets.all(20),
-            children: const [
-              TxSkeleton(),
-              SizedBox(height: 10),
-              TxSkeleton(),
-              SizedBox(height: 10),
-              TxSkeleton(),
-            ],
-          ),
-          error: (_, _) => Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Tr('Could not load transactions.'),
-                TextButton(
-                  onPressed: () => ref.invalidate(walletProvider),
-                  child: const Tr('Retry'),
-                ),
-              ],
-            ),
-          ),
-          data: (w) {
-            final start = _startOf(_period);
-            final txs = [
-              for (final t in w.transactions)
-                if (start == null || !t.createdAt.isBefore(start)) t,
-            ];
-            var moneyIn = 0;
-            var moneyOut = 0;
-            for (final t in txs) {
-              if (t.isCredit) {
-                moneyIn += t.amountMinor;
-              } else {
-                moneyOut += t.amountMinor + t.feeMinor;
-              }
-            }
-            return ListView.builder(
-              padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-              itemCount: txs.length + 1,
-              itemBuilder: (_, i) {
-                if (i == 0) {
-                  return _Header(
-                    period: _period,
-                    onPeriod: (p) => setState(() => _period = p),
-                    moneyIn: moneyIn,
-                    moneyOut: moneyOut,
-                    count: txs.length,
-                    busy: _busy,
-                    onDownload: txs.isEmpty
-                        ? null
-                        : () => _download(txs, moneyIn, moneyOut),
-                  );
-                }
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: FadeSlideIn(
-                    index: i < 8 ? i : 0,
-                    child: TxTile(tx: txs[i - 1]),
-                  ),
-                );
-              },
-            );
-          },
+    return wallet.when(
+      loading: () => PinkPage(
+        header: const PinkHeader(title: 'Statement'),
+        body: ListView(
+          padding: const EdgeInsets.all(20),
+          children: const [
+            TxSkeleton(),
+            SizedBox(height: 10),
+            TxSkeleton(),
+            SizedBox(height: 10),
+            TxSkeleton(),
+          ],
         ),
       ),
+      error: (_, _) => PinkPage(
+        header: const PinkHeader(title: 'Statement'),
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Tr('Could not load transactions.'),
+              TextButton(
+                onPressed: () => ref.invalidate(walletProvider),
+                child: const Tr('Retry'),
+              ),
+            ],
+          ),
+        ),
+      ),
+      data: (w) {
+        final start = _startOf(_period);
+        final txs = [
+          for (final t in w.transactions)
+            if (start == null || !t.createdAt.isBefore(start)) t,
+        ];
+        var moneyIn = 0;
+        var moneyOut = 0;
+        for (final t in txs) {
+          if (t.isCredit) {
+            moneyIn += t.amountMinor;
+          } else {
+            moneyOut += t.amountMinor + t.feeMinor;
+          }
+        }
+        return PinkPage(
+          header: PinkHeader(
+            title: 'Statement',
+            cardHeight: 92,
+            card: HeaderCard(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _Total(
+                          label: 'Money in',
+                          minor: moneyIn,
+                          color: AppColors.green,
+                          icon: Icons.south_rounded,
+                        ),
+                      ),
+                      Container(
+                          width: 1, height: 40, color: const Color(0xFFEDEDF3)),
+                      Expanded(
+                        child: _Total(
+                          label: 'Money out',
+                          minor: moneyOut,
+                          color: AppColors.error,
+                          icon: Icons.north_rounded,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          body: ListView.builder(
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+            itemCount: txs.length + 1,
+            itemBuilder: (_, i) {
+              if (i == 0) {
+                return _Controls(
+                  period: _period,
+                  onPeriod: (p) => setState(() => _period = p),
+                  count: txs.length,
+                  busy: _busy,
+                  onDownload: txs.isEmpty
+                      ? null
+                      : () => _download(txs, moneyIn, moneyOut),
+                );
+              }
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: FadeSlideIn(
+                  index: i < 8 ? i : 0,
+                  child: TxTile(tx: txs[i - 1]),
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
 
-class _Header extends StatelessWidget {
+class _Controls extends StatelessWidget {
   final _Period period;
   final ValueChanged<_Period> onPeriod;
-  final int moneyIn;
-  final int moneyOut;
   final int count;
   final bool busy;
   final VoidCallback? onDownload;
 
-  const _Header({
+  const _Controls({
     required this.period,
     required this.onPeriod,
-    required this.moneyIn,
-    required this.moneyOut,
     required this.count,
     required this.busy,
     required this.onDownload,
@@ -205,31 +236,10 @@ class _Header extends StatelessWidget {
             ],
           ),
         ),
+        const SizedBox(height: 10),
+        Tr('$count transactions',
+            style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
         const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(22),
-            gradient: const LinearGradient(
-              colors: [AppColors.primary, AppColors.primaryDark],
-            ),
-          ),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(child: _Total(label: 'Money in', minor: moneyIn)),
-                  Container(width: 1, height: 40, color: Colors.white30),
-                  Expanded(child: _Total(label: 'Money out', minor: moneyOut)),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Tr('$count transactions',
-                  style: const TextStyle(fontSize: 12, color: Colors.white70)),
-            ],
-          ),
-        ),
-        const SizedBox(height: 14),
         PrimaryButton(
           label: 'Download PDF',
           loading: busy,
@@ -252,25 +262,46 @@ class _Header extends StatelessWidget {
 class _Total extends StatelessWidget {
   final String label;
   final int minor;
-  const _Total({required this.label, required this.minor});
+  final Color color;
+  final IconData icon;
+  const _Total({
+    required this.label,
+    required this.minor,
+    required this.color,
+    required this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Tr(label, style: const TextStyle(fontSize: 12, color: Colors.white70)),
-        const SizedBox(height: 4),
-        TweenAnimationBuilder<int>(
-          tween: IntTween(begin: 0, end: minor),
-          duration: const Duration(milliseconds: 700),
-          curve: Curves.easeOutCubic,
-          builder: (_, v, _) => Tr(
-            formatTaka(v),
-            style: const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-            ),
+        CircleAvatar(
+          radius: 16,
+          backgroundColor: color.withValues(alpha: 0.12),
+          child: Icon(icon, size: 16, color: color),
+        ),
+        const SizedBox(width: 8),
+        Flexible(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Tr(label,
+                  style: const TextStyle(
+                      fontSize: 11, color: AppColors.textMuted)),
+              TweenAnimationBuilder<int>(
+                tween: IntTween(begin: 0, end: minor),
+                duration: const Duration(milliseconds: 700),
+                curve: Curves.easeOutCubic,
+                builder: (_, v, _) => Tr(
+                  formatTaka(v),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w800),
+                ),
+              ),
+            ],
           ),
         ),
       ],

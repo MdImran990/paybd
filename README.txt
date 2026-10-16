@@ -1,1 +1,1 @@
-Home screen matched to the login/menu style (step 19)
+Pink header style for History, Inbox, Statement (step 20)
