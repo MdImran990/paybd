@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pink_header.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/app_colors.dart';
@@ -99,11 +100,12 @@ class _NomineeScreenState extends ConsumerState<NomineeScreen> {
   @override
   Widget build(BuildContext context) {
     final saved = ref.watch(nomineeProvider) != null;
-    return Scaffold(
-      appBar: const PayAppBar(title: Tr('Nominee information')),
+    return PinkPage(
+      header: const PinkHeader(title: 'Nominee information'),
       body: SafeArea(
+        top: false,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
           children: [
             FadeSlideIn(
               index: 0,

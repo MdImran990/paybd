@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pink_header.dart';
 import '../../core/i18n/tr.dart';
-import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/utils/validators.dart';
@@ -80,17 +80,19 @@ class _ChangePinScreenState extends ConsumerState<ChangePinScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PayAppBar(
-        actions: [
-          if (_stage == 0)
-            TextButton(
-              onPressed: _forgotPin,
-              child: const Tr('Forgot PIN?'),
-            ),
-        ],
+    return PinkPage(
+      header: PinkHeader(
+        title: 'Change PIN',
+        trailing: _stage == 0
+            ? TextButton(
+                onPressed: _forgotPin,
+                child: const Tr('Forgot PIN?',
+                    style: TextStyle(color: Colors.white)),
+              )
+            : null,
       ),
       body: SafeArea(
+        top: false,
         child: PinEntry(
           title: _titles[_stage],
           subtitle: _subtitles[_stage],

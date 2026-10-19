@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pink_header.dart';
 import '../../core/widgets/fade_slide_in.dart';
 import '../../core/i18n/tr.dart';
-import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -130,11 +130,12 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final phone = ref.watch(sessionPhoneProvider) ?? '';
     final name = ref.watch(profileNameProvider);
-    return Scaffold(
-      appBar: PayAppBar(title: const Tr('Profile')),
+    return PinkPage(
+      header: const PinkHeader(title: 'Profile'),
       body: SafeArea(
+        top: false,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
           children: staggered([
             Container(
               padding: const EdgeInsets.all(20),

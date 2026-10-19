@@ -10,7 +10,13 @@ import 'pay_app_bar.dart';
 class PinkPage extends StatelessWidget {
   final Widget header;
   final Widget body;
-  const PinkPage({super.key, required this.header, required this.body});
+  final Widget? floatingActionButton;
+  const PinkPage({
+    super.key,
+    required this.header,
+    required this.body,
+    this.floatingActionButton,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +24,7 @@ class PinkPage extends StatelessWidget {
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
         backgroundColor: AppColors.bg,
+        floatingActionButton: floatingActionButton,
         body: Column(
           children: [
             header,
@@ -33,6 +40,7 @@ class PinkHeader extends StatelessWidget {
   final String title;
   final String? subtitle;
   final Widget? trailing;
+  final bool showBack;
 
   /// White card that overlaps the bottom of the pink area (search box, summary...).
   final Widget? card;
@@ -45,6 +53,7 @@ class PinkHeader extends StatelessWidget {
     required this.title,
     this.subtitle,
     this.trailing,
+    this.showBack = true,
     this.card,
     this.cardHeight = 56,
   });
@@ -85,10 +94,13 @@ class PinkHeader extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            BackButton(
-                              color: Colors.white,
-                              onPressed: () => goBackOrHome(context),
-                            ),
+                            if (showBack)
+                              BackButton(
+                                color: Colors.white,
+                                onPressed: () => goBackOrHome(context),
+                              )
+                            else
+                              const SizedBox(width: 20, height: 48),
                             Expanded(
                               child: Tr(title,
                                   style: const TextStyle(

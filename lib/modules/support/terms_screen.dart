@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pink_header.dart';
 import '../../core/widgets/fade_slide_in.dart';
 import '../../core/i18n/tr.dart';
-import '../../core/widgets/pay_app_bar.dart';
 import '../../app/theme/app_colors.dart';
 
 /// PLACEHOLDER. Replace with the real Terms of Use and Privacy Policy
@@ -11,11 +11,12 @@ class TermsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PayAppBar(title: const Tr('Terms & Privacy')),
+    return PinkPage(
+      header: const PinkHeader(title: 'Terms & Privacy'),
       body: SafeArea(
+        top: false,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
           children: staggered(const [
             Tr('Terms of Use',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),

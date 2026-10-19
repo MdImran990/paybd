@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pink_header.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_shadows.dart';
@@ -6,7 +7,6 @@ import '../../core/i18n/tr.dart';
 import '../../core/utils/format.dart';
 import '../../core/utils/tx_ui.dart';
 import '../../core/widgets/fade_slide_in.dart';
-import '../../core/widgets/pay_app_bar.dart';
 import '../../data/models/transaction.dart';
 import '../../data/repositories/wallet_repository.dart';
 import '../wallet/wallet_providers.dart';
@@ -35,11 +35,12 @@ class LimitsScreen extends ConsumerWidget {
         .where((x) => x.type == t && !x.createdAt.isBefore(monthStart))
         .fold<int>(0, (sum, x) => sum + x.amountMinor);
 
-    return Scaffold(
-      appBar: const PayAppBar(title: Tr('Limits')),
+    return PinkPage(
+      header: const PinkHeader(title: 'Limits'),
       body: SafeArea(
+        top: false,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
           children: [
             for (var i = 0; i < _types.length; i++)
               Padding(

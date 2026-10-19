@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pink_header.dart';
 import '../../core/i18n/tr.dart';
-import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -19,8 +19,8 @@ class SavingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final goals = ref.watch(savingsProvider);
-    return Scaffold(
-      appBar: PayAppBar(title: const Tr('Savings')),
+    return PinkPage(
+      header: const PinkHeader(title: 'Savings'),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => showDialog<void>(
           context: context,
@@ -32,6 +32,7 @@ class SavingsScreen extends ConsumerWidget {
         label: const Tr('New goal'),
       ),
       body: SafeArea(
+        top: false,
         child: goals.isEmpty
             ? const Center(
                 child: Padding(
@@ -52,7 +53,7 @@ class SavingsScreen extends ConsumerWidget {
                 ),
               )
             : ListView.separated(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 96),
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 96),
                 itemCount: goals.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 12),
                 itemBuilder: (_, i) => FadeSlideIn(

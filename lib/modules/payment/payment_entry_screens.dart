@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pink_header.dart';
 import '../../core/i18n/tr.dart';
-import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/utils/billers.dart';
 import '../../core/utils/operators.dart';
@@ -117,9 +117,9 @@ class SavingsDepositScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final names = [for (final g in ref.watch(savingsProvider)) g.name];
     if (names.isEmpty) {
-      return Scaffold(
-        appBar: PayAppBar(title: const Tr('Add to savings')),
-        body: const Center(child: Tr('Create a savings goal first.')),
+      return const PinkPage(
+        header: PinkHeader(title: 'Add to savings'),
+        body: Center(child: Tr('Create a savings goal first.')),
       );
     }
     return PaymentFormScreen(

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pink_header.dart';
 import '../../core/widgets/fade_slide_in.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/i18n/app_language.dart';
 import '../../core/i18n/tr.dart';
 import '../../core/security/biometric_service.dart';
-import '../../core/widgets/pay_app_bar.dart';
 import '../auth/logout.dart';
 import 'settings_providers.dart';
 
@@ -80,11 +80,12 @@ class SettingsScreen extends ConsumerWidget {
     final requirePin = ref.watch(requirePinProvider);
     final biometric = ref.watch(biometricEnabledProvider);
     final blockShots = ref.watch(blockScreenshotsProvider);
-    return Scaffold(
-      appBar: const PayAppBar(title: Tr('Settings')),
+    return PinkPage(
+      header: const PinkHeader(title: 'Settings'),
       body: SafeArea(
+        top: false,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
           children: staggered([
             const _LanguageTile(),
             const SizedBox(height: 12),

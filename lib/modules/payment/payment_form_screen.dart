@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pink_header.dart';
 import '../../core/widgets/fade_slide_in.dart';
 import '../../core/i18n/tr.dart';
-import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -253,17 +253,15 @@ class _PaymentFormScreenState extends ConsumerState<PaymentFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PayAppBar(
-        title: Tr(widget.title),
-        backgroundColor: Colors.transparent,
-      ),
+    return PinkPage(
+      header: PinkHeader(title: widget.title),
       body: SafeArea(
+        top: false,
         child: Column(
             children: [
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 12),
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: staggered([

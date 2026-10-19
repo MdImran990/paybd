@@ -7,6 +7,7 @@ import '../../core/utils/format.dart';
 import '../../core/widgets/confetti.dart';
 import '../../core/widgets/copy_receipt_button.dart';
 import '../../core/widgets/fade_slide_in.dart';
+import '../../core/widgets/floating_bubbles.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../core/widgets/receipt_card.dart';
 import '../../data/models/transaction.dart';
@@ -17,73 +18,110 @@ class ReceiptScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final top = MediaQuery.of(context).padding.top;
     // The money has already moved, so going "back" must not repeat the payment.
     return PopScope(
       canPop: false,
-      child: Scaffold(
-        body: Stack(
-          children: [
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
+        child: Scaffold(
+          backgroundColor: AppColors.bg,
+          body: Stack(
+            children: [
+              Column(
+                children: [
+                  // Pink success area
+                  Container(
+                    width: double.infinity,
+                    clipBehavior: Clip.antiAlias,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [AppColors.primary, AppColors.primaryDark],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius:
+                          BorderRadius.vertical(bottom: Radius.circular(36)),
+                    ),
+                    child: Stack(
+                      children: [
+                        const Positioned.fill(
+                          child: RepaintBoundary(child: FloatingBubbles()),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(24, top + 28, 24, 68),
+                          child: Column(
+                            children: [
+                              const _AnimatedCheck(),
+                              const SizedBox(height: 16),
+                              FadeSlideIn(
+                                index: 3,
+                                child: Column(
+                                  children: [
+                                    Tr(tx.type.successTitle,
+                                        style: const TextStyle(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.w800,
+                                            color: Colors.white)),
+                                    const SizedBox(height: 6),
+                                    Tr(formatTaka(tx.amountMinor),
+                                        style: const TextStyle(
+                                            fontSize: 34,
+                                            fontWeight: FontWeight.w800,
+                                            color: Colors.white)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                      child: Transform.translate(
+                        // The white receipt card overlaps the pink area.
+                        offset: const Offset(0, -40),
                         child: Column(
                           children: [
-                            const SizedBox(height: 8),
-                            const _AnimatedCheck(),
-                            const SizedBox(height: 18),
-                            FadeSlideIn(
-                              index: 3,
-                              child: Column(
-                                children: [
-                                  Tr(tx.type.successTitle,
-                                      style: const TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w800)),
-                                  const SizedBox(height: 6),
-                                  Tr(formatTaka(tx.amountMinor),
-                                      style: const TextStyle(
-                                          fontSize: 30,
-                                          fontWeight: FontWeight.w800,
-                                          color: AppColors.green)),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 24),
                             FadeSlideIn(index: 5, child: ReceiptCard(tx: tx)),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 4),
                             FadeSlideIn(
                                 index: 6, child: CopyReceiptButton(tx: tx)),
                           ],
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    FadeSlideIn(
-                      index: 7,
-                      child: PrimaryButton(
-                        label: 'Done',
-                        onPressed: () => context.go('/home'),
+                  ),
+                  SafeArea(
+                    top: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 4, 24, 16),
+                      child: FadeSlideIn(
+                        index: 7,
+                        child: PrimaryButton(
+                          label: 'Done',
+                          onPressed: () => context.go('/home'),
+                        ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ),
-            const Positioned.fill(
-              child: RepaintBoundary(child: ConfettiBurst()),
-            ),
-          ],
+              const Positioned.fill(
+                child: RepaintBoundary(child: ConfettiBurst()),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-/// Green circle that pops in, then the check mark draws itself.
+/// White circle that pops in, then the green check mark draws itself.
 class _AnimatedCheck extends StatefulWidget {
   const _AnimatedCheck();
 
@@ -118,12 +156,12 @@ class _AnimatedCheckState extends State<_AnimatedCheck> {
             height: 84,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.green,
+              color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.green.withValues(alpha: 0.35),
+                  color: Colors.black.withValues(alpha: 0.18),
                   blurRadius: 22,
-                  spreadRadius: 2,
+                  offset: const Offset(0, 8),
                 ),
               ],
             ),
@@ -142,9 +180,9 @@ class _CheckPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white
+      ..color = AppColors.green
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 6
+      ..strokeWidth = 7
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
     final path = Path()

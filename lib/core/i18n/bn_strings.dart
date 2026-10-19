@@ -337,4 +337,5 @@ const Map<String, String> bnStrings = {
   "Services": "সেবাসমূহ",
   "Messages": "মেসেজ",
   "New": "নতুন",
+  "PIN setup": "পিন সেটআপ",
 };

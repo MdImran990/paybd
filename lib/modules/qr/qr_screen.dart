@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pink_header.dart';
 import '../../core/widgets/fade_slide_in.dart';
 import '../../core/i18n/tr.dart';
-import '../../core/widgets/pay_app_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -24,21 +24,24 @@ class QrScreen extends StatelessWidget {
     return DefaultTabController(
       length: 2,
       initialIndex: initialTab,
-      child: Scaffold(
-        appBar: PayAppBar(
-          title: const Tr('QR Pay'),
-          backgroundColor: Colors.transparent,
-          bottom: TabBar(
-            indicatorColor: AppColors.primary,
-            labelColor: AppColors.primary,
-            unselectedLabelColor: AppColors.textMuted,
-            tabs: [Tab(text: tr('My QR')), Tab(text: tr('Scan'))],
-          ),
-        ),
-        // Tabs are built only when shown, so the camera runs only on the Scan tab.
-        body: const TabBarView(
-          physics: NeverScrollableScrollPhysics(),
-          children: [_MyQrTab(), _ScanTab()],
+      child: PinkPage(
+        header: const PinkHeader(title: 'QR Pay'),
+        body: Column(
+          children: [
+            TabBar(
+              indicatorColor: AppColors.primary,
+              labelColor: AppColors.primary,
+              unselectedLabelColor: AppColors.textMuted,
+              tabs: [Tab(text: tr('My QR')), Tab(text: tr('Scan'))],
+            ),
+            // Tabs are built only when shown, so the camera runs only on the Scan tab.
+            const Expanded(
+              child: TabBarView(
+                physics: NeverScrollableScrollPhysics(),
+                children: [_MyQrTab(), _ScanTab()],
+              ),
+            ),
+          ],
         ),
       ),
     );

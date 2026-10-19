@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pink_header.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/widgets/fade_slide_in.dart';
@@ -37,8 +38,10 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PinkPage(
+      header: const PinkHeader(title: 'PIN setup', showBack: false),
       body: SafeArea(
+        top: false,
         child: FadeSlideIn(
           child: PinEntry(
             title: _first == null ? 'Create your PIN' : 'Confirm your PIN',

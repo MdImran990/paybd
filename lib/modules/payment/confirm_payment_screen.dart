@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pink_header.dart';
 import '../../core/widgets/fade_slide_in.dart';
 import '../../core/i18n/tr.dart';
-import '../../core/widgets/pay_app_bar.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/utils/format.dart';
@@ -16,12 +16,10 @@ class ConfirmPaymentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PayAppBar(
-        title: const Tr('Confirm'),
-        backgroundColor: Colors.transparent,
-      ),
+    return PinkPage(
+      header: const PinkHeader(title: 'Confirm'),
       body: SafeArea(
+        top: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
           child: Column(

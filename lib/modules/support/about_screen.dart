@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pink_header.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/app_info.dart';
 import '../../core/i18n/tr.dart';
 import '../../core/widgets/fade_slide_in.dart';
-import '../../core/widgets/pay_app_bar.dart';
 import '../../core/widgets/primary_button.dart';
 
 class AboutScreen extends StatelessWidget {
@@ -18,11 +18,12 @@ class AboutScreen extends StatelessWidget {
       (Icons.qr_code_scanner_rounded, 'Pay and get paid with QR'),
       (Icons.fingerprint_rounded, 'Protected by your PIN and fingerprint'),
     ];
-    return Scaffold(
-      appBar: const PayAppBar(title: Tr('Learn about PayBD')),
+    return PinkPage(
+      header: const PinkHeader(title: 'Learn about PayBD'),
       body: SafeArea(
+        top: false,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
           children: [
             FadeSlideIn(
               index: 0,

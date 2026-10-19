@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../data/models/transaction.dart';
 import '../../modules/auth/change_pin_screen.dart';
-import '../../modules/auth/login_pin_screen.dart';
 import '../../modules/auth/login_screen.dart';
 import '../../modules/auth/register_details_screen.dart';
 import '../../modules/auth/register_screen.dart';
@@ -76,6 +75,7 @@ CustomTransitionPage<void> _slide(GoRouterState state, Widget child) {
     },
   );
 }
+
 final routerProvider = Provider<GoRouter>((ref) {
   // Re-run the redirect whenever the session changes (login / logout).
   final refresh = ValueNotifier<int>(0);
@@ -125,16 +125,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/login',
         pageBuilder: (_, s) => _fade(s, const LoginScreen()),
-      ),
-      GoRoute(
-        path: '/login/pin',
-        pageBuilder: (_, s) {
-          final p = s.extra;
-          return _slide(
-            s,
-            p is String ? LoginPinScreen(phone: p) : const LoginScreen(),
-          );
-        },
       ),
       GoRoute(
         path: '/register',

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../core/widgets/pink_header.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/i18n/tr.dart';
 import '../../core/utils/format.dart';
-import '../../core/widgets/pay_app_bar.dart';
 import '../../core/widgets/pin_entry.dart';
 import '../../core/widgets/processing_overlay.dart';
 import '../../data/models/payment_request.dart';
@@ -78,9 +78,10 @@ class _PaymentPinScreenState extends ConsumerState<PaymentPinScreen> {
       canPop: !_processing,
       child: Stack(
         children: [
-          Scaffold(
-            appBar: PayAppBar(backgroundColor: Colors.transparent),
+          PinkPage(
+            header: PinkHeader(title: request.type.label),
             body: SafeArea(
+              top: false,
               child: PinEntry(
                 title: 'Enter your PIN',
                 subtitle:

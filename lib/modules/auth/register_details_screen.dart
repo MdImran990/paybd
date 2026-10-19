@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../core/i18n/tr.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
-import '../../core/widgets/auth_header.dart';
 import '../../core/widgets/fade_slide_in.dart';
-import '../../core/widgets/primary_button.dart';
+import '../../core/widgets/continue_bar.dart';
+import '../../core/widgets/language_toggle.dart';
+import '../../core/widgets/pink_auth_page.dart';
 import '../notifications/notification_providers.dart';
 import '../profile/profile_providers.dart';
 import 'account_provider.dart';
@@ -67,104 +67,96 @@ class _RegisterDetailsScreenState extends ConsumerState<RegisterDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final keyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light,
-      child: Scaffold(
-        backgroundColor: AppColors.primary,
-        body: Column(
-          children: [
-            AuthHeader(
-              title: 'Your details',
-              subtitle: 'Number verified: ${widget.phone}',
-              compact: keyboardOpen,
-            ),
-            Expanded(
-              child: AuthSheet(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const FadeSlideIn(
-                      index: 0,
-                      child: Tr('What should we call you?',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w800)),
-                    ),
-                    const SizedBox(height: 16),
-                    FadeSlideIn(
-                      index: 1,
-                      child: TextField(
-                        controller: _name,
-                        maxLength: 40,
-                        textCapitalization: TextCapitalization.words,
-                        onChanged: (v) => _valid.value = _isValidName(v),
-                        onTapOutside: (_) =>
-                            FocusManager.instance.primaryFocus?.unfocus(),
-                        decoration: InputDecoration(
-                          hintText: tr('Full name'),
-                          counterText: '',
-                          filled: true,
-                          fillColor: AppColors.panel,
-                          prefixIcon: const Icon(Icons.person_outline_rounded),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(18),
-                            borderSide: const BorderSide(
-                                color: AppColors.primary, width: 1.5),
-                          ),
-                        ),
+    return PinkAuthPage(
+      title: 'Your details',
+      trailing: const LanguageToggle(),
+      body: Column(
+        children: [
+          FadeSlideIn(
+            index: 0,
+            child: AuthCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Tr('Number verified: ${widget.phone}',
+                      style: const TextStyle(
+                          fontSize: 12, color: AppColors.textMuted)),
+                  const SizedBox(height: 14),
+                  const Tr('What should we call you?',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 6),
+                  TextField(
+                    controller: _name,
+                    maxLength: 40,
+                    textCapitalization: TextCapitalization.words,
+                    onChanged: (v) => _valid.value = _isValidName(v),
+                    onTapOutside: (_) =>
+                        FocusManager.instance.primaryFocus?.unfocus(),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w600),
+                    decoration: InputDecoration(
+                      hintText: tr('Full name'),
+                      counterText: '',
+                      filled: false,
+                      prefixIcon: const Icon(Icons.person_outline_rounded,
+                          color: AppColors.primary),
+                      enabledBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Color(0xFFE5E5EC)),
+                      ),
+                      focusedBorder: const UnderlineInputBorder(
+                        borderSide:
+                            BorderSide(color: AppColors.primary, width: 2),
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    FadeSlideIn(
-                      index: 2,
-                      child: Container(
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.08),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: const Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Icon(Icons.verified_user_outlined,
-                                color: AppColors.primary, size: 20),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Tr(
-                                'This is a basic account. Identity verification (eKYC) will be added later to raise your limits.',
-                                style: TextStyle(
-                                    fontSize: 12, color: AppColors.textMuted),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 22),
-                    FadeSlideIn(
-                      index: 3,
-                      child: ValueListenableBuilder<bool>(
-                        valueListenable: _loading,
-                        builder: (_, loading, _) =>
-                            ValueListenableBuilder<bool>(
-                          valueListenable: _valid,
-                          builder: (_, valid, _) => PrimaryButton(
-                            label: 'Continue',
-                            loading: loading,
-                            onPressed: valid ? _create : null,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 14),
+                ],
               ),
             ),
-          ],
+          ),
+          const SizedBox(height: 14),
+          FadeSlideIn(
+            index: 1,
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.16),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.verified_user_outlined,
+                      color: Colors.white, size: 20),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Tr(
+                      'This is a basic account. Identity verification (eKYC) will be added later to raise your limits.',
+                      style: TextStyle(fontSize: 12, color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      bottom: ColoredBox(
+        color: AppColors.primary,
+        child: SafeArea(
+          top: false,
+          child: ValueListenableBuilder<bool>(
+            valueListenable: _loading,
+            builder: (_, loading, _) => ValueListenableBuilder<bool>(
+              valueListenable: _valid,
+              builder: (_, valid, _) => ContinueBar(
+                label: 'Continue',
+                loading: loading,
+                onPressed: valid ? _create : null,
+              ),
+            ),
+          ),
         ),
       ),
     );
