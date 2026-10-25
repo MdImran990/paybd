@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 /// PayBD palette: bKash-style pink on a light background.
 /// Use PayBD's own logo and name; do not copy any other company's branding.
 class AppColors {
