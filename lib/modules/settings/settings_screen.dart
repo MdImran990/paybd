@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../core/widgets/pink_header.dart';
 import '../../core/widgets/fade_slide_in.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,7 +7,15 @@ import '../../app/theme/app_colors.dart';
 import '../../core/i18n/app_language.dart';
 import '../../core/i18n/tr.dart';
 import '../../core/security/biometric_service.dart';
+import '../../core/backup/backup_service.dart';
+import '../../core/storage/prefs.dart';
+import '../auth/auth_providers.dart';
 import '../auth/logout.dart';
+import '../nominee/nominee_provider.dart';
+import '../notifications/notification_providers.dart';
+import '../profile/profile_providers.dart';
+import '../savings/savings_providers.dart';
+import '../wallet/wallet_providers.dart';
 import 'settings_providers.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -53,6 +62,109 @@ class SettingsScreen extends ConsumerWidget {
       ),
     );
     if (ok == true) await deleteCurrentAccount(ref);
+  }
+
+  void _backupSheet(BuildContext context, WidgetRef ref) {
+    final phone = ref.read(sessionPhoneProvider);
+    if (phone == null) return;
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.panel,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (sheet) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Tr('Backup & restore',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 8),
+            const Tr(
+              'Copy a backup code and keep it somewhere safe. It has your transactions and settings, but not your PIN. Anyone who has this code can read your data, so do not share it.',
+              style: TextStyle(color: AppColors.textMuted, height: 1.5),
+            ),
+            const SizedBox(height: 18),
+            FilledButton.icon(
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                minimumSize: const Size.fromHeight(50),
+              ),
+              onPressed: () async {
+                final prefs = ref.read(sharedPreferencesProvider);
+                await Clipboard.setData(
+                    ClipboardData(text: buildBackup(prefs, phone)));
+                if (sheet.mounted) Navigator.of(sheet).pop();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Tr('Backup code copied')),
+                  );
+                }
+              },
+              icon: const Icon(Icons.copy_rounded),
+              label: const Tr('Copy backup code'),
+            ),
+            const SizedBox(height: 10),
+            OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size.fromHeight(50),
+                side: const BorderSide(color: AppColors.primary),
+              ),
+              onPressed: () {
+                Navigator.of(sheet).pop();
+                _restore(context, ref, phone);
+              },
+              icon: const Icon(Icons.restore_rounded, color: AppColors.primary),
+              label: const Tr('Restore from clipboard',
+                  style: TextStyle(color: AppColors.primary)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _restore(BuildContext context, WidgetRef ref, String phone) async {
+    final clip = await Clipboard.getData(Clipboard.kTextPlain);
+    final text = clip?.text ?? '';
+    if (!context.mounted) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.panel,
+        title: const Tr('Restore this backup?'),
+        content: const Tr(
+            'Your current data for this number will be replaced by the copied backup.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Tr('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Tr('Restore'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+
+    final error =
+        await restoreBackup(ref.read(sharedPreferencesProvider), phone, text);
+    // Everything reads its data again from the saved values.
+    ref.invalidate(walletRepositoryProvider);
+    ref.invalidate(notificationsProvider);
+    ref.invalidate(savingsProvider);
+    ref.invalidate(profileNameProvider);
+    ref.invalidate(nomineeProvider);
+    ref.invalidate(requirePinProvider);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Tr(error ?? 'Backup restored')),
+      );
+    }
   }
 
   Future<void> _toggleBiometric(
@@ -114,6 +226,25 @@ class SettingsScreen extends ConsumerWidget {
                   'Hide PayBD in screenshots, screen recording and the recent apps list (Android).',
               value: blockShots,
               onChanged: (v) => ref.read(blockScreenshotsProvider.notifier).set(v),
+            ),
+            const SizedBox(height: 12),
+            Material(
+              color: AppColors.panel,
+              borderRadius: BorderRadius.circular(18),
+              child: ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                leading:
+                    const Icon(Icons.backup_outlined, color: AppColors.primary),
+                title: const Tr('Backup & restore',
+                    style: TextStyle(fontWeight: FontWeight.w600)),
+                subtitle: const Tr(
+                  'Copy your data as a backup code, or restore it.',
+                  style: TextStyle(color: AppColors.textMuted, fontSize: 12),
+                ),
+                onTap: () => _backupSheet(context, ref),
+              ),
             ),
             const SizedBox(height: 12),
             Material(

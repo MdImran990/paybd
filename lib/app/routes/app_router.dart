@@ -10,6 +10,7 @@ import '../../modules/auth/otp_screen.dart';
 import '../../modules/auth/pin_setup_screen.dart';
 import '../../modules/auth/auth_providers.dart';
 import '../../modules/home/home_screen.dart';
+import '../../modules/insights/insights_screen.dart';
 import '../../modules/limits/limits_screen.dart';
 import '../../modules/nominee/nominee_screen.dart';
 import '../../modules/notifications/inbox_screen.dart';
@@ -220,6 +221,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/inbox',
         pageBuilder: (_, s) => _slide(s, const InboxScreen()),
+      ),
+      GoRoute(
+        path: '/insights',
+        pageBuilder: (_, s) => _slide(s, const InsightsScreen()),
       ),
       GoRoute(
         path: '/limits',

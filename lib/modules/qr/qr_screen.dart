@@ -9,6 +9,9 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/utils/format.dart';
+import '../../core/widgets/pink_auth_page.dart';
+import '../../core/widgets/pay_keypad.dart';
+import '../../core/utils/numeric_input.dart';
 import '../../data/models/transaction.dart';
 import '../../data/repositories/wallet_repository.dart';
 import '../auth/auth_providers.dart';
@@ -59,13 +62,22 @@ class _MyQrTab extends ConsumerStatefulWidget {
 
 class _MyQrTabState extends ConsumerState<_MyQrTab> {
   final _amount = TextEditingController();
+  final _focus = FocusNode();
   final _amountText = ValueNotifier<String>('');
 
   @override
   void dispose() {
     _amount.dispose();
+    _focus.dispose();
     _amountText.dispose();
     super.dispose();
+  }
+
+  void _onKey(String key) {
+    if (key == 'next') return;
+    if (applyKey(_amount, key, decimal: true, maxInt: 5, maxDecimals: 2)) {
+      _amountText.value = _amount.text;
+    }
   }
 
   @override
@@ -73,103 +85,103 @@ class _MyQrTabState extends ConsumerState<_MyQrTab> {
     final phone = ref.watch(sessionPhoneProvider) ?? '';
     final limits = WalletLimits.of(TxType.sent);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
-      child: Column(
-        children: staggered([
-          ValueListenableBuilder<String>(
-            valueListenable: _amountText,
-            builder: (_, text, _) {
-              final minor = parseTakaToMinor(text);
-              final amountOk =
-                  minor != null && minor >= limits.min && minor <= limits.max;
-              final data = QrPayload(
-                phone: phone,
-                amountMinor: amountOk ? minor : null,
-              ).toQrString();
-              return Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: QrImageView(
-                      data: data,
-                      size: 220,
-                      backgroundColor: Colors.white,
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
+            child: Column(
+              children: staggered([
+                ValueListenableBuilder<String>(
+                  valueListenable: _amountText,
+                  builder: (_, text, _) {
+                    final minor = parseTakaToMinor(text);
+                    final amountOk = minor != null &&
+                        minor >= limits.min &&
+                        minor <= limits.max;
+                    final data = QrPayload(
+                      phone: phone,
+                      amountMinor: amountOk ? minor : null,
+                    ).toQrString();
+                    return Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: const [
+                              BoxShadow(
+                                  color: Color(0x22000000),
+                                  blurRadius: 18,
+                                  offset: Offset(0, 8)),
+                            ],
+                          ),
+                          child: QrImageView(
+                            data: data,
+                            size: 190,
+                            backgroundColor: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Tr(
+                          amountOk
+                              ? 'Request ${formatTaka(minor)}'
+                              : 'Anyone can scan this to pay you',
+                          style: const TextStyle(color: AppColors.textMuted),
+                        ),
+                        if (text.isNotEmpty && !amountOk)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 6),
+                            child: Tr(
+                              'Amount must be ${formatTaka(limits.min)} to ${formatTaka(limits.max)}.',
+                              style: const TextStyle(
+                                  color: AppColors.error, fontSize: 12),
+                            ),
+                          ),
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(height: 10),
+                Tr(phone,
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.w800)),
+                TextButton.icon(
+                  onPressed: () async {
+                    await Clipboard.setData(ClipboardData(text: phone));
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Tr('Number copied')),
+                      );
+                    }
+                  },
+                  icon: const Icon(Icons.copy_rounded, size: 18),
+                  label: const Tr('Copy number'),
+                ),
+                const SizedBox(height: 6),
+                AuthCard(
+                  child: ValueListenableBuilder<String>(
+                    valueListenable: _amountText,
+                    builder: (_, _, _) => PinkField(
+                      label: 'Request an amount (optional)',
+                      controller: _amount,
+                      focus: _focus,
+                      hint: '0.00',
+                      prefix: const Text('৳',
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.primary)),
                     ),
                   ),
-                  const SizedBox(height: 14),
-                  Tr(
-                    amountOk
-                        ? 'Request ${formatTaka(minor)}'
-                        : 'Anyone can scan this to pay you',
-                    style: const TextStyle(color: AppColors.textMuted),
-                  ),
-                  if (text.isNotEmpty && !amountOk)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 6),
-                      child: Tr(
-                        'Amount must be ${formatTaka(limits.min)} to ${formatTaka(limits.max)}.',
-                        style: const TextStyle(
-                            color: AppColors.error, fontSize: 12),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 18),
-          Tr(phone,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
-          const SizedBox(height: 4),
-          TextButton.icon(
-            onPressed: () async {
-              await Clipboard.setData(ClipboardData(text: phone));
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Tr('Number copied')),
-                );
-              }
-            },
-            icon: const Icon(Icons.copy_rounded, size: 18),
-            label: const Tr('Copy number'),
-          ),
-          const SizedBox(height: 20),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: const Tr('Request an amount (optional)',
-                style: TextStyle(fontWeight: FontWeight.w600)),
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _amount,
-            keyboardType:
-                const TextInputType.numberWithOptions(decimal: true),
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(
-                  RegExp(r'^\d{0,5}(\.\d{0,2})?$')),
-            ],
-            onChanged: (v) => _amountText.value = v,
-            decoration: InputDecoration(
-              hintText: '0.00',
-              prefixText: '৳ ',
-              filled: true,
-              fillColor: AppColors.panel,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: const BorderSide(color: AppColors.primary),
-              ),
+                ),
+              ]),
             ),
           ),
-        ]),
-      ),
+        ),
+        PayKeypad(kind: KeypadKind.decimal, onKey: _onKey),
+      ],
     );
   }
 }

@@ -402,7 +402,7 @@ const _services = <_Service>[
   _Service(Icons.public_rounded, 'Remittance', null),
   _Service(Icons.account_balance_rounded, 'Loan', null),
   _Service(Icons.health_and_safety_rounded, 'Insurance', null),
-  _Service(Icons.person_outline_rounded, 'My Profile', '/profile'),
+  _Service(Icons.pie_chart_outline_rounded, 'Insights', '/insights'),
 ];
 
 class _ServiceGrid extends StatelessWidget {

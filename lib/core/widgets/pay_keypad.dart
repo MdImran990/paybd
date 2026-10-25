@@ -47,6 +47,7 @@ class PayKeypad extends StatelessWidget {
 
   Widget _digit(String d) => _PadKey(
         color: _keyLight,
+        semanticLabel: d,
         onTap: () => onKey(d),
         child: Tr(d,
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
@@ -54,6 +55,7 @@ class PayKeypad extends StatelessWidget {
 
   Widget _back() => _PadKey(
         color: _keyDark,
+        semanticLabel: tr('Delete'),
         onTap: () => onKey('back'),
         onLongPress: () => onKey('clear'),
         child: const Icon(Icons.backspace_outlined,
@@ -69,6 +71,7 @@ class PayKeypad extends StatelessWidget {
         left = _back();
         right = _PadKey(
           color: AppColors.primary,
+          semanticLabel: tr('Next'),
           onTap: () => onKey('next'),
           child: const Icon(Icons.arrow_forward_rounded,
               size: 24, color: Colors.white),
@@ -76,6 +79,7 @@ class PayKeypad extends StatelessWidget {
       case KeypadKind.decimal:
         left = _PadKey(
           color: _keyLight,
+          semanticLabel: tr('Decimal point'),
           onTap: () => onKey('.'),
           child: const Text('.',
               style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800)),
@@ -114,9 +118,11 @@ class _PadKey extends StatefulWidget {
   final Color color;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
+  final String? semanticLabel;
   final Widget child;
 
   const _PadKey({
+    required this.semanticLabel,
     required this.color,
     required this.onTap,
     required this.child,
@@ -136,7 +142,11 @@ class _PadKeyState extends State<_PadKey> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Semantics(
+      button: true,
+      label: widget.semanticLabel,
+      excludeSemantics: true,
+      child: GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTapDown: (_) => _set(true),
       onTapUp: (_) => _set(false),
@@ -166,6 +176,7 @@ class _PadKeyState extends State<_PadKey> {
           ),
           child: widget.child,
         ),
+      ),
       ),
     );
   }

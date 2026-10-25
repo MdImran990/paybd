@@ -8,11 +8,15 @@ class ContinueBar extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool loading;
 
+  /// Optional widget on the right side (for example the fingerprint button).
+  final Widget? trailing;
+
   const ContinueBar({
     super.key,
     required this.label,
     required this.onPressed,
     this.loading = false,
+    this.trailing,
   });
 
   @override
@@ -53,6 +57,8 @@ class ContinueBar extends StatelessWidget {
                             color: Colors.white,
                             size: 22),
                   ),
+                  const Spacer(),
+                  ?trailing,
                 ],
               ),
             ),

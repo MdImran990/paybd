@@ -97,6 +97,8 @@ class MenuDrawer extends ConsumerWidget {
       _Entry(Icons.home_outlined, 'Home',
           () => Scaffold.of(context).closeEndDrawer()),
       _Entry(Icons.bar_chart_rounded, 'Statement', () => _go(context, '/statement')),
+      _Entry(Icons.pie_chart_outline_rounded, 'Spending insights',
+          () => _go(context, '/insights')),
       _Entry(Icons.warning_amber_rounded, 'Limits', () => _go(context, '/limits')),
       _Entry(Icons.headset_mic_outlined, 'Customer Service',
           () => _go(context, '/help')),

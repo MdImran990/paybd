@@ -5,6 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/theme/app_colors.dart';
 import '../../core/i18n/tr.dart';
+import '../../core/security/biometric_service.dart';
+import '../../core/storage/account_keys.dart';
+import '../../core/storage/prefs.dart';
 import '../../core/utils/numeric_input.dart';
 import '../../core/utils/pin_verify.dart';
 import '../../core/utils/validators.dart';
@@ -134,6 +137,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     } finally {
       if (mounted) _loading.value = false;
     }
+  }
+
+  /// The typed number has an account with a PIN and fingerprint login turned on.
+  bool get _fingerprintReady {
+    if (!_numberValid) return false;
+    final phone = _number.text;
+    if (!ref.read(accountsProvider).contains(phone)) return false;
+    final prefs = ref.read(sharedPreferencesProvider);
+    if (!(prefs.getBool(acctKey(phone, 'biometric_unlock')) ?? false)) {
+      return false;
+    }
+    return PinAccess(ref.read(pinRepositoryProvider), phone).hasPin;
+  }
+
+  Future<void> _fingerprintLogin() async {
+    final phone = _number.text;
+    final ok = await BiometricService.authenticate(tr('Log in to PayBD'));
+    if (!ok || !mounted) return;
+    await ref.read(accountProvider.notifier).save(phone);
+    await ref.read(sessionPhoneProvider.notifier).setPhone(phone);
+    if (mounted) context.go('/home');
   }
 
   Future<void> _startReset(String phone) async {
@@ -329,6 +353,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                 label: 'Continue',
                 loading: loading,
                 onPressed: _canContinue ? _continue : null,
+                trailing: _fingerprintReady
+                    ? IconButton(
+                        tooltip: tr('Use fingerprint'),
+                        onPressed: loading ? null : _fingerprintLogin,
+                        icon: const Icon(Icons.fingerprint_rounded,
+                            color: Colors.white, size: 30),
+                      )
+                    : null,
               ),
             ),
           ),
